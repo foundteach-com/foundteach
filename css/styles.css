@@ -85,9 +85,16 @@ img {
   padding: 0 1.5rem;
 }
 
+.logo {
+  display: flex;
+  align-items: center;
+}
+
 .logo-img {
-  height: 40px;
-  width: auto;
+  height: 44px;
+  width: 44px;
+  object-fit: contain;
+  border-radius: 20%;
   display: block;
   transition: opacity var(--transition);
 }
@@ -97,7 +104,9 @@ img {
 }
 
 .logo-img-footer {
-  height: 36px;
+  height: 40px;
+  width: 40px;
+  border-radius: 20%;
 }
 
 .nav-links {
