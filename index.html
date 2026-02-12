@@ -21,61 +21,73 @@
   <body>
     <header class="header">
       <nav class="nav">
-        <a href="#" class="logo">
-          <img src="assets/logo.png" alt="FoundTeach" class="logo-img" />
-          <span class="logo-text">FoundTeach</span>
-        </a>
-        <ul class="nav-links">
-          <li><a href="#servicios">Servicios</a></li>
-          <li><a href="#nosotros">Nosotros</a></li>
-          <li><a href="#proyectos">Proyectos</a></li>
-          <li><a href="#contacto" class="nav-cta">Contactar</a></li>
-        </ul>
-        <button class="nav-toggle" aria-label="Menú">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-      </nav>
+      <a href="#" class="logo">
+        <img src="assets/logo.png" alt="FoundTeach" class="logo-img">
+        <span class="logo-text">FoundTeach</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#servicios">Producto</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#proyectos">Proyectos</a></li>
+      </ul>
+      <div class="header-actions">
+        <a href="#login" class="nav-link-subtle">Ingresar</a>
+        <a href="#contacto" class="nav-cta">Solicitar demo</a>
+      </div>
+      <button class="nav-toggle" aria-label="Menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </nav>
     </header>
 
     <main>
       <section class="hero">
-        <div class="hero-bg">
-          <div class="hero-grid"></div>
-          <div class="hero-glow"></div>
-        </div>
-        <div class="container hero-container">
+      <div class="hero-bg">
+        <!-- Background elements simple like reference -->
+        <div class="hero-shape hero-shape-1"></div>
+        <div class="hero-shape hero-shape-2"></div>
+      </div>
+      <div class="container hero-container-centered">
         <div class="hero-content">
-          <p class="hero-badge">Ingeniería de software</p>
-          <h1 class="hero-title">
-            Construimos <span class="highlight">soluciones</span> que impulsan
-            tu negocio
+          <h1 class="hero-title-centered">
+            Ingeniería de software <br><span class="highlight">para todos</span>
           </h1>
-          <p class="hero-description">
-            Desarrollo de software a medida, consultoría tecnológica y
-            transformación digital. Convertimos tus ideas en productos
-            escalables y eficientes.
+          <p class="hero-description-centered">
+            Construimos el futuro de tu empresa con soluciones digitales <br>
+            de alto impacto y diseño excepcional.
           </p>
-          <div class="hero-actions">
-            <a href="#contacto" class="btn btn-primary">Iniciar proyecto</a>
-            <a href="#servicios" class="btn btn-secondary">Conocer servicios</a>
+          <div class="hero-actions-centered">
+            <a href="#contacto" class="btn btn-primary">Iniciar ahora</a>
+            <a href="#servicios" class="btn btn-secondary-outline">
+              <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              Ver video
+            </a>
           </div>
         </div>
-        <div class="hero-visual">
-          <div class="hero-visual-wrapper">
-             <div class="hero-visual-placeholder">
-                <!-- El video o imagen 3D irá aquí -->
-                <div class="floating-code">
-                  <pre><code>function solve() {
-  return "success";
-}</code></pre>
+        <div class="hero-visual-bottom">
+          <div class="hero-3d-scene">
+             <!-- Placeholder para el render 3D de ingenieros -->
+             <div class="clay-illustration">
+                <div class="clay-device">
+                  <div class="clay-screen">
+                    <div class="clay-code-lines"></div>
+                  </div>
+                </div>
+                <div class="clay-floating-elements">
+                  <div class="clay-element gear"></div>
+                  <div class="clay-element cloud"></div>
+                  <div class="clay-element sphere"></div>
                 </div>
              </div>
           </div>
         </div>
       </div>
-        <div class="hero-stats">
+    </section>
+    <div class="hero-stats">
           <div class="stat">
             <span class="stat-value">+50</span>
             <span class="stat-label">Proyectos entregados</span>
