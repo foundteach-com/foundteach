@@ -11,8 +11,8 @@
   --color-accent-muted: rgba(8, 145, 178, 0.12);
   --color-border: rgba(100, 116, 139, 0.2);
   --color-on-accent: #ffffff;
-  --font-sans: 'Instrument Sans', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: "Instrument Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
   --radius: 12px;
   --radius-lg: 20px;
   --transition: 0.2s ease;
@@ -88,6 +88,14 @@ img {
 .logo {
   display: flex;
   align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-text {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.03em;
 }
 
 .logo-img {
@@ -172,7 +180,7 @@ img {
 .hero-grid {
   position: absolute;
   inset: 0;
-  background-image: 
+  background-image:
     linear-gradient(rgba(8, 145, 178, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(8, 145, 178, 0.08) 1px, transparent 1px);
   background-size: 60px 60px;
@@ -510,7 +518,9 @@ img {
   }
 
   .nav-toggle span {
-    transition: transform 0.2s, opacity 0.2s;
+    transition:
+      transform 0.2s,
+      opacity 0.2s;
   }
 
   .nav-toggle {
