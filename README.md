@@ -1,73 +1,55 @@
-# FoundTeach
+# FoundTeach Monorepo
 
 Sitio web institucional y API de **FoundTeach** — empresa de ingeniería de software.
 
 ## Arquitectura
 
-Monorepo con tres servicios en [Railway](https://railway.app):
+Monorepo basado en [Turbo](https://turbo.build/repo) con las siguientes tecnologías:
 
-| Servicio | Descripción | Raíz |
-|----------|-------------|------|
-| **web** | Sitio institucional (HTML, CSS, JS) | raíz del repo |
-| **api** | Backend API (Express + Postgres) | `/api` |
-| **Postgres** | Base de datos | — |
+- **Frontend:** Next.js (App Router, TypeScript)
+- **Backend:** NestJS (TypeScript, Prisma)
+- **Base de Datos:** Postgres
+- **Package Manager:** npm Workspaces
 
-## Configuración Railway
-
-### Servicio Web (foundteach.com)
-
-1. **Root Directory**: vacío (raíz del repo)
-2. **Dominio personalizado**: 
-   - Settings → Networking → + Custom Domain
-   - Agregar `foundteach.com`
-   - Crear registro CNAME en DNS apuntando al valor que indica Railway
-
-### Servicio API
-
-1. **Root Directory**: `api`
-2. **Variables**: Railway inyecta `DATABASE_URL` al vincular el servicio Postgres
-3. Vincular Postgres: Variables → Add Variable → Reference → Postgres → `DATABASE_URL`
-
-### Servicio Postgres
-
-- Crear desde Railway (Database → Postgres)
-- Vincular al servicio API para compartir `DATABASE_URL`
-
-## Desarrollo local
-
-### Web
-
-```bash
-npm install
-npm start
-```
-
-Sitio en `http://localhost:3000`.
-
-### API
-
-```bash
-cd api
-npm install
-DATABASE_URL=postgresql://user:pass@localhost:5432/foundteach npm start
-```
-
-API en `http://localhost:4000`.
-
-## Estructura
+## Estructura del Proyecto
 
 ```
 foundteach/
-├── index.html        # Sitio institucional
-├── css/
-│   └── styles.css
-├── js/
-│   └── main.js
-├── server.js         # Servidor web (Express)
-├── package.json      # Web
-├── Procfile          # Railway web
-├── api/              # Backend API
-│   ├── server.js
-│   └── package.json
-└── README.md
+├── apps/
+│   ├── web/          # Sitio institucional (Next.js)
+│   └── api/          # Backend API (NestJS + Prisma)
+├── legacy/           # Versiones anteriores (Express, Sitios Estáticos)
+├── package.json      # Configuración de Workspaces
+└── turbo.json        # Configuración de Orquestación
 ```
+
+## Desarrollo Local
+
+1. Instalar dependencias:
+
+```bash
+npm install
+```
+
+2. Ejecutar ambos servicios en paralelo (modo desarrollo):
+
+```bash
+npm run dev
+```
+
+- Web: `http://localhost:3000`
+- API: `http://localhost:4000`
+
+## Base de Datos (Prisma)
+
+En `apps/api`:
+
+- `npm run db:generate` para generar el cliente de Prisma.
+- `npm run db:migrate` para aplicar migraciones.
+
+## Configuración Railway
+
+| Servicio | Root Directory |
+| -------- | -------------- |
+| **web**  | `apps/web`     |
+| **api**  | `apps/api`     |

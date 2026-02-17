@@ -3,3 +3,11 @@ node_modules/
 *.log
 .env
 .env.local
+.env.*.local
+dist/
+.next/
+.turbo/
+build/
+out/
+.vercel
+*.tsbuildinfo

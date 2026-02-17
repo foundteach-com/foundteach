@@ -1,15 +1,18 @@
 {
-  "name": "foundteach-web",
+  "name": "foundteach-monorepo",
   "version": "1.0.0",
-  "description": "Sitio institucional FoundTeach - Ingeniería de software",
-  "main": "server.js",
+  "private": true,
   "scripts": {
-    "start": "node server.js"
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "start": "turbo start"
   },
-  "engines": {
-    "node": ">=18"
+  "workspaces": [
+    "apps/*"
+  ],
+  "devDependencies": {
+    "turbo": "^2.1.2"
   },
-  "dependencies": {
-    "express": "^4.21.0"
-  }
+  "packageManager": "npm@11.6.2"
 }
