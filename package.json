@@ -8,7 +8,9 @@
     "build:web": "turbo build --filter=@foundteach/web",
     "build:api": "turbo build --filter=@foundteach/api",
     "lint": "turbo lint",
-    "start": "turbo start"
+    "start": "turbo start",
+    "start:web": "npm run start --workspace=@foundteach/web",
+    "start:api": "npm run start:prod --workspace=@foundteach/api"
   },
   "workspaces": [
     "apps/*"
