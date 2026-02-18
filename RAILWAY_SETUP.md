@@ -5,9 +5,16 @@ Pasos para configurar los servicios en Railway y conectar **foundteach.com** al 
 ## 1. Servicio Web (sitio institucional)
 
 ### Root Directory
+
 - **Settings** → **Source** → Root Directory: dejar **vacío** (raíz del repo)
 
+### Build & Start Commands
+
+- **Build Command**: `npm run build:web`
+- **Start Command**: `npm run start:web`
+
 ### Dominio foundteach.com
+
 1. **Settings** → **Networking** → **+ Custom Domain**
 2. Escribir: `foundteach.com`
 3. Copiar el valor CNAME que muestra Railway (ej: `xxxx.up.railway.app`)
@@ -18,6 +25,7 @@ Pasos para configurar los servicios en Railway y conectar **foundteach.com** al 
 5. Esperar propagación (puede tardar hasta 72 h)
 
 ### Generar dominio Railway (opcional)
+
 - **Settings** → **Networking** → **Generate Domain** (para pruebas antes del dominio personalizado)
 
 ---
@@ -25,9 +33,16 @@ Pasos para configurar los servicios en Railway y conectar **foundteach.com** al 
 ## 2. Servicio API
 
 ### Root Directory
-- **Settings** → **Source** → Root Directory: `api`
+
+- **Settings** → **Source** → Root Directory: dejar **vacío** (raíz del repo)
+
+### Build & Start Commands
+
+- **Build Command**: `npm run build:api`
+- **Start Command**: `npm run start:api`
 
 ### Base de datos
+
 1. En el servicio **Postgres**: **Variables** → copiar `DATABASE_URL`
 2. En el servicio **API**: **Variables** → **Add Variable**
 3. Seleccionar **Reference** → Postgres → `DATABASE_URL`
@@ -36,10 +51,10 @@ O vincular Postgres al servicio API desde el panel de Postgres.
 
 ---
 
-## 3. Resumen de Root Directories
+## 3. Resumen de Configuración en Railway
 
-| Servicio | Root Directory |
-|----------|----------------|
-| web      | *(vacío)*      |
-| api      | `api`          |
-| Postgres | —              |
+| Servicio | Root Directory | Build Command       | Start Command       |
+| -------- | -------------- | ------------------- | ------------------- |
+| web      | _(vacío)_      | `npm run build:web` | `npm run start:web` |
+| api      | _(vacío)_      | `npm run build:api` | `npm run start:api` |
+| Postgres | —              | —                   | —                   |
