@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "db:generate": "echo no-op",
     "start": "next start",
     "lint": "eslint"
   },
