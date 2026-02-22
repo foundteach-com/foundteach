@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Role } from '@prisma/client';
+import { Role, ContactStatus } from '@prisma/client';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { ContactService } from './contact.service';
@@ -31,7 +31,11 @@ export class ContactController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.ADMIN)
   findAll(@Query('status') status?: string) {
-    return this.contactService.findAll(status);
+    const contactStatus =
+      status && Object.values(ContactStatus).includes(status as ContactStatus)
+        ? (status as ContactStatus)
+        : undefined;
+    return this.contactService.findAll(contactStatus);
   }
 
   @Get(':id')
