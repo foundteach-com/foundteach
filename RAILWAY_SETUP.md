@@ -34,12 +34,23 @@ Pasos para configurar los servicios en Railway y conectar **foundteach.com** al 
 
 ### Root Directory
 
-- **Settings** → **Source** → Root Directory: dejar **vacío** (raíz del repo)
+- **Settings** → **Source** → Root Directory: `apps/api`
 
 ### Build & Start Commands
 
-- **Build Command**: `npm run build:api`
-- **Start Command**: `npm run start:api`
+- **Build Command**: `npm install && npm run build:prod`
+- **Start Command**: `npm run start:prod`
+
+> ℹ️ `build:prod` ejecuta `prisma generate && nest build` directamente, sin pasar por Turbo. Esto garantiza la compatibilidad con el entorno de Railway.
+
+### Variables de entorno requeridas
+
+| Variable         | Descripción                                                  |
+| ---------------- | ------------------------------------------------------------ |
+| `DATABASE_URL`   | Conexión PostgreSQL (referenciar desde el servicio Postgres) |
+| `JWT_SECRET`     | Clave secreta para firmar los tokens JWT                     |
+| `JWT_EXPIRATION` | Duración del token (ej: `24h`)                               |
+| `PORT`           | Puerto (Railway lo inyecta automáticamente)                  |
 
 ### Base de datos
 
@@ -53,8 +64,8 @@ O vincular Postgres al servicio API desde el panel de Postgres.
 
 ## 3. Resumen de Configuración en Railway
 
-| Servicio | Root Directory | Build Command       | Start Command       |
-| -------- | -------------- | ------------------- | ------------------- |
-| web      | _(vacío)_      | `npm run build:web` | `npm run start:web` |
-| api      | _(vacío)_      | `npm run build:api` | `npm run start:api` |
-| Postgres | —              | —                   | —                   |
+| Servicio | Root Directory | Build Command                       | Start Command        |
+| -------- | -------------- | ----------------------------------- | -------------------- |
+| web      | _(vacío)_      | `npm run build:web`                 | `npm run start:web`  |
+| api      | `apps/api`     | `npm install && npm run build:prod` | `npm run start:prod` |
+| Postgres | —              | —                                   | —                    |
