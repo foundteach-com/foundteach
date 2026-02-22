@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ContactStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
@@ -15,14 +16,15 @@ export class ContactService {
 
     return {
       success: true,
-      message: 'Mensaje recibido correctamente. Nos pondremos en contacto pronto.',
+      message:
+        'Mensaje recibido correctamente. Nos pondremos en contacto pronto.',
       id: message.id,
     };
   }
 
   // Endpoints protegidos — panel administrativo
-  async findAll(status?: string) {
-    const where = status ? { status: status as any } : {};
+  async findAll(status?: ContactStatus) {
+    const where = status ? { status } : {};
 
     return this.prisma.contactMessage.findMany({
       where,
