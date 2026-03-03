@@ -40,8 +40,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <body className={`${dinNextRounded.variable}`}>
+    <html lang="es" className={`${dinNextRounded.variable}`}>
+      <body>
         <ScrollObserver />
         {children}
       </body>
