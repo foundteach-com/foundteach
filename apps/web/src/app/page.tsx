@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -6,7 +7,18 @@ export default function Home() {
       {/* Header */}
       <header className="header">
         <nav className="nav container">
-          <Link href="/" className="logo-text">
+          <Link
+            href="/"
+            className="logo-text"
+            style={{ display: "flex", alignItems: "center", gap: "10px" }}
+          >
+            <Image
+              src="/logo_foundteach.png"
+              alt="FoundTeach Logo"
+              width={32}
+              height={32}
+              style={{ height: "32px", width: "auto" }}
+            />
             FoundTeach
           </Link>
           <ul className="nav-links">

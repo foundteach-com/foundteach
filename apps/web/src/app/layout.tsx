@@ -14,8 +14,12 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FoundTeach | Ingeniería de Software",
+  title: "FoundTeach • Servicios de Ingeniería de Software",
   description: "Desarrollo de aplicaciones, consultoría tecnológica y soluciones digitales a medida.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/logo_foundteach.png",
+  },
 };
 
 export default function RootLayout({

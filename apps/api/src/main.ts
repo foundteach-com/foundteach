@@ -44,4 +44,3 @@ bootstrap().catch((err) => {
   console.error('❌ Error fatal iniciando la API:', err);
   process.exit(1);
 });
-
