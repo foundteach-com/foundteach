@@ -35,14 +35,30 @@ export default function Home() {
         <div className="hero-bg-gradient"></div>
         <div className="container hero-premium-layout">
           <div className="hero-text-side">
-            <p style={{ fontFamily: "var(--font-mono)", color: "var(--color-primary)", fontWeight: 700, letterSpacing: "0.2em", marginBottom: "1rem" }}>
+            <p
+              style={{
+                fontFamily: "var(--font-din-next)",
+                color: "var(--color-primary)",
+                fontWeight: 700,
+                letterSpacing: "0.2em",
+                marginBottom: "1rem",
+              }}
+            >
               INGENIERÍA DE SOFTWARE
             </p>
-            <h1 className="hero-title-main">
+            <h1 className="hero-title-main" style={{ fontWeight: 700 }}>
               DESARROLLÁ TU <br />
               <span className="highlight-premium">PROYECTO DIGITAL</span>
             </h1>
-            <p style={{ fontSize: "1.1rem", color: "#555", marginBottom: "3rem", lineHeight: 1.6 }}>
+            <p
+              style={{
+                fontSize: "1.1rem",
+                color: "#555",
+                marginBottom: "3rem",
+                lineHeight: 1.6,
+                fontWeight: 300,
+              }}
+            >
               Soluciones robustas y escalables creadas por un equipo <br />
               de expertos apasionados por el código.
             </p>

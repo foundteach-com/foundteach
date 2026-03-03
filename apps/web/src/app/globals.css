@@ -6,8 +6,8 @@
   --color-text: #333333;
   --color-text-light: #777777;
   --color-white: #ffffff;
-  --font-sans: var(--font-instrument-sans), system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), monospace;
+  --font-sans: var(--font-din-next), system-ui, sans-serif;
+  --font-mono: var(--font-din-next), monospace;
   --transition: 0.3s ease;
 }
 
