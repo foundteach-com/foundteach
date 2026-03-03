@@ -1,9 +1,15 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const logger = new Logger('Bootstrap');
+
+  logger.log('🔧 Iniciando FoundTeach API...');
+
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log'],
+  });
 
   // Prefijo global para todos los endpoints, excepto health
   app.setGlobalPrefix('api', {
@@ -26,13 +32,16 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const port = process.env.PORT ?? 4000;
-  // Escuchar en 0.0.0.0 para que Railway pueda acceder al servidor
-  await app.listen(port, '0.0.0.0');
-  console.log(`🚀 FoundTeach API corriendo en http://0.0.0.0:${port}`);
-  console.log(`📋 Health check: http://0.0.0.0:${port}/health`);
-  console.log(`📋 API endpoints: http://0.0.0.0:${port}/api`);
+  const port = process.env.PORT || 4000;
+  await app.listen(port);
+
+  logger.log(`🚀 FoundTeach API corriendo en puerto ${port}`);
+  logger.log(`📋 Health check disponible en /health`);
+  logger.log(`📋 API endpoints en /api`);
 }
+
 bootstrap().catch((err) => {
-  console.error('❌ Error iniciando la API:', err);
+  console.error('❌ Error fatal iniciando la API:', err);
+  process.exit(1);
 });
+
