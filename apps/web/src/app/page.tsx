@@ -85,13 +85,19 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="hero-visual-side">
-            <div className="software-team-art active-bob">
-              <div className="art-engineer-1"></div>
-              <div className="art-engineer-2"></div>
-              <div className="art-screen-center">
-                <div className="screen-code-flow"></div>
-              </div>
+          <div className="hero-visual-side" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <div className="active-bob" style={{ position: "relative", width: "100%", maxWidth: "550px", aspectRatio: "1/1" }}>
+              <Image
+                src="/hero-laptop.png"
+                alt="Equipo de computo escribiendo código 3D"
+                fill
+                style={{
+                  objectFit: "contain",
+                  mixBlendMode: "multiply",
+                  filter: "contrast(1.05)"
+                }}
+                priority
+              />
             </div>
           </div>
         </div>
