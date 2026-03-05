@@ -22,10 +22,20 @@ export default function Home() {
             FoundTeach
           </Link>
           <ul className="nav-links">
-            <li><Link href="/" className="active">INICIO</Link></li>
-            <li><Link href="#nosotros">NOSOTROS</Link></li>
-            <li><Link href="#servicios">SERVICIOS</Link></li>
-            <li><Link href="#contacto">CONTACTO</Link></li>
+            <li>
+              <Link href="/" className="active">
+                INICIO
+              </Link>
+            </li>
+            <li>
+              <Link href="#nosotros">NOSOTROS</Link>
+            </li>
+            <li>
+              <Link href="#servicios">SERVICIOS</Link>
+            </li>
+            <li>
+              <Link href="#contacto">CONTACTO</Link>
+            </li>
           </ul>
         </nav>
       </header>
@@ -40,29 +50,37 @@ export default function Home() {
                 fontFamily: "var(--font-din-next)",
                 color: "var(--color-primary)",
                 fontWeight: 700,
-                letterSpacing: "0.2em",
+                letterSpacing: "0.15em",
                 marginBottom: "1rem",
+                textTransform: "uppercase",
               }}
             >
-              INGENIERÍA DE SOFTWARE
+              Tu Socio Tecnológico
             </p>
             <h1 className="hero-title-main" style={{ fontWeight: 700 }}>
-              DESARROLLÁ TU <br />
-              <span className="highlight-premium">PROYECTO DIGITAL</span>
+              TRANSFORMAMOS IDEAS EN <br />
+              <span className="highlight-premium">SOFTWARE DE IMPACTO</span>
             </h1>
             <p
               style={{
-                fontSize: "1.1rem",
+                fontSize: "1.15rem",
                 color: "#555",
                 marginBottom: "3rem",
                 lineHeight: 1.6,
                 fontWeight: 300,
+                maxWidth: "600px",
               }}
             >
-              Soluciones robustas y escalables creadas por un equipo <br />
-              de expertos apasionados por el código.
+              Diseñamos y desarrollamos aplicaciones web y móviles a medida.
+              <br />
+              Ayudamos a escalar tu negocio con tecnología moderna y segura.
             </p>
-            <Link href="#contacto" className="btn btn-premium-cta">
+            <Link
+              href="https://wa.me/573208325534?text=Hola,%20me%20interesa%20cotizar%20un%20proyecto%20de%20software."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-premium-cta"
+            >
               COTIZAR AHORA
             </Link>
           </div>
@@ -86,7 +104,10 @@ export default function Home() {
           <div className="services-grid">
             <div className="service-card">
               <h3>Desarrollo a medida</h3>
-              <p>Aplicaciones web, móviles y de escritorio diseñadas según tus necesidades.</p>
+              <p>
+                Aplicaciones web, móviles y de escritorio diseñadas según tus
+                necesidades.
+              </p>
             </div>
             <div className="service-card">
               <h3>Consultoría tecnológica</h3>
@@ -101,7 +122,14 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer style={{ padding: "4rem 0", background: "white", textAlign: "center", borderTop: "1px solid #eee" }}>
+      <footer
+        style={{
+          padding: "4rem 0",
+          background: "white",
+          textAlign: "center",
+          borderTop: "1px solid #eee",
+        }}
+      >
         <div className="container">
           <p>© 2026 FoundTeach. Ingeniería de software.</p>
         </div>
