@@ -27,11 +27,17 @@ export class UploadController {
       storage: diskStorage({
         destination: (req, file, cb) => {
           const uploadPath = join(process.cwd(), 'uploads');
-          // Asegurarse de que el directorio existe
-          if (!existsSync(uploadPath)) {
-            mkdirSync(uploadPath, { recursive: true });
+          
+          try {
+            if (!existsSync(uploadPath)) {
+              mkdirSync(uploadPath, { recursive: true });
+              this.logger.log(`📁 Directorio de uploads creado en: ${uploadPath}`);
+            }
+            cb(null, uploadPath);
+          } catch (error) {
+            this.logger.error('❌ Error creando directorio de uploads', error);
+            cb(error as Error, uploadPath);
           }
-          cb(null, uploadPath);
         },
         filename: (req, file, cb) => {
           const uniqueSuffix =
@@ -56,11 +62,11 @@ export class UploadController {
   )
   uploadImage(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
-      this.logger.error('Fallo en la subida de archivo: archivo no recibido');
-      throw new BadRequestException('Archivo no subido correctamente');
+      this.logger.error('❌ Fallo en la subida de archivo: No se recibió ningún archivo');
+      throw new BadRequestException('El archivo no se pudo subir correctamente');
     }
 
-    this.logger.log(`Imagen subida: ${file.filename}`);
+    this.logger.log(`✅ Imagen subida con éxito: ${file.filename} (${file.size} bytes)`);
     const fileUrl = this.uploadService.generateFileUrl(file.filename);
 
     return {

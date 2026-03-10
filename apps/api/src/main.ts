@@ -25,9 +25,13 @@ async function bootstrap() {
     }),
   );
 
-  // CORS para permitir peticiones desde el frontend
+  // CORS configurado para ser más robusto
+  const corsOrigin = process.env.CORS_ORIGIN 
+    ? process.env.CORS_ORIGIN.split(',') 
+    : '*';
+
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: corsOrigin,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
