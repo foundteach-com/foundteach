@@ -7,10 +7,12 @@
     "build": "turbo build",
     "build:web": "turbo build --filter=@foundteach/web",
     "build:api": "turbo build --filter=@foundteach/api",
+    "build:admin": "turbo build --filter=@foundteach/admin",
     "lint": "turbo lint",
     "start": "turbo start",
     "start:web": "npm run start --workspace=@foundteach/web",
-    "start:api": "npm run start:prod --workspace=@foundteach/api"
+    "start:api": "npm run start:prod --workspace=@foundteach/api",
+    "start:admin": "npm run start --workspace=@foundteach/admin"
   },
   "workspaces": [
     "apps/*"
@@ -21,5 +23,8 @@
   "devDependencies": {
     "turbo": "^2.1.2"
   },
-  "packageManager": "npm@11.6.2"
+  "packageManager": "npm@11.6.2",
+  "dependencies": {
+    "reflect-metadata": "^0.2.2"
+  }
 }
