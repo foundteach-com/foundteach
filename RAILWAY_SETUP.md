@@ -62,10 +62,30 @@ O vincular Postgres al servicio API desde el panel de Postgres.
 
 ---
 
-## 3. Resumen de Configuración en Railway
+## 3. Servicio Admin (Panel de Administración)
+
+### Root Directory
+
+- **Settings** → **Source** → Root Directory: dejar **vacío** (raíz del repo)
+
+### Build & Start Commands
+
+- **Build Command**: `npm run build:admin`
+- **Start Command**: `npm run start:admin`
+
+### Dominio admin.foundteach.com
+
+1. **Settings** → **Networking** → **+ Custom Domain**
+2. Escribir: `admin.foundteach.com`
+3. Copiar el valor CNAME y configurar en DNS como se hizo con el sitio web.
+
+---
+
+## 4. Resumen de Configuración en Railway
 
 | Servicio | Root Directory | Build Command                       | Start Command        |
 | -------- | -------------- | ----------------------------------- | -------------------- |
 | web      | _(vacío)_      | `npm run build:web`                 | `npm run start:web`  |
 | api      | `apps/api`     | `npm install && npm run build:prod` | `npm run start:prod` |
+| admin    | _(vacío)_      | `npm run build:admin`               | `npm run start:admin`|
 | Postgres | —              | —                                   | —                    |
