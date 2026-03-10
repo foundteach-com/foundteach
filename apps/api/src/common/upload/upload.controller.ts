@@ -31,11 +31,11 @@ export class UploadController {
           try {
             if (!existsSync(uploadPath)) {
               mkdirSync(uploadPath, { recursive: true });
-              this.logger.log(`📁 Directorio de uploads creado en: ${uploadPath}`);
+              Logger.log(`📁 Directorio de uploads creado en: ${uploadPath}`, 'UploadController');
             }
             cb(null, uploadPath);
           } catch (error) {
-            this.logger.error('❌ Error creando directorio de uploads', error);
+            Logger.error('❌ Error creando directorio de uploads', error, 'UploadController');
             cb(error as Error, uploadPath);
           }
         },
