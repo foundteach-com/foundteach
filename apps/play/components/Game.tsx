@@ -10,7 +10,12 @@ interface GameShape extends ShapeDef {
   id: string;
 }
 
-export function Game() {
+interface GameProps {
+  playerName?: string;
+  studentCode?: string;
+}
+
+export function Game({ playerName: _playerName, studentCode: _studentCode }: GameProps = {}) {
   const [targetNumber, setTargetNumber] = useState<number>(0);
   const [boardShapes, setBoardShapes] = useState<GameShape[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
