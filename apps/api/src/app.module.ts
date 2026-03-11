@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ContactModule } from './contact/contact.module';
 import { ServicesModule } from './services/services.module';
+import { GamePlayersModule } from './game-players/game-players.module';
 import { UploadModule } from './common/upload/upload.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -26,6 +27,7 @@ import { AppService } from './app.service';
     UsersModule,
     ContactModule,
     ServicesModule,
+    GamePlayersModule,
     UploadModule,
   ],
   controllers: [AppController],

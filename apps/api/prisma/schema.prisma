@@ -72,3 +72,20 @@ model Service {
 
   @@map("services")
 }
+
+// ─── GEOMATCH (juego educativo) ──────────────────────────────────────────────
+
+model GamePlayer {
+  id           String   @id @default(uuid())
+  name         String
+  studentCode  String   @unique @map("student_code")
+  totalScore   Int      @default(0) @map("total_score")
+  highestLevel Int      @default(1) @map("highest_level")
+  lastLevel    Int      @default(1) @map("last_level")
+  roundsPlayed Int      @default(0) @map("rounds_played")
+  levelsData   Json?    @map("levels_data")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("game_players")
+}

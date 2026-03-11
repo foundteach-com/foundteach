@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
-import { LayoutDashboard, Users, LogOut, Loader2, MessageSquare, Briefcase } from 'lucide-react';
+import { LayoutDashboard, Users, LogOut, Loader2, MessageSquare, Briefcase, Gamepad2 } from 'lucide-react';
+import { GamePlayersPage } from './pages/GamePlayersPage';
 import './App.css';
 
 // Config
@@ -41,6 +42,7 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
     { path: '/', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/services', label: 'Servicios', icon: Briefcase },
     { path: '/messages', label: 'Mensajes', icon: MessageSquare },
+    { path: '/game-players', label: 'GeoMath Players', icon: Gamepad2 },
     { path: '/users', label: 'Usuarios', icon: Users },
   ];
 
@@ -91,6 +93,7 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="/" element={<Dashboard />} />
             <Route path="/services" element={<div style={{ padding: 40, textAlign: 'center' }}>Gestión de Servicios (Próximamente)</div>} />
             <Route path="/messages" element={<div style={{ padding: 40, textAlign: 'center' }}>Mensajes de Contacto (Próximamente)</div>} />
+            <Route path="/game-players" element={<GamePlayersPage />} />
             <Route path="/users" element={<div style={{ padding: 40, textAlign: 'center' }}>Gestión de Usuarios (Próximamente)</div>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

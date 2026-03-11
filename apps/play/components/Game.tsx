@@ -16,6 +16,7 @@ const MIN_CORRECT     = 3;   // minimum correct to advance level
 const ANGLE_MODE_LVL  = 10;  // level where angles mechanic activates
 const HID_DETAIL_LVL  = 5;   // level where value label hides (only dim shown)
 const HID_DIM_LVL     = 9;   // level where all labels hide
+const API_URL         = 'https://api.foundteach.com';
 
 /* ─── Types ─────────────────────────────────────────────────────── */
 interface GameShape extends ShapeDef { id: string; }
@@ -52,6 +53,25 @@ function saveProgress(code: string, data: PlayerProgress) {
     all[code] = data;
     localStorage.setItem(SCORES_KEY, JSON.stringify(all));
   } catch { /* ignore */ }
+}
+
+/* ─── API sync (fire & forget) ─────────────────────────────────── */
+async function syncToAPI(progress: PlayerProgress, code: string) {
+  try {
+    await fetch(`${API_URL}/api/game-players`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name:         progress.name,
+        studentCode:  code,
+        totalScore:   progress.totalScore,
+        highestLevel: progress.highestLevel,
+        lastLevel:    progress.lastLevel,
+        roundsPlayed: progress.levels.reduce((s, l) => s + l.rounds, 0),
+        levelsData:   progress.levels,
+      }),
+    });
+  } catch { /* offline — localStorage is the source of truth */ }
 }
 
 /* ─── Round generator ──────────────────────────────────────────── */
@@ -178,6 +198,7 @@ export function Game({ playerName, studentCode }: GameProps) {
         : prev.levels,
     };
     saveProgress(studentCode, updated);
+    void syncToAPI(updated, studentCode);
 
     setTotalScore(newTotal);
     setHighestLevel(newHighest);
