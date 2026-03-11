@@ -1,0 +1,5 @@
+{
+  "name": "GeoMath Match",
+  "description": "Un juego matemático donde debes seleccionar figuras geométricas 2D y 3D para que la suma de sus lados o caras coincida con el número objetivo.",
+  "requestFramePermissions": []
+}
