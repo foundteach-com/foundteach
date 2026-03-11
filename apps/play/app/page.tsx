@@ -17,16 +17,11 @@ export default function Home() {
   const [player, setPlayer] = useState<Player | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // On mount, check if player is already registered in this session
   useEffect(() => {
     try {
       const saved = sessionStorage.getItem(SESSION_KEY);
-      if (saved) {
-        setPlayer(JSON.parse(saved));
-      }
-    } catch {
-      // ignore
-    }
+      if (saved) setPlayer(JSON.parse(saved));
+    } catch { /* ignore */ }
     setIsLoading(false);
   }, []);
 
@@ -43,7 +38,7 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="h-screen bg-slate-50 flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
       </div>
     );
@@ -62,56 +57,54 @@ export default function Home() {
           <RegisterForm onRegister={handleRegister} />
         </motion.div>
       ) : (
-        <motion.main
+        <motion.div
           key="game"
-          initial={{ opacity: 0, scale: 0.97 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 flex flex-col items-center"
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+          className="h-screen overflow-hidden flex flex-col bg-slate-50"
         >
-          {/* Game Header */}
-          <div className="max-w-4xl w-full mb-8">
-            {/* Title */}
-            <div className="text-center mb-4">
-              <h1 className="text-5xl md:text-6xl font-black text-indigo-900 tracking-tight mb-3">
-                GeoMath Match
-              </h1>
-              <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-                Selecciona las figuras cuyos lados o caras sumen el número objetivo.
-              </p>
-            </div>
-
-            {/* Player badge + logout */}
-            <div className="flex items-center justify-center gap-3 mt-4">
-              <div className="flex items-center gap-2.5 bg-white border border-indigo-100 rounded-full px-4 py-2 shadow-sm">
-                <div className="w-7 h-7 bg-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-black">
+          {/* ── Top bar: compact, fixed height ──────────────────── */}
+          <header className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border-b border-slate-100 shadow-sm">
+            <h1 className="text-lg sm:text-xl font-black text-indigo-900 tracking-tight">
+              GeoMath Match
+            </h1>
+            <div className="flex items-center gap-2">
+              {/* Player badge */}
+              <div className="hidden sm:flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-full px-3 py-1.5">
+                <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-black shrink-0">
                   {player.name.charAt(0).toUpperCase()}
                 </div>
-                <div className="text-sm">
-                  <span className="font-bold text-slate-800">{player.name}</span>
-                  <span className="text-slate-400 mx-1.5">·</span>
-                  <span className="font-mono font-semibold text-indigo-600 text-xs tracking-wider">
-                    {player.studentCode}
-                  </span>
-                </div>
+                <span className="text-sm font-bold text-slate-700 max-w-[160px] truncate">
+                  {player.name}
+                </span>
+                <span className="font-mono text-xs font-semibold text-indigo-500 tracking-wider">
+                  {player.studentCode}
+                </span>
+              </div>
+              {/* Mobile: just the avatar */}
+              <div className="sm:hidden w-7 h-7 bg-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-black">
+                {player.name.charAt(0).toUpperCase()}
               </div>
               <button
                 onClick={handleLogout}
-                title="Cerrar sesión"
-                className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-red-500 transition-colors bg-white border border-slate-200 rounded-full px-3 py-2"
+                title="Salir"
+                className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-red-500 transition-colors bg-slate-50 hover:bg-red-50 border border-slate-200 rounded-full px-3 py-1.5"
               >
                 <LogOut className="w-3.5 h-3.5" />
-                Salir
+                <span className="hidden sm:inline">Salir</span>
               </button>
             </div>
-          </div>
+          </header>
 
-          {/* Game Board */}
-          <div className="w-full max-w-5xl bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
-            <Game playerName={player.name} studentCode={player.studentCode} />
+          {/* ── Game board fills all remaining space ─────────────── */}
+          <div className="flex-1 min-h-0 p-2 sm:p-3">
+            <div className="h-full bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+              <Game playerName={player.name} studentCode={player.studentCode} />
+            </div>
           </div>
-        </motion.main>
+        </motion.div>
       )}
     </AnimatePresence>
   );
