@@ -534,12 +534,15 @@ export function Game({ playerName, studentCode }: GameProps) {
               {target}
             </motion.span>
           </div>
-          <div className="text-[10px] sm:text-xs text-slate-500 leading-relaxed max-w-[180px] text-right">
+          <div className="text-sm sm:text-base text-slate-700 leading-tight max-w-[260px] text-right font-bold">
             {angleMode
-              ? 'Suma los ángulos/vértices de las figuras seleccionadas.'
+              ? 'Suma los ángulos o vértices de las figuras seleccionadas.'
               : 'Selecciona figuras 2D (lados) o 3D (caras) que sumen el número.'}
-            <br />
-            <span className="text-indigo-500 font-semibold">+{10 * level} pts por acierto</span>
+            <div className="mt-1.5 flex justify-end">
+              <span className="bg-indigo-600 text-white text-[10px] sm:text-xs font-black px-3 py-1 rounded-full shadow-sm">
+                +{10 * level} pts por acierto
+              </span>
+            </div>
           </div>
         </div>
 
