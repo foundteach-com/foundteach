@@ -21,7 +21,7 @@ export default function Home() {
               height={32}
               style={{ height: "32px", width: "auto" }}
             />
-            FoundTeach EdTech S.A.S
+            FoundTeach
           </Link>
           <ul className="nav-links">
             <li>
