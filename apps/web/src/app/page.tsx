@@ -281,11 +281,11 @@ export default function Home() {
                   <p>+57 320 832 5534</p>
                 </div>
               </Link>
-              <a href="mailto:hola@foundteach.com" className="contact-option">
+              <a href="mailto:manuel.martinez@mannez.com" className="contact-option">
                 <span className="contact-option-icon">📧</span>
                 <div>
                   <strong>Correo electrónico</strong>
-                  <p>hola@foundteach.com</p>
+                  <p>manuel.martinez@mannez.com</p>
                 </div>
               </a>
             </div>
@@ -338,7 +338,7 @@ export default function Home() {
           <div className="footer-links-group">
             <h4>Contacto</h4>
             <ul>
-              <li><a href="mailto:hola@foundteach.com">hola@foundteach.com</a></li>
+              <li><a href="mailto:manuel.martinez@mannez.com">manuel.martinez@mannez.com</a></li>
               <li>
                 <Link
                   href="https://wa.me/573208325534"
