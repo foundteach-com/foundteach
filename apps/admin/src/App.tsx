@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { LayoutDashboard, Users, LogOut, Loader2, MessageSquare, Briefcase, Gamepad2 } from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
+import { MessagesPage } from './pages/MessagesPage';
 import './App.css';
 
 // Config
@@ -92,7 +93,7 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/services" element={<div style={{ padding: 40, textAlign: 'center' }}>Gestión de Servicios (Próximamente)</div>} />
-            <Route path="/messages" element={<div style={{ padding: 40, textAlign: 'center' }}>Mensajes de Contacto (Próximamente)</div>} />
+            <Route path="/messages" element={<MessagesPage />} />
             <Route path="/game-players" element={<GamePlayersPage />} />
             <Route path="/users" element={<div style={{ padding: 40, textAlign: 'center' }}>Gestión de Usuarios (Próximamente)</div>} />
             <Route path="*" element={<Navigate to="/" />} />
