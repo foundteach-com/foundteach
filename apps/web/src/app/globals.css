@@ -40,8 +40,7 @@ a { text-decoration: none; color: inherit; }
   height: 80px;
   display: flex;
   align-items: center;
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 100;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(14px);
