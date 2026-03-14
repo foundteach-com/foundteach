@@ -352,7 +352,7 @@ export default function Home() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 FoundTeach EdTech S.A.S · Ingeniería de Software · Colombia</p>
+          <p>© 2026 FoundTeach EdTech S.A.S · Servicios de Ingeniería de Software • Manuel Antonio Martínez Sogamoso</p>
         </div>
       </footer>
     </main>
