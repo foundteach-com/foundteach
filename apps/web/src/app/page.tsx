@@ -21,7 +21,7 @@ export default function Home() {
               height={32}
               style={{ height: "32px", width: "auto" }}
             />
-            FoundTeach
+            FoundTeach EdTech S.A.S
           </Link>
           <ul className="nav-links">
             <li>
@@ -126,7 +126,7 @@ export default function Home() {
               Ingeniería de software con <span className="highlight-premium">propósito</span>
             </h2>
             <p className="nosotros-description">
-              FoundTeach es una empresa de ingeniería de software enfocada en construir
+              FoundTeach EdTech S.A.S es una empresa de ingeniería de software enfocada en construir
               soluciones digitales que resuelvan problemas reales. Trabajamos con startups,
               pymes y empresas que quieren dar el salto tecnológico sin perder el tiempo.
             </p>
@@ -162,20 +162,20 @@ export default function Home() {
           <div className="nosotros-visual">
             <div className="nosotros-card-grid">
               <div className="nosotros-card accent-blue">
-                <span className="nosotros-card-icon">🌎</span>
-                <p>Clientes en Colombia, USA y España</p>
+                <span className="nosotros-card-icon">💡</span>
+                <p>Soluciones a medida con las últimas tecnologías del mercado</p>
               </div>
               <div className="nosotros-card accent-pink">
                 <span className="nosotros-card-icon">🚀</span>
-                <p>Startups que lanzaron con nosotros en menos de 3 meses</p>
+                <p>Prototipado ágil y validación de productos en tiempo récord</p>
               </div>
               <div className="nosotros-card accent-light">
-                <span className="nosotros-card-icon">🏆</span>
-                <p>Equipo Senior en React, Node, Cloud y Mobile</p>
+                <span className="nosotros-card-icon">🤝</span>
+                <p>Acompañamiento cercano y comunicación 100% transparente</p>
               </div>
               <div className="nosotros-card accent-dark">
-                <span className="nosotros-card-icon">🧠</span>
-                <p>Integramos IA en productos reales</p>
+                <span className="nosotros-card-icon">📈</span>
+                <p>Arquitecturas de código listas para crecer junto a ti</p>
               </div>
             </div>
           </div>
@@ -328,7 +328,7 @@ export default function Home() {
                 height={28}
                 style={{ height: "28px", width: "auto" }}
               />
-              FoundTeach
+              FoundTeach EdTech S.A.S
             </Link>
             <p className="footer-tagline">
               Ingeniería de software con propósito. <br />
@@ -368,7 +368,7 @@ export default function Home() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 FoundTeach · Ingeniería de Software · Colombia</p>
+          <p>© 2026 FoundTeach EdTech S.A.S · Ingeniería de Software · Colombia</p>
         </div>
       </footer>
     </main>
