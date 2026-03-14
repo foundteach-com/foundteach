@@ -188,56 +188,40 @@ export default function Home() {
           <p className="section-eyebrow text-center">Lo que hacemos</p>
           <h2 className="section-title">Nuestros Servicios</h2>
           <div className="services-grid">
-            <div className="service-card">
+            <div className="service-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div className="service-card-icon">💻</div>
-              <h3>Desarrollo a medida</h3>
-              <p>
-                Aplicaciones web, móviles y de escritorio diseñadas según tus
-                necesidades específicas. Stack moderno, código limpio.
-              </p>
+              <h3>Desarrollo Web y Móvil</h3>
+              <ul style={{ textAlign: "left", fontSize: "0.93rem", color: "#666", lineHeight: "1.7", paddingLeft: "1.2rem", marginTop: "0.5rem", width: "100%" }}>
+                <li style={{ listStyleType: "disc" }}>Desarrollo de páginas web corporativas</li>
+                <li style={{ listStyleType: "disc" }}>Sistemas web a medida (ERP, CRM, plataformas)</li>
+                <li style={{ listStyleType: "disc" }}>Aplicaciones móviles (Android / iOS)</li>
+                <li style={{ listStyleType: "disc" }}>Integración con APIs</li>
+                <li style={{ listStyleType: "disc" }}>Mantenimiento y soporte</li>
+              </ul>
             </div>
-            <div className="service-card">
-              <div className="service-card-icon">☁️</div>
-              <h3>Consultoría tecnológica</h3>
-              <p>
-                Análisis de tu stack actual, auditorías de código y
-                recomendaciones de mejora para escalar con confianza.
-              </p>
+            
+            <div className="service-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className="service-card-icon">📊</div>
+              <h3>Business Intelligence con Power BI</h3>
+              <ul style={{ textAlign: "left", fontSize: "0.93rem", color: "#666", lineHeight: "1.7", paddingLeft: "1.2rem", marginTop: "0.5rem", width: "100%" }}>
+                <li style={{ listStyleType: "disc" }}>Creación de dashboards interactivos</li>
+                <li style={{ listStyleType: "disc" }}>Integración de datos (Excel, bases de datos, APIs)</li>
+                <li style={{ listStyleType: "disc" }}>Automatización de reportes</li>
+                <li style={{ listStyleType: "disc" }}>Modelado de datos</li>
+                <li style={{ listStyleType: "disc" }}>Capacitación en Power BI</li>
+              </ul>
             </div>
-            <div className="service-card">
-              <div className="service-card-icon">🔄</div>
-              <h3>Transformación digital</h3>
-              <p>
-                Modernización de sistemas legacy, migración a la nube e
-                integración de APIs y servicios de terceros.
-              </p>
-            </div>
-            <div className="service-card">
-              <div className="service-card-icon">🤖</div>
-              <h3>Integración con IA</h3>
-              <p>
-                Incorporamos modelos de lenguaje, visión por computador y
-                automatización inteligente en tu producto.
-              </p>
-            </div>
-            <div className="service-card">
-              <div className="service-card-icon">📱</div>
-              <h3>Apps móviles</h3>
-              <p>
-                Aplicaciones iOS y Android nativas o híbridas (React Native)
-                diseñadas para el usuario final.
-              </p>
-            </div>
-            <div className="service-card">
-              <div className="service-card-icon">🎓</div>
-              <h3>Plataformas Edu-Tech</h3>
-              <p>
-                Construimos plataformas educativas interactivas. Desde LMS
-                hasta mini juegos de aprendizaje como{" "}
-                <Link href="https://play.foundteach.com" target="_blank" className="inline-link">
-                  GeoMath Match ↗
-                </Link>
-              </p>
+            
+            <div className="service-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className="service-card-icon">⚙️</div>
+              <h3 style={{ lineHeight: "1.4" }}>Consultoría en Automatización y Transformación Digital</h3>
+              <ul style={{ textAlign: "left", fontSize: "0.93rem", color: "#666", lineHeight: "1.7", paddingLeft: "1.2rem", marginTop: "0.5rem", width: "100%" }}>
+                <li style={{ listStyleType: "disc" }}>Automatización de procesos</li>
+                <li style={{ listStyleType: "disc" }}>Integración entre sistemas</li>
+                <li style={{ listStyleType: "disc" }}>Implementación de herramientas digitales</li>
+                <li style={{ listStyleType: "disc" }}>Optimización de flujos de trabajo</li>
+                <li style={{ listStyleType: "disc" }}>Diagnóstico tecnológico de empresas</li>
+              </ul>
             </div>
           </div>
         </div>
