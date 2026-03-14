@@ -44,7 +44,8 @@ input, textarea, select {
 /* Layout */
 .admin-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .sidebar {
@@ -68,6 +69,7 @@ input, textarea, select {
   font-weight: 700;
   background: linear-gradient(135deg, #818cf8, #c084fc);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
 }
@@ -105,6 +107,7 @@ input, textarea, select {
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100vh;
 }
 
 .topbar {
