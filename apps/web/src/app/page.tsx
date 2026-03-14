@@ -96,17 +96,17 @@ export default function Home() {
       <section className="stats-bar">
         <div className="container stats-grid">
           <div className="stat-item">
-            <span className="stat-number">+50</span>
+            <span className="stat-number">+1</span>
             <span className="stat-label">Proyectos entregados</span>
           </div>
           <div className="stat-divider"></div>
           <div className="stat-item">
-            <span className="stat-number">+30</span>
+            <span className="stat-number">+1</span>
             <span className="stat-label">Clientes satisfechos</span>
           </div>
           <div className="stat-divider"></div>
           <div className="stat-item">
-            <span className="stat-number">5+</span>
+            <span className="stat-number">+1</span>
             <span className="stat-label">Años de experiencia</span>
           </div>
           <div className="stat-divider"></div>
