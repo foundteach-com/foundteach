@@ -28,9 +28,11 @@ export class ContactService {
       data: dto,
     });
 
-    try {
-      if (process.env.SMTP_USER) {
-        await this.transporter.sendMail({
+    if (process.env.SMTP_USER) {
+      // Se quita el await para no bloquear la respuesta HTTP al usuario
+      // en caso de que el servidor SMTP tarde en responder o haya problemas de red.
+      this.transporter
+        .sendMail({
           from: `"Notificaciones FoundTeach" <${process.env.SMTP_USER}>`,
           to:
             process.env.CONTACT_NOTIFICATION_EMAIL ||
@@ -45,14 +47,14 @@ export class ContactService {
             <hr />
             <p><strong>Mensaje:</strong> <br />${dto.message}</p>
           `,
+        })
+        .catch((error) => {
+          console.error('Error al enviar el correo de notificación:', error);
         });
-      } else {
-        console.warn(
-          'SMTP_USER no está configurado, saltando el envío de correo.',
-        );
-      }
-    } catch (error) {
-      console.error('Error al enviar el correo de notificación:', error);
+    } else {
+      console.warn(
+        'SMTP_USER no está configurado, saltando el envío de correo.',
+      );
     }
 
     return {
