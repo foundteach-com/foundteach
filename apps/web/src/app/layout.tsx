@@ -25,7 +25,7 @@ const dinNextRounded = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "FoundTeach EdTech S.A.S • Servicios de Ingeniería de Software",
+  title: "FoundTeach • Servicios de ingeniería de software",
   description:
     "Desarrollo de aplicaciones, consultoría tecnológica y soluciones digitales a medida.",
   icons: {
