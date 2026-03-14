@@ -32,7 +32,8 @@ export function ContactForm() {
     e.preventDefault();
     setStatus("loading");
     try {
-      const res = await fetch("https://api.foundteach.com/api/contact", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.foundteach.com";
+      const res = await fetch(`${apiUrl}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

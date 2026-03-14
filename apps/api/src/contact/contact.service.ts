@@ -32,7 +32,9 @@ export class ContactService {
       if (process.env.SMTP_USER) {
         await this.transporter.sendMail({
           from: `"Notificaciones FoundTeach" <${process.env.SMTP_USER}>`,
-          to: 'manuel.martinez@mannez.com',
+          to:
+            process.env.CONTACT_NOTIFICATION_EMAIL ||
+            'manuel.martinez@mannez.com',
           subject: `Nuevo mensaje de contacto: ${dto.subject}`,
           html: `
             <h2>Nuevo mensaje desde la página web</h2>

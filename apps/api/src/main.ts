@@ -26,8 +26,8 @@ async function bootstrap() {
   );
 
   // CORS configurado para ser más robusto
-  const corsOrigin = process.env.CORS_ORIGIN 
-    ? process.env.CORS_ORIGIN.split(',') 
+  const corsOrigin = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',')
     : '*';
 
   app.enableCors({

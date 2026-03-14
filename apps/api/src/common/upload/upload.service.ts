@@ -8,10 +8,12 @@ export class UploadService {
   generateFileUrl(filename: string): string {
     const apiDomain =
       this.configService.get<string>('API_URL') || 'http://localhost:4000';
-    
+
     // Eliminar barra final del dominio si existe para evitar // en la URL
-    const cleanDomain = apiDomain.endsWith('/') ? apiDomain.slice(0, -1) : apiDomain;
-    
+    const cleanDomain = apiDomain.endsWith('/')
+      ? apiDomain.slice(0, -1)
+      : apiDomain;
+
     return `${cleanDomain}/uploads/${filename}`;
   }
 

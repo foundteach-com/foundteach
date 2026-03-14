@@ -12,21 +12,21 @@ export class GamePlayersService {
     const player = await this.prisma.gamePlayer.upsert({
       where: { studentCode: dto.studentCode },
       create: {
-        name:         dto.name,
-        studentCode:  dto.studentCode,
-        totalScore:   dto.totalScore,
+        name: dto.name,
+        studentCode: dto.studentCode,
+        totalScore: dto.totalScore,
         highestLevel: dto.highestLevel,
-        lastLevel:    dto.lastLevel,
+        lastLevel: dto.lastLevel,
         roundsPlayed: dto.roundsPlayed,
-        levelsData:   dto.levelsData ?? [],
+        levelsData: dto.levelsData ?? [],
       },
       update: {
-        name:         dto.name,
-        totalScore:   dto.totalScore,
+        name: dto.name,
+        totalScore: dto.totalScore,
         highestLevel: dto.highestLevel,
-        lastLevel:    dto.lastLevel,
+        lastLevel: dto.lastLevel,
         roundsPlayed: dto.roundsPlayed,
-        levelsData:   dto.levelsData ?? [],
+        levelsData: dto.levelsData ?? [],
       },
     });
 
@@ -38,7 +38,7 @@ export class GamePlayersService {
     const where = search
       ? {
           OR: [
-            { name:        { contains: search, mode: 'insensitive' as const } },
+            { name: { contains: search, mode: 'insensitive' as const } },
             { studentCode: { contains: search, mode: 'insensitive' as const } },
           ],
         }
