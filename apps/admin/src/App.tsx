@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { 
-  LayoutDashboard, Users, LogOut, Loader2, MessageSquare, 
+  LayoutDashboard, LogOut, Loader2, MessageSquare, 
   Globe, Gamepad2, ShoppingCart, Settings, 
   Banknote, LineChart, Truck, PackageCheck, Factory, PlaySquare, Wrench, Building2 
 } from 'lucide-react';
