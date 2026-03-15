@@ -9,6 +9,7 @@ import { ContactModule } from './contact/contact.module';
 import { ServicesModule } from './services/services.module';
 import { GamePlayersModule } from './game-players/game-players.module';
 import { UploadModule } from './common/upload/upload.module';
+import { HcmModule } from './hcm/hcm.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -18,9 +19,7 @@ import { AppService } from './app.service';
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
-      serveStaticOptions: {
-        index: false,
-      },
+      serveStaticOptions: { index: false },
     }),
     PrismaModule,
     AuthModule,
@@ -29,6 +28,7 @@ import { AppService } from './app.service';
     ServicesModule,
     GamePlayersModule,
     UploadModule,
+    HcmModule,
   ],
   controllers: [AppController],
   providers: [AppService],

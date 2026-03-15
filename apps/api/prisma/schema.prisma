@@ -26,6 +26,38 @@ enum ContactStatus {
   ARCHIVED
 }
 
+// ─── HCM ENUMS ───────────────────────────────────────────────────────────────
+
+enum EmployeeType {
+  FOUNDER
+  EMPLOYEE
+  INSTRUCTOR
+  FREELANCER
+  INTERN
+}
+
+enum ContractType {
+  FIXED_TERM
+  INDEFINITE
+  SERVICE_CONTRACT
+  INTERNSHIP
+}
+
+enum ContractStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  TERMINATED
+}
+
+enum PayrollStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+
+
 // ─── USUARIOS (núcleo compartido por todos los servicios) ────────────────────
 
 model User {
@@ -89,3 +121,73 @@ model GamePlayer {
 
   @@map("game_players")
 }
+
+// ─── HCM — MÓDULO DE CAPITAL HUMANO ─────────────────────────────────────────
+
+model Employee {
+  id             String       @id @default(uuid())
+  firstName      String       @map("first_name")
+  lastName       String       @map("last_name")
+  email          String       @unique
+  phone          String?
+  documentType   String       @default("CC") @map("document_type")
+  documentNumber String       @unique @map("document_number")
+  position       String       // Cargo / Puesto
+  department     String?      // Área (Tecnología, Educación, Admin...)
+  employeeType   EmployeeType @default(EMPLOYEE) @map("employee_type")
+  startDate      DateTime     @map("start_date")
+  birthDate      DateTime?    @map("birth_date")
+  address        String?
+  city           String?      @default("Colombia")
+  isActive       Boolean      @default(true) @map("is_active")
+  notes          String?
+  avatarUrl      String?      @map("avatar_url")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  contracts      Contract[]
+  payrolls       Payroll[]
+
+  @@map("employees")
+}
+
+model Contract {
+  id             String         @id @default(uuid())
+  employeeId     String         @map("employee_id")
+  contractType   ContractType   @map("contract_type")
+  status         ContractStatus @default(ACTIVE)
+  startDate      DateTime       @map("start_date")
+  endDate        DateTime?      @map("end_date")
+  salary         Decimal        @db.Decimal(12, 2)
+  currency       String         @default("COP")
+  workHoursPerWeek Int          @default(40) @map("work_hours_per_week")
+  description    String?
+  documentUrl    String?        @map("document_url")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  employee       Employee       @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("contracts")
+}
+
+model Payroll {
+  id             String        @id @default(uuid())
+  employeeId     String        @map("employee_id")
+  period         String        // "2026-03" = Año-Mes
+  baseSalary     Decimal       @map("base_salary") @db.Decimal(12, 2)
+  bonuses        Decimal       @default(0) @db.Decimal(12, 2)
+  deductions     Decimal       @default(0) @db.Decimal(12, 2)
+  netPay         Decimal       @map("net_pay") @db.Decimal(12, 2)
+  currency       String        @default("COP")
+  status         PayrollStatus @default(PENDING)
+  paidAt         DateTime?     @map("paid_at")
+  notes          String?
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  employee       Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("payrolls")
+}
+
