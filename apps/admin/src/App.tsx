@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
-import { LayoutDashboard, Users, LogOut, Loader2, MessageSquare, Briefcase, Gamepad2 } from 'lucide-react';
+import { 
+  LayoutDashboard, Users, LogOut, Loader2, MessageSquare, 
+  Globe, Gamepad2, ShoppingCart, Package, Building2, Settings 
+} from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
 import './App.css';
@@ -39,15 +42,20 @@ function App() {
 function AdminLayout({ onLogout }: { onLogout: () => void }) {
   const location = useLocation();
   
-  const navItems = [
-    { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/services', label: 'Servicios', icon: Briefcase },
-    { path: '/messages', label: 'Mensajes', icon: MessageSquare },
-    { path: '/game-players', label: 'GeoMath Players', icon: Gamepad2 },
-    { path: '/users', label: 'Usuarios', icon: Users },
-  ];
-
-  const currentPage = navItems.find(item => item.path === location.pathname)?.label || 'Panel de Control';
+  const getPageTitle = () => {
+    switch (location.pathname) {
+      case '/': return 'Panel General';
+      case '/services': return 'Sitio Institucional & Servicios';
+      case '/messages': return 'Mensajes de Contacto';
+      case '/game-players': return 'Jugadores de GeoMath';
+      case '/sales': return 'Ventas y Facturación (ERP)';
+      case '/crm': return 'Clientes y CRM (ERP)';
+      case '/inventory': return 'Gestión de Inventario (ERP)';
+      case '/hr': return 'Recursos Humanos (ERP)';
+      case '/settings': return 'Configuración del Sistema';
+      default: return 'Panel de Control';
+    }
+  };
 
   return (
     <div className="admin-layout">
@@ -56,22 +64,45 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
         <div className="sidebar-header">
           <span className="sidebar-logo">FoundTeach.</span>
         </div>
+        
         <nav className="nav-links">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link 
-                key={item.path} 
-                to={item.path} 
-                className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
-              >
-                <Icon size={20} />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+          <div className="nav-section-title">Principal</div>
+          <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
+            <LayoutDashboard size={20} /> <span>Dashboard</span>
+          </Link>
+          
+          <div className="nav-section-title">Plataformas Web</div>
+          <Link to="/services" className={`nav-item ${location.pathname === '/services' ? 'active' : ''}`}>
+            <Globe size={20} /> <span>Sitio & Servicios</span>
+          </Link>
+          <Link to="/messages" className={`nav-item ${location.pathname === '/messages' ? 'active' : ''}`}>
+            <MessageSquare size={20} /> <span>Bandeja Entrada</span>
+          </Link>
+          <Link to="/game-players" className={`nav-item ${location.pathname === '/game-players' ? 'active' : ''}`}>
+            <Gamepad2 size={20} /> <span>GeoMath Players</span>
+          </Link>
+
+          <div className="nav-section-title">Sistema ERP</div>
+          <Link to="/sales" className={`nav-item ${location.pathname === '/sales' ? 'active' : ''}`}>
+            <ShoppingCart size={20} /> <span>Ventas y Facturas</span>
+          </Link>
+          <Link to="/crm" className={`nav-item ${location.pathname === '/crm' ? 'active' : ''}`}>
+            <Users size={20} /> <span>CRM y Clientes</span>
+          </Link>
+          <Link to="/inventory" className={`nav-item ${location.pathname === '/inventory' ? 'active' : ''}`}>
+            <Package size={20} /> <span>Inventario</span>
+          </Link>
+          <Link to="/hr" className={`nav-item ${location.pathname === '/hr' ? 'active' : ''}`}>
+            <Building2 size={20} /> <span>Recursos Humanos</span>
+          </Link>
+          
+          <div className="nav-section-title">Sistema</div>
+          <Link to="/settings" className={`nav-item ${location.pathname === '/settings' ? 'active' : ''}`}>
+            <Settings size={20} /> <span>Configuración</span>
+          </Link>
         </nav>
-        <div style={{ marginTop: 'auto', padding: '16px' }}>
+        
+        <div style={{ padding: '16px', marginTop: 'auto', borderTop: '1px solid var(--border-color)' }}>
           <button className="nav-item" onClick={onLogout} style={{ width: '100%', color: 'var(--danger-color)' }}>
             <LogOut size={20} />
             <span>Cerrar Sesión</span>
@@ -82,20 +113,26 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
       {/* Main Content */}
       <main className="main-content">
         <header className="topbar">
-          <h1 className="page-title">{currentPage}</h1>
+          <h1 className="page-title">{getPageTitle()}</h1>
           <div className="user-profile">
-            <div className="avatar">A</div>
-            <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>Admin</span>
+            <div className="avatar">M</div>
+            <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}>Manuel M.</span>
           </div>
         </header>
         
         <div className="page-container">
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/services" element={<div style={{ padding: 40, textAlign: 'center' }}>Gestión de Servicios (Próximamente)</div>} />
+            <Route path="/services" element={<PlaceholderPanel title="Gestión de Sitio Web" desc="Administración del contenido del sitio, banners y servicios." />} />
             <Route path="/messages" element={<MessagesPage />} />
             <Route path="/game-players" element={<GamePlayersPage />} />
-            <Route path="/users" element={<div style={{ padding: 40, textAlign: 'center' }}>Gestión de Usuarios (Próximamente)</div>} />
+            
+            <Route path="/sales" element={<PlaceholderPanel title="Ventas y Facturación" desc="Módulo de facturación electrónica, cotizaciones y cobros recurrentes." icon="🛒" />} />
+            <Route path="/crm" element={<PlaceholderPanel title="CRM y Clientes" desc="Embudo de ventas, seguimiento de contactos e historial de interacciones." icon="👥" />} />
+            <Route path="/inventory" element={<PlaceholderPanel title="Inventario" desc="Control de stock para productos físicos y licencias digitales." icon="📦" />} />
+            <Route path="/hr" element={<PlaceholderPanel title="Recursos Humanos" desc="Gestión de nómina, asistencias, profesores y personal operativo." icon="🏢" />} />
+            <Route path="/settings" element={<PlaceholderPanel title="Configuración del Sistema" desc="Roles, permisos, variables de entorno y preferencias generales." icon="⚙️" />} />
+            
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
@@ -105,6 +142,19 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
 }
 
 // --- Pages ---
+
+function PlaceholderPanel({ title, desc, icon = "🚀" }: { title: string, desc: string, icon?: string }) {
+  return (
+    <div style={{ backgroundColor: 'var(--surface-color)', padding: '60px', borderRadius: '16px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+      <div style={{ fontSize: '4rem', marginBottom: '20px' }}>{icon}</div>
+      <h2 style={{ fontSize: '1.5rem', marginBottom: '12px', color: 'var(--text-main)' }}>{title}</h2>
+      <p style={{ color: 'var(--text-muted)', maxWidth: '500px', margin: '0 auto', fontSize: '1rem' }}>{desc}</p>
+      <div style={{ display: 'inline-block', marginTop: '24px', padding: '8px 16px', background: 'rgba(37,99,235,0.1)', color: 'var(--primary-color)', borderRadius: '20px', fontWeight: 600, fontSize: '0.85rem' }}>
+        Módulo en Desarrollo
+      </div>
+    </div>
+  );
+}
 
 function Login({ onLogin }: { onLogin: (token: string) => void }) {
   const [email, setEmail] = useState('');
@@ -142,19 +192,22 @@ function Login({ onLogin }: { onLogin: (token: string) => void }) {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h1 className="auth-title">Admin Login</h1>
-          <p className="auth-subtitle">Ingresa tus credenciales de administrador</p>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+            <span style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary-color)', letterSpacing: '-1px' }}>FoundTeach.</span>
+          </div>
+          <h1 className="auth-title">Plataforma Hub</h1>
+          <p className="auth-subtitle">Centro de control unificado</p>
         </div>
         
         <form onSubmit={handleSubmit}>
-          {error && <div style={{ color: 'var(--danger-color)', marginBottom: '16px', fontSize: '0.875rem', textAlign: 'center' }}>{error}</div>}
+          {error && <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger-color)', padding: '12px', borderRadius: '8px', marginBottom: '20px', fontSize: '0.875rem', textAlign: 'center', fontWeight: 500 }}>{error}</div>}
           
           <div className="form-group">
-            <label className="form-label">Correo Electrónico</label>
+            <label className="form-label">Correo Institucional</label>
             <input 
               type="email" 
               className="form-input" 
-              placeholder="admin@foundteach.com"
+              placeholder="manuel.martinez@foundteach.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -162,7 +215,7 @@ function Login({ onLogin }: { onLogin: (token: string) => void }) {
           </div>
           
           <div className="form-group">
-            <label className="form-label">Contraseña</label>
+            <label className="form-label">Contraseña Administrativa</label>
             <input 
               type="password" 
               className="form-input" 
@@ -173,8 +226,8 @@ function Login({ onLogin }: { onLogin: (token: string) => void }) {
             />
           </div>
           
-          <button type="submit" className="btn-primary" disabled={isLoading} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-            {isLoading ? <Loader2 size={20} className="spin" /> : 'Ingresar'}
+          <button type="submit" className="btn-primary" disabled={isLoading} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '24px' }}>
+            {isLoading ? <Loader2 size={20} className="spin" /> : 'Acceder al Sistema'}
           </button>
         </form>
       </div>
@@ -187,9 +240,8 @@ function Dashboard() {
 
   useEffect(() => {
     // In a complete implementation, fetch actual stats here.
-    // For now, simulating API load.
     setTimeout(() => {
-      setStats({ services: 5, messages: 12, users: 2, status: 'loaded' });
+      setStats({ services: 5, messages: 12, users: 145, status: 'loaded' });
     }, 1000);
   }, []);
 
@@ -197,15 +249,15 @@ function Dashboard() {
     <div>
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon"><Briefcase size={24} /></div>
+          <div className="stat-icon purple"><Globe size={28} /></div>
           <div className="stat-info">
-            <h3>Servicios Activos</h3>
-            <div className="stat-value">{stats.status === 'loaded' ? stats.services : '-'}</div>
+            <h3>Visitas Web (Mes)</h3>
+            <div className="stat-value">12.5K</div>
           </div>
         </div>
         
         <div className="stat-card">
-          <div className="stat-icon"><MessageSquare size={24} /></div>
+          <div className="stat-icon orange"><MessageSquare size={28} /></div>
           <div className="stat-info">
             <h3>Mensajes Nuevos</h3>
             <div className="stat-value">{stats.status === 'loaded' ? stats.messages : '-'}</div>
@@ -213,20 +265,40 @@ function Dashboard() {
         </div>
         
         <div className="stat-card">
-          <div className="stat-icon"><Users size={24} /></div>
+          <div className="stat-icon green"><ShoppingCart size={28} /></div>
           <div className="stat-info">
-            <h3>Usuarios del Sistema</h3>
-            <div className="stat-value">{stats.status === 'loaded' ? stats.users : '-'}</div>
+            <h3>Ventas (Mes)</h3>
+            <div className="stat-value">$14.2M</div>
           </div>
         </div>
       </div>
       
-      <div style={{ backgroundColor: 'var(--surface-dark)', padding: '24px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-        <h2 style={{ fontSize: '1.25rem', marginBottom: '16px' }}>Bienvenido al Panel de Administración</h2>
-        <p style={{ color: 'var(--text-muted)' }}>
-          Desde aquí podrás gestionar todo el contenido de la plataforma de FoundTeach. 
-          Selecciona una opción en el menú lateral para comenzar.
-        </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: '24px' }}>
+        <div style={{ backgroundColor: 'var(--surface-color)', padding: '32px', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)' }}>
+          <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', color: 'var(--text-main)', fontWeight: 700 }}>Descripción General de FoundTeach Hub</h2>
+          <p style={{ color: 'var(--text-muted)' }}>
+            Bienvenido, Manuel. Desde esta plataforma central tienes control absoluto sobre todos los módulos de FoundTeach.
+            Usa el menú lateral para navegar entre la administración web (como revisar mensajes de contacto) y los próximos módulos del ERP (Ventas, Clientes e Inventario).
+          </p>
+        </div>
+        
+        <div style={{ backgroundColor: 'var(--surface-color)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)' }}>
+           <h3 style={{ fontSize: '1.1rem', marginBottom: '16px', color: 'var(--text-main)', fontWeight: 600 }}>Actividad Reciente</h3>
+           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+               <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--primary-color)' }} />
+               <div style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}><span style={{ fontWeight: 600 }}>Carlos</span> envió un mensaje</div>
+             </div>
+             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+               <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--secondary-color)' }} />
+               <div style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>Nueva cotización aprobada</div>
+             </div>
+             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+               <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--text-muted)' }} />
+               <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Backup completado</div>
+             </div>
+           </div>
+        </div>
       </div>
     </div>
   );

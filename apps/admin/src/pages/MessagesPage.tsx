@@ -65,8 +65,8 @@ export function MessagesPage() {
       case 'PENDING': return { text: 'Pendiente', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)' };
       case 'READ': return { text: 'Leído', color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.1)' };
       case 'REPLIED': return { text: 'Respondido', color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' };
-      case 'ARCHIVED': return { text: 'Archivado', color: 'var(--text-muted)', bg: 'rgba(255, 255, 255, 0.05)' };
-      default: return { text: status, color: '#fff', bg: 'transparent' };
+      case 'ARCHIVED': return { text: 'Archivado', color: 'var(--text-muted)', bg: 'rgba(0, 0, 0, 0.05)' };
+      default: return { text: status, color: 'var(--text-main)', bg: 'transparent' };
     }
   };
 
@@ -98,7 +98,7 @@ export function MessagesPage() {
         </div>
       </div>
 
-      <div style={{ backgroundColor: 'var(--surface-dark)', borderRadius: '12px', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+      <div style={{ backgroundColor: 'var(--surface-color)', borderRadius: '12px', border: '1px solid var(--border-color)', overflow: 'hidden', color: 'var(--text-main)' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-color)' }}>
           <h2 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Mensajes de Contacto recibidos</h2>
         </div>
@@ -127,7 +127,7 @@ export function MessagesPage() {
                 const badge = getStatusBadgeOptions(m.status);
                 return (
                   <tr key={m.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background 0.15s' }}
-                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)')}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--surface-hover)')}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
                   >
                     <td style={{ padding: '14px 16px' }}>
@@ -161,7 +161,7 @@ export function MessagesPage() {
       {/* VER MENSAJE MODAL */}
       {selectedMessage && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-          <div style={{ background: 'var(--surface-dark)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 600, border: '1px solid var(--border-color)' }}>
+          <div style={{ background: 'var(--surface-color)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 600, border: '1px solid var(--border-color)', color: 'var(--text-main)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <h2 style={{ fontSize: '1.25rem' }}>Detalle del mensaje</h2>
               <button 
@@ -193,12 +193,12 @@ export function MessagesPage() {
 
             <div style={{ marginBottom: '24px' }}>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Asunto</p>
-              <p style={{ fontWeight: 600, padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>{selectedMessage.subject}</p>
+              <p style={{ fontWeight: 600, padding: '12px', background: 'var(--background-color)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>{selectedMessage.subject}</p>
             </div>
 
             <div style={{ marginBottom: '24px' }}>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Mensaje</p>
-              <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--border-color)', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
+              <div style={{ padding: '16px', background: 'var(--background-color)', borderRadius: '8px', border: '1px solid var(--border-color)', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
                 {selectedMessage.message}
               </div>
             </div>

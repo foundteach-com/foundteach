@@ -149,7 +149,7 @@ export function GamePlayersPage() {
       </div>
 
       {/* Search + Table */}
-      <div style={{ backgroundColor: 'var(--surface-dark)', borderRadius: '12px', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+      <div style={{ backgroundColor: 'var(--surface-color)', borderRadius: '12px', border: '1px solid var(--border-color)', overflow: 'hidden', color: 'var(--text-main)' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>🔍</span>
           <input
@@ -187,7 +187,7 @@ export function GamePlayersPage() {
             <tbody>
               {players.map((p, i) => (
                 <tr key={p.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background 0.15s' }}
-                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)')}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--surface-hover)')}
                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
                 >
                   <td style={{ padding: '14px 16px', fontWeight: 700, color: 'var(--text-muted)' }}>{medal(i)}</td>
@@ -243,8 +243,8 @@ export function GamePlayersPage() {
       {/* EDIT MODAL */}
       {editPlayer && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-          <div style={{ background: 'var(--surface-dark)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 420, border: '1px solid var(--border-color)' }}>
-            <h2 style={{ marginBottom: 20 }}>✏️ Editar jugador</h2>
+          <div style={{ background: 'var(--surface-color)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 420, border: '1px solid var(--border-color)', color: 'var(--text-main)' }}>
+            <h2 style={{ marginBottom: 20, color: 'var(--text-main)' }}>✏️ Editar jugador</h2>
             {error && <p style={{ color: '#ef4444', marginBottom: 12, fontSize: '0.875rem' }}>{error}</p>}
             {(['name', 'studentCode', 'totalScore', 'highestLevel', 'lastLevel'] as (keyof EditForm)[]).map(field => (
               <div className="form-group" key={field}>
@@ -274,7 +274,7 @@ export function GamePlayersPage() {
       {/* DELETE CONFIRM */}
       {deleteId && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-          <div style={{ background: 'var(--surface-dark)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 380, border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
+          <div style={{ background: 'var(--surface-color)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 380, border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center', color: 'var(--text-main)' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🗑️</div>
             <h2 style={{ marginBottom: 8 }}>¿Eliminar jugador?</h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: 24, fontSize: '0.9rem' }}>Esta acción no se puede deshacer. Se perderán todos sus datos y progreso.</p>
