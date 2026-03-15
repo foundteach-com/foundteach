@@ -8,6 +8,7 @@ import {
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
 import { HcmPage } from './pages/HcmPage';
+import { SdPage } from './pages/SdPage';
 import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -315,7 +316,8 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             {/* CO */}
             <Route path="/erp/co/*" element={<Placeholder title="CO · Controlling" desc="Centros de costo, P&L y presupuesto por línea de negocio." icon="📈" />} />
             {/* SD */}
-            <Route path="/erp/sd/*" element={<Placeholder title="SD · Ventas y Distribución" desc="CRM, cotizaciones, pedidos y facturación comercial." icon="🚚" />} />
+            <Route path="/erp/sd" element={<SdPage />} />
+            <Route path="/erp/sd/*" element={<SdPage />} />
             {/* MM */}
             <Route path="/erp/mm/*" element={<Placeholder title="MM · Gestión de Materiales" desc="Inventario, proveedores y órdenes de compra." icon="📦" />} />
             {/* PP */}
@@ -429,7 +431,7 @@ function Dashboard() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
           {[
             { code: 'HCM', label: 'Capital Humano', status: 'En desarrollo', color: '#2563eb' },
-            { code: 'SD', label: 'Ventas (CRM)', status: 'Planificado', color: '#94a3b8' },
+            { code: 'SD', label: 'Ventas (CRM)', status: 'En desarrollo', color: '#2563eb' },
             { code: 'FI', label: 'Finanzas', status: 'Planificado', color: '#94a3b8' },
             { code: 'CO', label: 'Controlling', status: 'Planificado', color: '#94a3b8' },
             { code: 'MM', label: 'Materiales', status: 'Planificado', color: '#94a3b8' },
