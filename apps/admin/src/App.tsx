@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, LogOut, Loader2, MessageSquare, 
-  Globe, Gamepad2, ShoppingCart, Package, Building2, Settings 
+  Globe, Gamepad2, ShoppingCart, Settings, 
+  Banknote, LineChart, Truck, PackageCheck, Factory, PlaySquare, Wrench, Building2 
 } from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -45,15 +46,25 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
   const getPageTitle = () => {
     switch (location.pathname) {
       case '/': return 'Panel General';
-      case '/services': return 'Sitio Institucional & Servicios';
-      case '/messages': return 'Mensajes de Contacto';
-      case '/game-players': return 'Jugadores de GeoMath';
-      case '/sales': return 'Ventas y Facturación (ERP)';
-      case '/crm': return 'Clientes y CRM (ERP)';
-      case '/inventory': return 'Gestión de Inventario (ERP)';
-      case '/hr': return 'Recursos Humanos (ERP)';
-      case '/settings': return 'Configuración del Sistema';
-      default: return 'Panel de Control';
+      
+      // Integraciones Web
+      case '/web-services': return 'Sitio Institucional & Servicios (WP)';
+      case '/web-messages': return 'Bandeja de Entrada (CRM Inbox)';
+      case '/web-geomath': return 'GeoMath Platform';
+
+      // Módulos ERP SAP
+      case '/erp/fi': return 'FI - Gestión Financiera (Financial Accounting)';
+      case '/erp/co': return 'CO - Controlling (Gestión de Costos)';
+      case '/erp/sd': return 'SD - Ventas y Distribución (Sales & Distribution)';
+      case '/erp/mm': return 'MM - Gestión de Materiales (Materials Management)';
+      case '/erp/pp': return 'PP - Planificación de Producción (Production Planning)';
+      case '/erp/qm': return 'QM - Gestión de Calidad (Quality Management)';
+      case '/erp/pm': return 'PM - Mantenimiento de Planta (Plant Maintenance)';
+      case '/erp/hcm': return 'HCM - Gestión de Capital Humano (Human Resources)';
+      
+      // Sistema
+      case '/settings': return 'BASIS - Administración del Sistema';
+      default: return 'Panel de Control ERP';
     }
   };
 
@@ -71,34 +82,46 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <LayoutDashboard size={20} /> <span>Dashboard</span>
           </Link>
           
-          <div className="nav-section-title">Plataformas Web</div>
-          <Link to="/services" className={`nav-item ${location.pathname === '/services' ? 'active' : ''}`}>
-            <Globe size={20} /> <span>Sitio & Servicios</span>
+          <div className="nav-section-title">FoundTeach Ecosystem</div>
+          <Link to="/web-services" className={`nav-item ${location.pathname === '/web-services' ? 'active' : ''}`}>
+            <Globe size={20} /> <span>Web & Servicios</span>
           </Link>
-          <Link to="/messages" className={`nav-item ${location.pathname === '/messages' ? 'active' : ''}`}>
-            <MessageSquare size={20} /> <span>Bandeja Entrada</span>
+          <Link to="/web-messages" className={`nav-item ${location.pathname === '/web-messages' ? 'active' : ''}`}>
+            <MessageSquare size={20} /> <span>Inbox & Contactos</span>
           </Link>
-          <Link to="/game-players" className={`nav-item ${location.pathname === '/game-players' ? 'active' : ''}`}>
-            <Gamepad2 size={20} /> <span>GeoMath Players</span>
+          <Link to="/web-geomath" className={`nav-item ${location.pathname === '/web-geomath' ? 'active' : ''}`}>
+            <Gamepad2 size={20} /> <span>GeoMath Platform</span>
           </Link>
 
-          <div className="nav-section-title">Sistema ERP</div>
-          <Link to="/sales" className={`nav-item ${location.pathname === '/sales' ? 'active' : ''}`}>
-            <ShoppingCart size={20} /> <span>Ventas y Facturas</span>
+          <div className="nav-section-title">SAP ERP Modules</div>
+          <Link to="/erp/fi" className={`nav-item ${location.pathname === '/erp/fi' ? 'active' : ''}`}>
+            <Banknote size={20} /> <span>FI - Finanzas</span>
           </Link>
-          <Link to="/crm" className={`nav-item ${location.pathname === '/crm' ? 'active' : ''}`}>
-            <Users size={20} /> <span>CRM y Clientes</span>
+          <Link to="/erp/co" className={`nav-item ${location.pathname === '/erp/co' ? 'active' : ''}`}>
+            <LineChart size={20} /> <span>CO - Controlling</span>
           </Link>
-          <Link to="/inventory" className={`nav-item ${location.pathname === '/inventory' ? 'active' : ''}`}>
-            <Package size={20} /> <span>Inventario</span>
+          <Link to="/erp/sd" className={`nav-item ${location.pathname === '/erp/sd' ? 'active' : ''}`}>
+            <Truck size={20} /> <span>SD - Ventas y Distrib.</span>
           </Link>
-          <Link to="/hr" className={`nav-item ${location.pathname === '/hr' ? 'active' : ''}`}>
-            <Building2 size={20} /> <span>Recursos Humanos</span>
+          <Link to="/erp/mm" className={`nav-item ${location.pathname === '/erp/mm' ? 'active' : ''}`}>
+            <PackageCheck size={20} /> <span>MM - Materiales</span>
+          </Link>
+          <Link to="/erp/pp" className={`nav-item ${location.pathname === '/erp/pp' ? 'active' : ''}`}>
+            <Factory size={20} /> <span>PP - Producción</span>
+          </Link>
+          <Link to="/erp/qm" className={`nav-item ${location.pathname === '/erp/qm' ? 'active' : ''}`}>
+            <PlaySquare size={20} /> <span>QM - Calidad</span>
+          </Link>
+          <Link to="/erp/pm" className={`nav-item ${location.pathname === '/erp/pm' ? 'active' : ''}`}>
+            <Wrench size={20} /> <span>PM - Mantenimiento</span>
+          </Link>
+          <Link to="/erp/hcm" className={`nav-item ${location.pathname === '/erp/hcm' ? 'active' : ''}`}>
+            <Building2 size={20} /> <span>HCM - RRHH</span>
           </Link>
           
-          <div className="nav-section-title">Sistema</div>
+          <div className="nav-section-title">System (BASIS)</div>
           <Link to="/settings" className={`nav-item ${location.pathname === '/settings' ? 'active' : ''}`}>
-            <Settings size={20} /> <span>Configuración</span>
+            <Settings size={20} /> <span>Configuración y Usuarios</span>
           </Link>
         </nav>
         
@@ -123,15 +146,24 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
         <div className="page-container">
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/services" element={<PlaceholderPanel title="Gestión de Sitio Web" desc="Administración del contenido del sitio, banners y servicios." />} />
-            <Route path="/messages" element={<MessagesPage />} />
-            <Route path="/game-players" element={<GamePlayersPage />} />
             
-            <Route path="/sales" element={<PlaceholderPanel title="Ventas y Facturación" desc="Módulo de facturación electrónica, cotizaciones y cobros recurrentes." icon="🛒" />} />
-            <Route path="/crm" element={<PlaceholderPanel title="CRM y Clientes" desc="Embudo de ventas, seguimiento de contactos e historial de interacciones." icon="👥" />} />
-            <Route path="/inventory" element={<PlaceholderPanel title="Inventario" desc="Control de stock para productos físicos y licencias digitales." icon="📦" />} />
-            <Route path="/hr" element={<PlaceholderPanel title="Recursos Humanos" desc="Gestión de nómina, asistencias, profesores y personal operativo." icon="🏢" />} />
-            <Route path="/settings" element={<PlaceholderPanel title="Configuración del Sistema" desc="Roles, permisos, variables de entorno y preferencias generales." icon="⚙️" />} />
+            {/* FoundTeach Interfaces */}
+            <Route path="/web-services" element={<PlaceholderPanel title="Gestión de Plataforma Web" desc="Administración del contenido del portal institucional y módulos CMS." />} />
+            <Route path="/web-messages" element={<MessagesPage />} />
+            <Route path="/web-geomath" element={<GamePlayersPage />} />
+            
+            {/* SAP Modules */}
+            <Route path="/erp/fi" element={<PlaceholderPanel title="Módulo FI: Finanzas" desc="Libros mayores, cuentas por cobrar, cuentas por pagar y contabilidad bancaria." icon="💰" />} />
+            <Route path="/erp/co" element={<PlaceholderPanel title="Módulo CO: Controlling" desc="Centro de costos, margen de rentabilidad y planificación financiera." icon="📈" />} />
+            <Route path="/erp/sd" element={<PlaceholderPanel title="Módulo SD: Ventas y Distribución" desc="Gestión de clientes (CRM), cotizaciones, pedidos, facturación comercial." icon="🚚" />} />
+            <Route path="/erp/mm" element={<PlaceholderPanel title="Módulo MM: Gestión de Materiales" desc="Inventario, compras, proveedores y control de stock de licencias." icon="📦" />} />
+            <Route path="/erp/pp" element={<PlaceholderPanel title="Módulo PP: Planificación Producción" desc="Desarrollo de cursos, planificación operativa y rutas de aprendizaje." icon="🏭" />} />
+            <Route path="/erp/qm" element={<PlaceholderPanel title="Módulo QM: Gestión de Calidad" desc="Inspecciones de software, control de calidad del contenido educativo." icon="✅" />} />
+            <Route path="/erp/pm" element={<PlaceholderPanel title="Módulo PM: Mantenimiento Planta" desc="Mantenimiento de servidores, infraestructura tecnológica y licencias cloud." icon="🔧" />} />
+            <Route path="/erp/hcm" element={<PlaceholderPanel title="Módulo HCM: Capital Humano" desc="Nómina, reclutamiento, gestión de instructores y desempeño laboral." icon="👥" />} />
+            
+            {/* Basis */}
+            <Route path="/settings" element={<PlaceholderPanel title="Módulo BASIS: Sistema" desc="Administración de roles, copias de seguridad, logs y auditoría." icon="⚙️" />} />
             
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
