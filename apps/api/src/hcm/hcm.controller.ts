@@ -2,13 +2,13 @@ import {
   Controller, Get, Post, Put, Delete,
   Body, Param, Query, UseGuards
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { HcmService } from './hcm.service';
 import { CreateEmployeeDto, UpdateEmployeeDto } from './dto/employee.dto';
 import { CreateContractDto, UpdateContractDto } from './dto/contract.dto';
 import { CreatePayrollDto, UpdatePayrollDto } from './dto/payroll.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('api/hcm')
 export class HcmController {
   constructor(private readonly hcm: HcmService) {}
