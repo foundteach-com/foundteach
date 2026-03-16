@@ -11,6 +11,7 @@ import { GamePlayersModule } from './game-players/game-players.module';
 import { UploadModule } from './common/upload/upload.module';
 import { HcmModule } from './hcm/hcm.module';
 import { SdModule } from './sd/sd.module';
+import { FiModule } from './fi/fi.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -31,6 +32,7 @@ import { AppService } from './app.service';
     UploadModule,
     HcmModule,
     SdModule,
+    FiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
