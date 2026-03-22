@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2,
+  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2,
 } from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
 import { WebServicesPage } from './pages/WebServicesPage';
 import { UsersPage } from './pages/UsersPage';
 import { CompanyPage } from './pages/CompanyPage';
+import { KpiPage } from './pages/KpiPage';
 import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -42,6 +43,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     title: 'Administración',
     items: [
+      { label: 'KPIs',      path: '/admin/kpis',    icon: <BarChart2 size={17} /> },
       { label: 'Usuarios',  path: '/admin/users',   icon: <Users size={17} /> },
       { label: 'Empresa',   path: '/admin/company', icon: <Building2 size={17} /> },
     ],
@@ -173,6 +175,7 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="/web/services" element={<WebServicesPage />} />
             <Route path="/web/messages" element={<MessagesPage />} />
             <Route path="/geomath/players" element={<GamePlayersPage />} />
+            <Route path="/admin/kpis" element={<KpiPage />} />
             <Route path="/admin/users" element={<UsersPage />} />
             <Route path="/admin/company" element={<CompanyPage />} />
             <Route path="/settings" element={<SettingsPage />} />
