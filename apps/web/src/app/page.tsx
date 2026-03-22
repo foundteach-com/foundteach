@@ -3,7 +3,59 @@ import Image from "next/image";
 import { ContactForm } from "@/components/ContactForm";
 import { MobileMenu } from "@/components/MobileMenu";
 
-export default function Home() {
+// ─── Tipos ───────────────────────────────────────────────────────────────────
+interface Service {
+  id: string;
+  title: string;
+  description: string;
+  icon: string | null;
+  sortOrder: number;
+}
+
+// ─── Servicios por defecto (fallback si la API no responde) ──────────────────
+const DEFAULT_SERVICES: Service[] = [
+  {
+    id: 'default-1',
+    title: 'Desarrollo Web y Móvil',
+    description:
+      'Desarrollo de páginas web corporativas, sistemas a medida (ERP, CRM, plataformas), aplicaciones móviles (Android / iOS), integración con APIs y mantenimiento.',
+    icon: '💻',
+    sortOrder: 0,
+  },
+  {
+    id: 'default-2',
+    title: 'Business Intelligence con Power BI',
+    description:
+      'Creación de dashboards interactivos, integración de datos (Excel, bases de datos, APIs), automatización de reportes, modelado de datos y capacitación.',
+    icon: '📊',
+    sortOrder: 1,
+  },
+  {
+    id: 'default-3',
+    title: 'Consultoría en Automatización y Transformación Digital',
+    description:
+      'Automatización de procesos, integración entre sistemas, implementación de herramientas digitales, optimización de flujos de trabajo y diagnóstico tecnológico.',
+    icon: '⚙️',
+    sortOrder: 2,
+  },
+];
+
+// ─── Carga servicios desde la API (Server Component) ────────────────────────
+async function getServices(): Promise<Service[]> {
+  try {
+    const res = await fetch('https://api.foundteach.com/api/services/public', {
+      next: { revalidate: 60 }, // Revalida cada 60 segundos (ISR)
+    });
+    if (!res.ok) return DEFAULT_SERVICES;
+    const data = await res.json();
+    return Array.isArray(data) && data.length > 0 ? data : DEFAULT_SERVICES;
+  } catch {
+    return DEFAULT_SERVICES;
+  }
+}
+
+export default async function Home() {
+  const services = await getServices();
   return (
     <main>
       {/* Header */}
@@ -188,44 +240,23 @@ export default function Home() {
           <p className="section-eyebrow text-center">Lo que hacemos</p>
           <h2 className="section-title">Nuestros Servicios</h2>
           <div className="services-grid">
-            <div className="service-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div className="service-card-icon">💻</div>
-              <h3>Desarrollo Web y Móvil</h3>
-              <ul style={{ textAlign: "left", fontSize: "0.93rem", color: "#666", lineHeight: "1.7", paddingLeft: "1.2rem", marginTop: "0.5rem", width: "100%" }}>
-                <li style={{ listStyleType: "disc" }}>Desarrollo de páginas web corporativas</li>
-                <li style={{ listStyleType: "disc" }}>Sistemas web a medida (ERP, CRM, plataformas)</li>
-                <li style={{ listStyleType: "disc" }}>Aplicaciones móviles (Android / iOS)</li>
-                <li style={{ listStyleType: "disc" }}>Integración con APIs</li>
-                <li style={{ listStyleType: "disc" }}>Mantenimiento y soporte</li>
-              </ul>
-            </div>
-            
-            <div className="service-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div className="service-card-icon">📊</div>
-              <h3>Business Intelligence con Power BI</h3>
-              <ul style={{ textAlign: "left", fontSize: "0.93rem", color: "#666", lineHeight: "1.7", paddingLeft: "1.2rem", marginTop: "0.5rem", width: "100%" }}>
-                <li style={{ listStyleType: "disc" }}>Creación de dashboards interactivos</li>
-                <li style={{ listStyleType: "disc" }}>Integración de datos (Excel, bases de datos, APIs)</li>
-                <li style={{ listStyleType: "disc" }}>Automatización de reportes</li>
-                <li style={{ listStyleType: "disc" }}>Modelado de datos</li>
-                <li style={{ listStyleType: "disc" }}>Capacitación en Power BI</li>
-              </ul>
-            </div>
-            
-            <div className="service-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div className="service-card-icon">⚙️</div>
-              <h3 style={{ lineHeight: "1.4" }}>Consultoría en Automatización y Transformación Digital</h3>
-              <ul style={{ textAlign: "left", fontSize: "0.93rem", color: "#666", lineHeight: "1.7", paddingLeft: "1.2rem", marginTop: "0.5rem", width: "100%" }}>
-                <li style={{ listStyleType: "disc" }}>Automatización de procesos</li>
-                <li style={{ listStyleType: "disc" }}>Integración entre sistemas</li>
-                <li style={{ listStyleType: "disc" }}>Implementación de herramientas digitales</li>
-                <li style={{ listStyleType: "disc" }}>Optimización de flujos de trabajo</li>
-                <li style={{ listStyleType: "disc" }}>Diagnóstico tecnológico de empresas</li>
-              </ul>
-            </div>
+            {services.map((service) => (
+              <div
+                key={service.id}
+                className="service-card"
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+              >
+                <div className="service-card-icon">{service.icon || '💻'}</div>
+                <h3 style={{ lineHeight: '1.4', textAlign: 'center' }}>{service.title}</h3>
+                <p style={{ textAlign: 'left', fontSize: '0.93rem', color: '#666', lineHeight: '1.7', marginTop: '0.5rem', width: '100%' }}>
+                  {service.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
+
 
       {/* Tecnologías Section */}
       <section id="tecnologias" className="section">

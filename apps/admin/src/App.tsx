@@ -10,6 +10,7 @@ import { MessagesPage } from './pages/MessagesPage';
 import { HcmPage } from './pages/HcmPage';
 import { SdPage } from './pages/SdPage';
 import { FiPage } from './pages/FiPage';
+import { WebServicesPage } from './pages/WebServicesPage';
 import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -301,7 +302,7 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             {/* Web */}
-            <Route path="/web-services" element={<Placeholder title="Sitio & Servicios" desc="Gestión del portal institucional FoundTeach." icon="🌐" />} />
+            <Route path="/web-services" element={<WebServicesPage />} />
             <Route path="/web-messages" element={<MessagesPage />} />
             <Route path="/web-geomath" element={<GamePlayersPage />} />
             {/* HCM */}
