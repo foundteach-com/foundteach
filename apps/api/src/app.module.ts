@@ -13,6 +13,7 @@ import { HcmModule } from './hcm/hcm.module';
 import { SdModule } from './sd/sd.module';
 import { FiModule } from './fi/fi.module';
 import { CompanyModule } from './company/company.module';
+import { DocumentsModule } from './documents/documents.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -35,6 +36,7 @@ import { AppService } from './app.service';
     SdModule,
     FiModule,
     CompanyModule,
+    DocumentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
