@@ -204,12 +204,7 @@ function AccordionSidebar({ onLogout }: { onLogout: () => void }) {
                 }}>
                 <span style={{ flexShrink: 0, color: isActiveSection ? 'var(--primary-color)' : 'var(--text-muted)' }}>{section.icon}</span>
                 <span style={{ flex: 1, fontWeight: 600, fontSize: '0.88rem' }}>{section.label}</span>
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '0.65rem', fontWeight: 800, padding: '2px 5px', borderRadius: 4,
-                  background: isActiveSection ? 'rgba(37,99,235,0.15)' : 'var(--border-color)',
-                  color: isActiveSection ? 'var(--primary-color)' : 'var(--text-muted)', marginRight: 4,
-                }}>{section.code}</span>
+
                 <ChevronDown size={14} style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s', flexShrink: 0 }} />
               </button>
 
@@ -285,7 +280,7 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
   const getTitle = () => {
     for (const section of NAV_SECTIONS) {
       for (const child of section.children) {
-        if (location.pathname.startsWith(child.path)) return `${section.code} · ${child.label}`;
+        if (location.pathname.startsWith(child.path)) return child.label;
       }
     }
     return 'Dashboard General';
@@ -316,20 +311,20 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="/erp/fi" element={<FiPage />} />
             <Route path="/erp/fi/*" element={<FiPage />} />
             {/* CO */}
-            <Route path="/erp/co/*" element={<Placeholder title="CO · Controlling" desc="Centros de costo, P&L y presupuesto por línea de negocio." icon="📈" />} />
+            <Route path="/erp/co/*" element={<Placeholder title="Controlling" desc="Centros de costo, P&L y presupuesto por línea de negocio." icon="📈" />} />
             {/* SD */}
             <Route path="/erp/sd" element={<SdPage />} />
             <Route path="/erp/sd/*" element={<SdPage />} />
             {/* MM */}
-            <Route path="/erp/mm/*" element={<Placeholder title="MM · Gestión de Materiales" desc="Inventario, proveedores y órdenes de compra." icon="📦" />} />
+            <Route path="/erp/mm/*" element={<Placeholder title="Gestión de Materiales" desc="Inventario, proveedores y órdenes de compra." icon="📦" />} />
             {/* PP */}
-            <Route path="/erp/pp/*" element={<Placeholder title="PP · Producción y Proyectos" desc="Proyectos de software, cursos y sprints." icon="🏭" />} />
+            <Route path="/erp/pp/*" element={<Placeholder title="Producción y Proyectos" desc="Proyectos de software, cursos y sprints." icon="🏭" />} />
             {/* QM */}
-            <Route path="/erp/qm/*" element={<Placeholder title="QM · Gestión de Calidad" desc="Inspecciones, NPS y registro de bugs." icon="✅" />} />
+            <Route path="/erp/qm/*" element={<Placeholder title="Gestión de Calidad" desc="Inspecciones, NPS y registro de bugs." icon="✅" />} />
             {/* PM */}
-            <Route path="/erp/pm/*" element={<Placeholder title="PM · Mantenimiento" desc="Activos cloud, renovaciones e historiales de incidentes." icon="🔧" />} />
+            <Route path="/erp/pm/*" element={<Placeholder title="Mantenimiento" desc="Activos cloud, renovaciones e historiales de incidentes." icon="🔧" />} />
             {/* BASIS */}
-            <Route path="/settings/*" element={<Placeholder title="BASIS · Administración del Sistema" desc="Usuarios, roles, permisos y auditoría." icon="⚙️" />} />
+            <Route path="/settings/*" element={<Placeholder title="Administración del Sistema" desc="Usuarios, roles, permisos y auditoría." icon="⚙️" />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
@@ -442,7 +437,7 @@ function Dashboard() {
             { code: 'PM', label: 'Mantenimiento', status: 'Planificado', color: '#94a3b8' },
           ].map(m => (
             <div key={m.code} style={{ padding: '14px 18px', border: '1px solid var(--border-color)', borderRadius: 10, borderLeft: `3px solid ${m.color}` }}>
-              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: m.color }}>{m.code}</div>
+
               <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: 4 }}>{m.label}</div>
               <div style={{ fontSize: '0.78rem', color: m.status === 'En desarrollo' ? '#059669' : 'var(--text-muted)', fontWeight: 600 }}>{m.status}</div>
             </div>
