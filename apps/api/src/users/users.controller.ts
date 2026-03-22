@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Patch,
   Param,
   Body,
@@ -18,6 +19,12 @@ import { UpdateUserDto } from './dto/update-user.dto';
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
+
+  @Post()
+  @Roles(Role.ADMIN)
+  create(@Body() dto: { email: string; password: string; firstName: string; lastName: string; role?: string }) {
+    return this.usersService.create(dto);
+  }
 
   @Get()
   @Roles(Role.ADMIN)

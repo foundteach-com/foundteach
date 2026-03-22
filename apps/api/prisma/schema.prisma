@@ -169,6 +169,20 @@ model Service {
   @@map("services")
 }
 
+model CompanyConfig {
+  id        String   @id @default(uuid())
+  name      String   @default("FoundTeach EdTech S.A.S")
+  email     String?
+  phone     String?
+  website   String?
+  address   String?
+  logoUrl   String?  @map("logo_url")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("company_config")
+}
+
+
 // ─── GEOMATCH (juego educativo) ──────────────────────────────────────────────
 
 model GamePlayer {

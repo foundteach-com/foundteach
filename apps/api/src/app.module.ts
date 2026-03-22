@@ -12,6 +12,7 @@ import { UploadModule } from './common/upload/upload.module';
 import { HcmModule } from './hcm/hcm.module';
 import { SdModule } from './sd/sd.module';
 import { FiModule } from './fi/fi.module';
+import { CompanyModule } from './company/company.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -33,6 +34,7 @@ import { AppService } from './app.service';
     HcmModule,
     SdModule,
     FiModule,
+    CompanyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
