@@ -759,3 +759,36 @@ model Assessment {
 
   @@map("assessments")
 }
+
+// ─── COMUNICACIONES ───────────────────────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  type      String   @default("INFO")    // ALERT | INFO | WARNING | SUCCESS
+  module    String?                       // finance | ops | edu | hcm | crm | dev
+  linkUrl   String?  @map("link_url")
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("notifications")
+}
+
+model InternalMessage {
+  id          String    @id @default(uuid())
+  fromName    String    @map("from_name")
+  fromEmail   String?   @map("from_email")
+  toName      String    @map("to_name")
+  toEmail     String?   @map("to_email")
+  subject     String
+  body        String
+  isRead      Boolean   @default(false) @map("is_read")
+  replyToId   String?   @map("reply_to_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  replyTo  InternalMessage?  @relation("Replies", fields: [replyToId], references: [id])
+  replies  InternalMessage[] @relation("Replies")
+
+  @@map("internal_messages")
+}

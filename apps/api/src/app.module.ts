@@ -19,6 +19,7 @@ import { OpsModule } from './ops/ops.module';
 import { DevModule } from './dev/dev.module';
 import { EduModule } from './edu/edu.module';
 import { BiModule } from './bi/bi.module';
+import { CommsModule } from './comms/comms.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -47,6 +48,7 @@ import { AppService } from './app.service';
     DevModule,
     EduModule,
     BiModule,
+    CommsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

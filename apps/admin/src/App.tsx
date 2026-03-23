@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck, GitBranch, Rocket, Bug, UserCheck, Clock, Wallet, Star, BookOpen, GraduationCap, ClipboardCheck, BarChart3, TrendingUp, FileBarChart2,
+  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck, GitBranch, Rocket, Bug, UserCheck, Clock, Wallet, Star, BookOpen, GraduationCap, ClipboardCheck, BarChart3, TrendingUp, FileBarChart2, Bell, MessageSquare,
 } from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -32,6 +32,8 @@ import { EvaluacionesEduPage } from './pages/EvaluacionesEduPage';
 import { AnaliticaEduPage } from './pages/AnaliticaEduPage';
 import { DashboardBIPage } from './pages/DashboardBIPage';
 import { ReportesPage } from './pages/ReportesPage';
+import { NotificacionesPage } from './pages/NotificacionesPage';
+import { MensajesPage } from './pages/MensajesPage';
 import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -127,6 +129,13 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: 'Dashboard',  path: '/bi/dashboard',  icon: <TrendingUp size={17} /> },
       { label: 'Reportes',   path: '/bi/reports',    icon: <FileBarChart2 size={17} /> },
+    ],
+  },
+  {
+    title: 'Comunicaciones',
+    items: [
+      { label: 'Notificaciones',  path: '/comms/notifications',  icon: <Bell size={17} /> },
+      { label: 'Mensajes',        path: '/comms/messages',       icon: <MessageSquare size={17} /> },
     ],
   },
 ];
@@ -282,6 +291,8 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="/edu/analytics" element={<AnaliticaEduPage />} />
             <Route path="/bi/dashboard" element={<DashboardBIPage />} />
             <Route path="/bi/reports" element={<ReportesPage />} />
+            <Route path="/comms/notifications" element={<NotificacionesPage />} />
+            <Route path="/comms/messages" element={<MensajesPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
