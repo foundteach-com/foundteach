@@ -14,11 +14,11 @@ export class BiService {
     ] = await Promise.all([
       this.prisma.customer.count(),
       this.prisma.project.count({ where: { status: { not: 'DONE' } } }),
-      this.prisma.ticket.count({ where: { status: { not: 'CLOSED' } } }),
+      this.prisma.supportTicket.count({ where: { status: { not: 'CLOSED' } } }),
       this.prisma.employee.count({ where: { isActive: true } }),
       this.prisma.course.count({ where: { status: 'PUBLISHED' } }),
       this.prisma.enrollment.count(),
-      this.prisma.invoice.count({ where: { status: 'PENDING' } }),
+      this.prisma.invoice.count({ where: { status: 'ISSUED' } }),
       this.prisma.invoice.aggregate({
         where: {
           status: 'PAID',
@@ -83,13 +83,13 @@ export class BiService {
       pipelineData,
     ] = await Promise.all([
       this.prisma.customer.count(),
-      this.prisma.customer.count({ where: { status: 'ACTIVE' } }),
+      this.prisma.customer.count({ where: { isActive: true } }),
       this.prisma.quote.count(),
       this.prisma.quote.count({ where: { status: 'ACCEPTED' } }),
-      this.prisma.invoice.count({ where: { status: 'PENDING' } }),
+      this.prisma.invoice.count({ where: { status: 'ISSUED' } }),
       this.prisma.invoice.count({ where: { status: 'PAID' } }),
       this.prisma.invoice.aggregate({ where: { status: 'PAID' }, _sum: { total: true } }),
-      this.prisma.customer.groupBy({ by: ['pipelineStage'], _count: { id: true } }),
+      this.prisma.deal.groupBy({ by: ['stage'], _count: { id: true } }),
     ]);
 
     return {
@@ -98,7 +98,7 @@ export class BiService {
       conversionRate: totalQuotes > 0 ? Math.round((acceptedQuotes / totalQuotes) * 100) : 0,
       pendingInvoices, paidInvoices,
       totalRevenue: Number(totalInvoiceAmount._sum.total ?? 0),
-      pipeline: pipelineData.map(p => ({ stage: p.pipelineStage, count: p._count.id })),
+      pipeline: pipelineData.map(p => ({ stage: p.stage, count: p._count.id })),
     };
   }
 
@@ -112,11 +112,11 @@ export class BiService {
       this.prisma.project.count(),
       this.prisma.project.count({ where: { status: 'IN_PROGRESS' } }),
       this.prisma.project.count({ where: { status: 'DONE' } }),
-      this.prisma.task.count(),
-      this.prisma.task.count({ where: { status: 'DONE' } }),
-      this.prisma.ticket.count({ where: { status: { not: 'CLOSED' } } }),
-      this.prisma.ticket.count({ where: { severity: 'CRITICAL', status: { not: 'CLOSED' } } }),
-      this.prisma.repo.count(),
+      this.prisma.projectTask.count(),
+      this.prisma.projectTask.count({ where: { status: 'DONE' } }),
+      this.prisma.supportTicket.count({ where: { status: { not: 'CLOSED' } } }),
+      this.prisma.supportTicket.count({ where: { priority: 'CRITICAL', status: { not: 'CLOSED' } } }),
+      this.prisma.repository.count(),
       this.prisma.deployment.count({ where: { status: 'SUCCESS' } }),
     ]);
 
@@ -192,10 +192,10 @@ export class BiService {
 
     const [criticalTickets, pendingPayroll, openReviews, overdueInvoices, droppedEnrollments] =
       await Promise.all([
-        this.prisma.ticket.count({ where: { severity: 'CRITICAL', status: { not: 'CLOSED' } } }),
+        this.prisma.supportTicket.count({ where: { priority: 'CRITICAL', status: { not: 'CLOSED' } } }),
         this.prisma.payroll.count({ where: { status: 'PENDING' } }),
         this.prisma.performanceReview.count({ where: { status: 'DRAFT' } }),
-        this.prisma.invoice.count({ where: { status: 'PENDING', dueDate: { lt: new Date() } } }),
+        this.prisma.invoice.count({ where: { status: 'ISSUED', dueDate: { lt: new Date() } } }),
         this.prisma.enrollment.count({ where: { status: 'DROPPED' } }),
       ]);
 
