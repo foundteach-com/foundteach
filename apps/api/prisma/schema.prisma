@@ -135,6 +135,8 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  gameSessions GameSession[]
+
   @@map("users")
 }
 
@@ -791,4 +793,31 @@ model InternalMessage {
   replies  InternalMessage[] @relation("Replies")
 
   @@map("internal_messages")
+}
+
+// ─── VIDEOGAME ───────────────────────────────────────────────────────────────
+
+model GameSession {
+  id        String   @id @default(uuid())
+  playerId  String   @map("player_id")
+  score     Int      @default(0)
+  level     Int      @default(1)
+  data      Json?
+  startedAt DateTime @default(now()) @map("started_at")
+  endedAt   DateTime? @map("ended_at")
+
+  player    User     @relation(fields: [playerId], references: [id])
+
+  @@map("game_sessions")
+}
+
+model GameAsset {
+  id        String   @id @default(uuid())
+  name      String
+  url       String
+  type      String   @default("IMAGE") // IMAGE, AUDIO, 3D_MODEL, OTHER
+  size      Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("game_assets")
 }

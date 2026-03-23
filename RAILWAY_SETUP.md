@@ -51,6 +51,10 @@ Pasos para configurar los servicios en Railway y conectar **foundteach.com** al 
 | `JWT_SECRET`     | Clave secreta para firmar los tokens JWT                     |
 | `JWT_EXPIRATION` | Duración del token (ej: `24h`)                               |
 | `PORT`           | Puerto (Railway lo inyecta automáticamente)                  |
+| `DO_SPACES_KEY`    | Access Key de DigitalOcean Spaces                            |
+| `DO_SPACES_SECRET` | Secret Key de DigitalOcean Spaces                            |
+| `DO_SPACES_BUCKET` | Nombre del Bucket (Space)                                    |
+| `DO_SPACES_REGION` | Región (ej: `nyc3`)                                          |
 
 ### Base de datos
 
@@ -102,12 +106,32 @@ O vincular Postgres al servicio API desde el panel de Postgres.
 
 ---
 
-## 5. Resumen de Configuración en Railway
+## 5. Servicio Videogame (app.foundteach.com)
 
-| Servicio | Root Directory | Build Command                       | Start Command        |
-| -------- | -------------- | ----------------------------------- | -------------------- |
-| web      | _(vacío)_      | `npm run build:web`                 | `npm run start:web`  |
-| api      | `apps/api`     | `npm install && npm run build:prod` | `npm run start:prod` |
-| admin    | _(vacío)_      | `npm run build:admin`               | `npm run start:admin`|
-| play     | _(vacío)_      | `npm run build:play`                | `npm run start:play` |
-| Postgres | —              | —                                   | —                    |
+### Root Directory
+
+- **Settings** → **Source** → Root Directory: dejar **vacío** (raíz del repo)
+
+### Build & Start Commands
+
+- **Build Command**: `npm run build:videogame`
+- **Start Command**: `npm run start:videogame`
+
+### Dominio app.foundteach.com
+
+1. **Settings** → **Networking** → **+ Custom Domain**
+2. Escribir: `app.foundteach.com`
+3. Copiar el valor CNAME y configurar en DNS.
+
+---
+
+## 6. Resumen de Configuración en Railway
+
+| Servicio  | Root Directory | Build Command                       | Start Command           |
+| --------- | -------------- | ----------------------------------- | ----------------------- |
+| web       | _(vacío)_      | `npm run build:web`                 | `npm run start:web`     |
+| api       | `apps/api`     | `npm install && npm run build:prod` | `npm run start:prod`    |
+| admin     | _(vacío)_      | `npm run build:admin`               | `npm run start:admin`   |
+| play      | _(vacío)_      | `npm run build:play`                | `npm run start:play`    |
+| videogame | _(vacío)_      | `npm run build:videogame`           | `npm run start:videogame`|
+| Postgres  | —              | —                                   | —                       |

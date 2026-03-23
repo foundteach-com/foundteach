@@ -22,6 +22,8 @@ import { BiModule } from './bi/bi.module';
 import { CommsModule } from './comms/comms.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { VideogameModule } from './videogame/videogame.module';
+import { MediaModule } from './media/media.module';
 
 @Module({
   imports: [
@@ -49,6 +51,8 @@ import { AppService } from './app.service';
     EduModule,
     BiModule,
     CommsModule,
+    VideogameModule,
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
