@@ -8,5 +8,6 @@ import { MediaController } from './media.controller';
   imports: [ConfigModule, PrismaModule],
   providers: [MediaService],
   controllers: [MediaController],
+  exports: [MediaService],
 })
 export class MediaModule {}
