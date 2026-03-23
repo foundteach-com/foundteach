@@ -3,10 +3,10 @@ import { MulterModule } from '@nestjs/platform-express';
 import { DocumentsController } from './documents.controller';
 import { DocumentsService } from './documents.service';
 import { PrismaModule } from '../prisma/prisma.module';
-import { UploadModule } from '../common/upload/upload.module';
+import { MediaModule } from '../media/media.module';
 
 @Module({
-  imports: [PrismaModule, UploadModule, MulterModule],
+  imports: [PrismaModule, MulterModule, MediaModule],
   controllers: [DocumentsController],
   providers: [DocumentsService],
 })

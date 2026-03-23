@@ -3,15 +3,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { UploadService } from '../common/upload/upload.service';
-import { unlink } from 'fs/promises';
-import { join } from 'path';
+import { MediaService } from '../media/media.service';
+import { extname } from 'path';
 
 @Injectable()
 export class DocumentsService {
   constructor(
     private prisma: PrismaService,
-    private uploadService: UploadService,
+    private mediaService: MediaService,
   ) {}
 
   async findAll(category?: string) {
@@ -22,11 +21,20 @@ export class DocumentsService {
   }
 
   async create(file: Express.Multer.File, name: string, category?: string) {
-    const url = this.uploadService.generateFileUrl(`docs/${file.filename}`);
+    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const filename = `docs/${unique}${extname(file.originalname)}`;
+    
+    // Subir a DigitalOcean
+    const url = await this.mediaService.uploadBuffer(
+      file.buffer,
+      filename,
+      file.mimetype,
+    );
+
     return this.prisma.document.create({
       data: {
         name: name || file.originalname,
-        filename: file.filename,
+        filename: filename, // Guardamos el KEY de S3 aquí
         url,
         mimetype: file.mimetype,
         size: file.size,
@@ -39,13 +47,8 @@ export class DocumentsService {
     const doc = await this.prisma.document.findUnique({ where: { id } });
     if (!doc) throw new NotFoundException('Documento no encontrado');
 
-    // Eliminar archivo del disco
-    try {
-      const filePath = join(process.cwd(), 'uploads', 'docs', doc.filename);
-      await unlink(filePath);
-    } catch {
-      // Si ya no existe en disco, continuar igual
-    }
+    // Eliminar archivo de DigitalOcean
+    await this.mediaService.deleteFile(doc.filename);
 
     return this.prisma.document.delete({ where: { id } });
   }

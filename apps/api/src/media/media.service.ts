@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { PrismaService } from '../prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
@@ -61,6 +61,47 @@ export class MediaService {
     } catch (error) {
       this.logger.error(`Error uploading file to Spaces: ${error instanceof Error ? error.message : String(error)}`);
       throw error;
+    }
+  }
+
+  /**
+   * Sube un buffer directamente a S3 sin crear registro en la DB
+   */
+  async uploadBuffer(buffer: Buffer, fileName: string, mimetype: string) {
+    try {
+      await this.s3Client.send(
+        new PutObjectCommand({
+          Bucket: this.bucketName,
+          Key: fileName,
+          Body: buffer,
+          ContentType: mimetype,
+          ACL: 'public-read',
+        }),
+      );
+
+      const region = this.configService.get<string>('DO_SPACES_REGION') || 'nyc3';
+      return `https://${this.bucketName}.${region}.digitaloceanspaces.com/${fileName}`;
+    } catch (error) {
+      this.logger.error(`Error uploading buffer to Spaces: ${error instanceof Error ? error.message : String(error)}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Elimina un archivo de S3
+   */
+  async deleteFile(key: string) {
+    try {
+      await this.s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: this.bucketName,
+          Key: key,
+        }),
+      );
+      this.logger.log(`🗑️ Archivo eliminado de S3: ${key}`);
+    } catch (error) {
+      this.logger.error(`Error deleting file from Spaces: ${error instanceof Error ? error.message : String(error)}`);
+      // No lanzamos error para no bloquear el flujo si el archivo ya no existe
     }
   }
 
