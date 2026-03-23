@@ -9,12 +9,14 @@
     "build:api": "turbo build --filter=@foundteach/api",
     "build:admin": "turbo build --filter=@foundteach/admin",
     "build:play": "turbo build --filter=@foundteach/play",
+    "build:videogame": "turbo build --filter=@foundteach/videogame",
     "lint": "turbo lint",
     "start": "turbo start",
     "start:web": "npm run start --workspace=@foundteach/web",
     "start:api": "npm run start:prod --workspace=@foundteach/api",
     "start:admin": "npm run start --workspace=@foundteach/admin",
-    "start:play": "npm run start --workspace=@foundteach/play"
+    "start:play": "npm run start --workspace=@foundteach/play",
+    "start:videogame": "npm run start --workspace=@foundteach/videogame"
   },
   "workspaces": [
     "apps/*"
