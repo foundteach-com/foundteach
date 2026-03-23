@@ -1,20 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { NestExpressApplication, ExpressAdapter } from '@nestjs/platform-express';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   logger.log('🔧 Iniciando FoundTeach API...');
 
-  const app = await NestFactory.create<NestExpressApplication>(
-    AppModule,
-    new ExpressAdapter(),
-    {
-      logger: ['error', 'warn', 'log'],
-    }
-  );
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log'],
+  });
 
   // Prefijo global para todos los endpoints, excepto health
   app.setGlobalPrefix('api', {
