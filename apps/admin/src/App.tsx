@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen,
+  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, BarChart,
 } from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -10,6 +10,9 @@ import { UsersPage } from './pages/UsersPage';
 import { CompanyPage } from './pages/CompanyPage';
 import { KpiPage } from './pages/KpiPage';
 import { DocumentsPage } from './pages/DocumentsPage';
+import { TransactionsPage } from './pages/TransactionsPage';
+import { InvoicesPage } from './pages/InvoicesPage';
+import { FinanceReportPage } from './pages/FinanceReportPage';
 import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -48,6 +51,14 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Usuarios',    path: '/admin/users',      icon: <Users size={17} /> },
       { label: 'Empresa',     path: '/admin/company',    icon: <Building2 size={17} /> },
       { label: 'Documentos',  path: '/admin/documents',  icon: <FolderOpen size={17} /> },
+    ],
+  },
+  {
+    title: 'Finanzas',
+    items: [
+      { label: 'Ingresos & Gastos', path: '/finance/transactions', icon: <DollarSign size={17} /> },
+      { label: 'Facturas',          path: '/finance/invoices',     icon: <FileText size={17} /> },
+      { label: 'Reportes',          path: '/finance/report',       icon: <BarChart size={17} /> },
     ],
   },
 ];
@@ -181,6 +192,9 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="/admin/users" element={<UsersPage />} />
             <Route path="/admin/company" element={<CompanyPage />} />
             <Route path="/admin/documents" element={<DocumentsPage />} />
+            <Route path="/finance/transactions" element={<TransactionsPage />} />
+            <Route path="/finance/invoices" element={<InvoicesPage />} />
+            <Route path="/finance/report" element={<FinanceReportPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

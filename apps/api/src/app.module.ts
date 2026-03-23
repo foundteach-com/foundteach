@@ -14,6 +14,7 @@ import { SdModule } from './sd/sd.module';
 import { FiModule } from './fi/fi.module';
 import { CompanyModule } from './company/company.module';
 import { DocumentsModule } from './documents/documents.module';
+import { FinanceModule } from './finance/finance.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -37,6 +38,7 @@ import { AppService } from './app.service';
     FiModule,
     CompanyModule,
     DocumentsModule,
+    FinanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

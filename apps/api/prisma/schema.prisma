@@ -195,6 +195,36 @@ model Document {
   @@map("documents")
 }
 
+model Transaction {
+  id          String   @id @default(uuid())
+  type        String   // "INCOME" | "EXPENSE"
+  amount      Float
+  description String
+  category    String
+  date        DateTime
+  reference   String?
+  notes       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("transactions")
+}
+
+model Invoice {
+  id          String   @id @default(uuid())
+  number      String   @unique
+  type        String   // "RECEIVABLE" | "PAYABLE"
+  party       String
+  amount      Float
+  tax         Float    @default(0)
+  status      String   @default("PENDING")
+  issueDate   DateTime @map("issue_date")
+  dueDate     DateTime @map("due_date")
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("invoices")
+}
+
 // ─── GEOMATCH (juego educativo) ──────────────────────────────────────────────
 
 model GamePlayer {
