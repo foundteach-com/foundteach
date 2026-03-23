@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, BarChart,
+  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, BarChart, Handshake, KanbanSquare, ClipboardList,
 } from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -13,6 +13,9 @@ import { DocumentsPage } from './pages/DocumentsPage';
 import { TransactionsPage } from './pages/TransactionsPage';
 import { InvoicesPage } from './pages/InvoicesPage';
 import { FinanceReportPage } from './pages/FinanceReportPage';
+import { ClientesPage } from './pages/ClientesPage';
+import { PipelinePage } from './pages/PipelinePage';
+import { QuotesPage } from './pages/QuotesPage';
 import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -59,6 +62,14 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Ingresos & Gastos', path: '/finance/transactions', icon: <DollarSign size={17} /> },
       { label: 'Facturas',          path: '/finance/invoices',     icon: <FileText size={17} /> },
       { label: 'Reportes',          path: '/finance/report',       icon: <BarChart size={17} /> },
+    ],
+  },
+  {
+    title: 'Comercial',
+    items: [
+      { label: 'Clientes',      path: '/crm/clients',   icon: <Handshake size={17} /> },
+      { label: 'Pipeline',      path: '/crm/pipeline',  icon: <KanbanSquare size={17} /> },
+      { label: 'Cotizaciones',  path: '/crm/quotes',    icon: <ClipboardList size={17} /> },
     ],
   },
 ];
@@ -195,6 +206,9 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="/finance/transactions" element={<TransactionsPage />} />
             <Route path="/finance/invoices" element={<InvoicesPage />} />
             <Route path="/finance/report" element={<FinanceReportPage />} />
+            <Route path="/crm/clients" element={<ClientesPage />} />
+            <Route path="/crm/pipeline" element={<PipelinePage />} />
+            <Route path="/crm/quotes" element={<QuotesPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
