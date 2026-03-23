@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck, GitBranch, Rocket, Bug, UserCheck, Clock, Wallet, Star,
+  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck, GitBranch, Rocket, Bug, UserCheck, Clock, Wallet, Star, BookOpen, GraduationCap, ClipboardCheck, BarChart3,
 } from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -26,6 +26,10 @@ import { ColaboradoresPage } from './pages/ColaboradoresPage';
 import { HorasPage } from './pages/HorasPage';
 import { NominaPage } from './pages/NominaPage';
 import { EvaluacionesPage } from './pages/EvaluacionesPage';
+import { CursosPage } from './pages/CursosPage';
+import { EstudiantesEduPage } from './pages/EstudiantesEduPage';
+import { EvaluacionesEduPage } from './pages/EvaluacionesEduPage';
+import { AnaliticaEduPage } from './pages/AnaliticaEduPage';
 import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -105,6 +109,15 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Horas',          path: '/hcm/hours',    icon: <Clock size={17} /> },
       { label: 'Nómina',         path: '/hcm/payroll',  icon: <Wallet size={17} /> },
       { label: 'Evaluaciones',   path: '/hcm/reviews',  icon: <Star size={17} /> },
+    ],
+  },
+  {
+    title: 'Educación',
+    items: [
+      { label: 'Cursos',        path: '/edu/courses',      icon: <BookOpen size={17} /> },
+      { label: 'Estudiantes',   path: '/edu/students',     icon: <GraduationCap size={17} /> },
+      { label: 'Evaluaciones',  path: '/edu/assessments',  icon: <ClipboardCheck size={17} /> },
+      { label: 'Analítica',     path: '/edu/analytics',    icon: <BarChart3 size={17} /> },
     ],
   },
 ];
@@ -254,6 +267,10 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="/hcm/hours" element={<HorasPage />} />
             <Route path="/hcm/payroll" element={<NominaPage />} />
             <Route path="/hcm/reviews" element={<EvaluacionesPage />} />
+            <Route path="/edu/courses" element={<CursosPage />} />
+            <Route path="/edu/students" element={<EstudiantesEduPage />} />
+            <Route path="/edu/assessments" element={<EvaluacionesEduPage />} />
+            <Route path="/edu/analytics" element={<AnaliticaEduPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

@@ -684,3 +684,78 @@ model PerformanceReview {
 
   @@map("performance_reviews")
 }
+
+// ─── EDUCACIÓN ────────────────────────────────────────────────────────────────
+
+model Course {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  level       String   @default("BEGINNER")   // BEGINNER | INTERMEDIATE | ADVANCED
+  category    String?
+  coverUrl    String?  @map("cover_url")
+  price       Float?   @default(0)
+  currency    String?  @default("COP")
+  instructor  String?
+  status      String   @default("DRAFT")      // DRAFT | PUBLISHED | ARCHIVED
+  durationH   Float?   @default(0) @map("duration_h")
+  isPublic    Boolean  @default(false) @map("is_public")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  lessons     Lesson[]
+  enrollments Enrollment[]
+  assessments Assessment[]
+
+  @@map("courses")
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  courseId    String   @map("course_id")
+  title       String
+  description String?
+  type        String   @default("VIDEO")      // VIDEO | READING | QUIZ | ACTIVITY
+  contentUrl  String?  @map("content_url")
+  durationMin Int?     @default(0) @map("duration_min")
+  orderIndex  Int      @default(0) @map("order_index")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("lessons")
+}
+
+model Enrollment {
+  id            String    @id @default(uuid())
+  courseId      String    @map("course_id")
+  studentName   String    @map("student_name")
+  studentEmail  String?   @map("student_email")
+  progress      Int       @default(0)          // 0-100
+  status        String    @default("ACTIVE")   // ACTIVE | COMPLETED | DROPPED
+  startedAt     DateTime  @default(now()) @map("started_at")
+  completedAt   DateTime? @map("completed_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  assessments Assessment[]
+
+  @@map("enrollments")
+}
+
+model Assessment {
+  id           String   @id @default(uuid())
+  courseId     String   @map("course_id")
+  enrollmentId String?  @map("enrollment_id")
+  title        String
+  type         String   @default("QUIZ")    // QUIZ | PROJECT | EXAM
+  maxScore     Float    @default(100) @map("max_score")
+  score        Float?
+  description  String?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  course     Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  enrollment Enrollment? @relation(fields: [enrollmentId], references: [id])
+
+  @@map("assessments")
+}
