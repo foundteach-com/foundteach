@@ -61,7 +61,7 @@ export class FinanceService {
   // ─── Invoices ──────────────────────────────────────────────────────────────
 
   findAllInvoices(type?: string, status?: string) {
-    return this.prisma.invoice.findMany({
+    return this.prisma.billing.findMany({
       where: {
         ...(type ? { type } : {}),
         ...(status ? { status } : {}),
@@ -71,7 +71,7 @@ export class FinanceService {
   }
 
   createInvoice(dto: CreateInvoiceDto) {
-    return this.prisma.invoice.create({
+    return this.prisma.billing.create({
       data: {
         number: dto.number,
         type: dto.type,
@@ -86,9 +86,9 @@ export class FinanceService {
   }
 
   async updateInvoiceStatus(id: string, status: string) {
-    const inv = await this.prisma.invoice.findUnique({ where: { id } });
+    const inv = await this.prisma.billing.findUnique({ where: { id } });
     if (!inv) throw new NotFoundException('Factura no encontrada');
-    return this.prisma.invoice.update({ where: { id }, data: { status } });
+    return this.prisma.billing.update({ where: { id }, data: { status } });
   }
 
   // ─── Report ────────────────────────────────────────────────────────────────
@@ -100,7 +100,7 @@ export class FinanceService {
     const [allTx, monthTx, invoices] = await Promise.all([
       this.prisma.transaction.findMany({ orderBy: { date: 'asc' } }),
       this.prisma.transaction.findMany({ where: { date: { gte: startOfMonth } } }),
-      this.prisma.invoice.findMany(),
+      this.prisma.billing.findMany(),
     ]);
 
     const totalIncome = allTx.filter(t => t.type === 'INCOME').reduce((s, t) => s + t.amount, 0);

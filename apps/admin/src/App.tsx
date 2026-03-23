@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, BarChart, Handshake, KanbanSquare, ClipboardList,
+  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList,
 } from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -61,7 +61,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: 'Ingresos & Gastos', path: '/finance/transactions', icon: <DollarSign size={17} /> },
       { label: 'Facturas',          path: '/finance/invoices',     icon: <FileText size={17} /> },
-      { label: 'Reportes',          path: '/finance/report',       icon: <BarChart size={17} /> },
+      { label: 'Reportes',          path: '/finance/report',       icon: <ChartBar size={17} /> },
     ],
   },
   {

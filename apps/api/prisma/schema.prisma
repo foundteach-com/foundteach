@@ -209,7 +209,7 @@ model Transaction {
   @@map("transactions")
 }
 
-model Invoice {
+model Billing {
   id          String   @id @default(uuid())
   number      String   @unique
   type        String   // "RECEIVABLE" | "PAYABLE"
@@ -222,7 +222,7 @@ model Invoice {
   description String?
   createdAt   DateTime @default(now()) @map("created_at")
 
-  @@map("invoices")
+  @@map("billings")
 }
 
 // ─── GEOMATCH (juego educativo) ──────────────────────────────────────────────
