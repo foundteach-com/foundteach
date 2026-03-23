@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Building2, User, Mail, Phone, MapPin, Plus, Pencil, X } from 'lucide-react';
+import { Building2, User, Mail, Phone, MapPin, Pencil, X } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
 const BASE = `${API_URL}/api/sd`;
