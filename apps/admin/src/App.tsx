@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck,
+  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck, GitBranch, Rocket, Bug,
 } from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -19,6 +19,9 @@ import { QuotesPage } from './pages/QuotesPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { TasksPage } from './pages/TasksPage';
 import { TicketsPage } from './pages/TicketsPage';
+import { ReposPage } from './pages/ReposPage';
+import { DeploymentsPage } from './pages/DeploymentsPage';
+import { BugsPage } from './pages/BugsPage';
 import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -81,6 +84,14 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Proyectos',   path: '/ops/projects', icon: <FolderKanban size={17} /> },
       { label: 'Tareas',      path: '/ops/tasks',    icon: <ListTodo size={17} /> },
       { label: 'Tickets',     path: '/ops/tickets',  icon: <TicketCheck size={17} /> },
+    ],
+  },
+  {
+    title: 'Tecnología',
+    items: [
+      { label: 'Repositorios',  path: '/dev/repos',        icon: <GitBranch size={17} /> },
+      { label: 'Deployments',   path: '/dev/deployments',  icon: <Rocket size={17} /> },
+      { label: 'Bugs',          path: '/dev/bugs',         icon: <Bug size={17} /> },
     ],
   },
 ];
@@ -223,6 +234,9 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="/ops/projects" element={<ProjectsPage />} />
             <Route path="/ops/tasks" element={<TasksPage />} />
             <Route path="/ops/tickets" element={<TicketsPage />} />
+            <Route path="/dev/repos" element={<ReposPage />} />
+            <Route path="/dev/deployments" element={<DeploymentsPage />} />
+            <Route path="/dev/bugs" element={<BugsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

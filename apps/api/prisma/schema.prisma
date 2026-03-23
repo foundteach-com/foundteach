@@ -521,6 +521,8 @@ model Project {
   tasks        ProjectTask[]
   deliverables Deliverable[]
   tickets      SupportTicket[]
+  repositories Repository[]
+  bugs         Bug[]
 
   @@map("projects")
 }
@@ -574,4 +576,61 @@ model SupportTicket {
   customer Customer? @relation(fields: [customerId], references: [id])
 
   @@map("support_tickets")
+}
+
+// ─── DEV MANAGEMENT ──────────────────────────────────────────────────────────
+
+model Repository {
+  id            String   @id @default(uuid())
+  name          String
+  url           String?                         // GitHub / GitLab URL
+  language      String?
+  description   String?
+  defaultBranch String?  @default("main") @map("default_branch")
+  isActive      Boolean  @default(true)   @map("is_active")
+  projectId     String?  @map("project_id")
+  createdAt     DateTime @default(now())  @map("created_at")
+  updatedAt     DateTime @updatedAt       @map("updated_at")
+
+  project     Project?     @relation(fields: [projectId], references: [id])
+  deployments Deployment[]
+  bugs        Bug[]
+
+  @@map("repositories")
+}
+
+model Deployment {
+  id          String   @id @default(uuid())
+  version     String                          // v1.2.0 or commit sha
+  environment String   @default("PROD")       // DEV | STAGING | PROD
+  status      String   @default("IN_PROGRESS") // SUCCESS | FAILED | IN_PROGRESS | ROLLED_BACK
+  notes       String?
+  deployedBy  String?  @map("deployed_by")
+  deployedAt  DateTime @default(now())  @map("deployed_at")
+  repoId      String   @map("repo_id")
+  createdAt   DateTime @default(now())  @map("created_at")
+
+  repository Repository @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@map("deployments")
+}
+
+model Bug {
+  id               String   @id @default(uuid())
+  title            String
+  description      String?
+  severity         String   @default("MEDIUM")  // LOW | MEDIUM | HIGH | CRITICAL
+  status           String   @default("OPEN")    // OPEN | IN_PROGRESS | FIXED | WONT_FIX | CLOSED
+  assignee         String?
+  stepsToReproduce String?  @map("steps_to_reproduce")
+  labels           String?                       // comma-separated tags
+  repoId           String   @map("repo_id")
+  projectId        String?  @map("project_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt      @map("updated_at")
+
+  repository Repository @relation(fields: [repoId], references: [id], onDelete: Cascade)
+  project    Project?   @relation(fields: [projectId], references: [id])
+
+  @@map("bugs")
 }
