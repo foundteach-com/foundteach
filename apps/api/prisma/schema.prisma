@@ -333,6 +333,8 @@ model Customer {
   quotes         Quote[]
   invoices       Invoice[]
   deals          Deal[]
+  projects       Project[]
+  tickets        SupportTicket[]
 
   @@map("customers")
 }
@@ -498,3 +500,78 @@ model JournalEntryLine {
   @@map("journal_entry_lines")
 }
 
+// ─── OPERACIONES ──────────────────────────────────────────────────────────────
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("PLANNING") // PLANNING | ACTIVE | ON_HOLD | COMPLETED | CANCELLED
+  progress    Int      @default(0)          // 0-100
+  startDate   DateTime? @map("start_date")
+  endDate     DateTime? @map("end_date")
+  budget      Float?
+  responsible String?
+  color       String?  @default("#6366f1")
+  customerId  String?  @map("customer_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  customer     Customer?      @relation(fields: [customerId], references: [id])
+  tasks        ProjectTask[]
+  deliverables Deliverable[]
+  tickets      SupportTicket[]
+
+  @@map("projects")
+}
+
+model ProjectTask {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("TODO")    // TODO | IN_PROGRESS | REVIEW | DONE
+  priority    String   @default("MEDIUM")  // LOW | MEDIUM | HIGH | CRITICAL
+  assignee    String?
+  dueDate     DateTime? @map("due_date")
+  projectId   String   @map("project_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_tasks")
+}
+
+model Deliverable {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  status      String   @default("PENDING") // PENDING | SUBMITTED | APPROVED | REJECTED
+  fileUrl     String?  @map("file_url")
+  dueDate     DateTime? @map("due_date")
+  projectId   String   @map("project_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("deliverables")
+}
+
+model SupportTicket {
+  id          String   @id @default(uuid())
+  subject     String
+  description String?
+  priority    String   @default("MEDIUM") // LOW | MEDIUM | HIGH | CRITICAL
+  status      String   @default("OPEN")   // OPEN | IN_PROGRESS | RESOLVED | CLOSED
+  reporter    String?
+  assignee    String?
+  projectId   String?  @map("project_id")
+  customerId  String?  @map("customer_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  project  Project?  @relation(fields: [projectId], references: [id])
+  customer Customer? @relation(fields: [customerId], references: [id])
+
+  @@map("support_tickets")
+}

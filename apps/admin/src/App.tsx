@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList,
+  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck,
 } from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -16,6 +16,9 @@ import { FinanceReportPage } from './pages/FinanceReportPage';
 import { ClientesPage } from './pages/ClientesPage';
 import { PipelinePage } from './pages/PipelinePage';
 import { QuotesPage } from './pages/QuotesPage';
+import { ProjectsPage } from './pages/ProjectsPage';
+import { TasksPage } from './pages/TasksPage';
+import { TicketsPage } from './pages/TicketsPage';
 import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -70,6 +73,14 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Clientes',      path: '/crm/clients',   icon: <Handshake size={17} /> },
       { label: 'Pipeline',      path: '/crm/pipeline',  icon: <KanbanSquare size={17} /> },
       { label: 'Cotizaciones',  path: '/crm/quotes',    icon: <ClipboardList size={17} /> },
+    ],
+  },
+  {
+    title: 'Operaciones',
+    items: [
+      { label: 'Proyectos',   path: '/ops/projects', icon: <FolderKanban size={17} /> },
+      { label: 'Tareas',      path: '/ops/tasks',    icon: <ListTodo size={17} /> },
+      { label: 'Tickets',     path: '/ops/tickets',  icon: <TicketCheck size={17} /> },
     ],
   },
 ];
@@ -209,6 +220,9 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="/crm/clients" element={<ClientesPage />} />
             <Route path="/crm/pipeline" element={<PipelinePage />} />
             <Route path="/crm/quotes" element={<QuotesPage />} />
+            <Route path="/ops/projects" element={<ProjectsPage />} />
+            <Route path="/ops/tasks" element={<TasksPage />} />
+            <Route path="/ops/tickets" element={<TicketsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

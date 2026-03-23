@@ -15,6 +15,7 @@ import { FiModule } from './fi/fi.module';
 import { CompanyModule } from './company/company.module';
 import { DocumentsModule } from './documents/documents.module';
 import { FinanceModule } from './finance/finance.module';
+import { OpsModule } from './ops/ops.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -39,6 +40,7 @@ import { AppService } from './app.service';
     CompanyModule,
     DocumentsModule,
     FinanceModule,
+    OpsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
