@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck, GitBranch, Rocket, Bug,
+  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck, GitBranch, Rocket, Bug, UserCheck, Clock, Wallet, Star,
 } from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -22,6 +22,10 @@ import { TicketsPage } from './pages/TicketsPage';
 import { ReposPage } from './pages/ReposPage';
 import { DeploymentsPage } from './pages/DeploymentsPage';
 import { BugsPage } from './pages/BugsPage';
+import { ColaboradoresPage } from './pages/ColaboradoresPage';
+import { HorasPage } from './pages/HorasPage';
+import { NominaPage } from './pages/NominaPage';
+import { EvaluacionesPage } from './pages/EvaluacionesPage';
 import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -92,6 +96,15 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Repositorios',  path: '/dev/repos',        icon: <GitBranch size={17} /> },
       { label: 'Deployments',   path: '/dev/deployments',  icon: <Rocket size={17} /> },
       { label: 'Bugs',          path: '/dev/bugs',         icon: <Bug size={17} /> },
+    ],
+  },
+  {
+    title: 'Talento Humano',
+    items: [
+      { label: 'Colaboradores',  path: '/hcm/staff',    icon: <UserCheck size={17} /> },
+      { label: 'Horas',          path: '/hcm/hours',    icon: <Clock size={17} /> },
+      { label: 'Nómina',         path: '/hcm/payroll',  icon: <Wallet size={17} /> },
+      { label: 'Evaluaciones',   path: '/hcm/reviews',  icon: <Star size={17} /> },
     ],
   },
 ];
@@ -237,6 +250,10 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="/dev/repos" element={<ReposPage />} />
             <Route path="/dev/deployments" element={<DeploymentsPage />} />
             <Route path="/dev/bugs" element={<BugsPage />} />
+            <Route path="/hcm/staff" element={<ColaboradoresPage />} />
+            <Route path="/hcm/hours" element={<HorasPage />} />
+            <Route path="/hcm/payroll" element={<NominaPage />} />
+            <Route path="/hcm/reviews" element={<EvaluacionesPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

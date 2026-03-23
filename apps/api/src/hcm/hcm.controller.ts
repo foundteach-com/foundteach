@@ -1,12 +1,14 @@
 import {
   Controller, Get, Post, Put, Delete,
-  Body, Param, Query, UseGuards
+  Body, Param, Query, UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { HcmService } from './hcm.service';
 import { CreateEmployeeDto, UpdateEmployeeDto } from './dto/employee.dto';
 import { CreateContractDto, UpdateContractDto } from './dto/contract.dto';
 import { CreatePayrollDto, UpdatePayrollDto } from './dto/payroll.dto';
+import { CreateTimeEntryDto } from './dto/time-entry.dto';
+import { CreateReviewDto, UpdateReviewDto, CreateSkillDto } from './dto/review.dto';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('api/hcm')
@@ -66,5 +68,41 @@ export class HcmController {
   @Put('payrolls/:id')
   updatePayroll(@Param('id') id: string, @Body() dto: UpdatePayrollDto) {
     return this.hcm.updatePayroll(id, dto);
+  }
+
+  // Time Entries
+  @Get('time-entries')
+  findTimeEntries(@Query('employeeId') employeeId?: string) {
+    return this.hcm.findTimeEntries(employeeId);
+  }
+
+  @Post('time-entries')
+  createTimeEntry(@Body() dto: CreateTimeEntryDto) { return this.hcm.createTimeEntry(dto); }
+
+  @Delete('time-entries/:id')
+  deleteTimeEntry(@Param('id') id: string) { return this.hcm.deleteTimeEntry(id); }
+
+  // Skills
+  @Get('employees/:id/skills')
+  findSkills(@Param('id') id: string) { return this.hcm.findSkills(id); }
+
+  @Post('skills')
+  addSkill(@Body() dto: CreateSkillDto) { return this.hcm.addSkill(dto); }
+
+  @Delete('skills/:id')
+  deleteSkill(@Param('id') id: string) { return this.hcm.deleteSkill(id); }
+
+  // Reviews
+  @Get('reviews')
+  findReviews(@Query('employeeId') employeeId?: string) {
+    return this.hcm.findReviews(employeeId);
+  }
+
+  @Post('reviews')
+  createReview(@Body() dto: CreateReviewDto) { return this.hcm.createReview(dto); }
+
+  @Put('reviews/:id')
+  updateReview(@Param('id') id: string, @Body() dto: UpdateReviewDto) {
+    return this.hcm.updateReview(id, dto);
   }
 }
