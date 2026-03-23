@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck, GitBranch, Rocket, Bug, UserCheck, Clock, Wallet, Star, BookOpen, GraduationCap, ClipboardCheck, BarChart3, TrendingUp, FileBarChart2, Bell, MessageSquare,
@@ -145,8 +145,22 @@ const NAV_GROUPS: NavGroup[] = [
 function Sidebar({ onLogout }: { onLogout: () => void }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
 
   const isActive = (path: string) => location.pathname.startsWith(path);
+
+  useEffect(() => {
+    for (const group of NAV_GROUPS) {
+      if (group.items.some(item => isActive(item.path))) {
+        setExpandedGroup(group.title);
+        break;
+      }
+    }
+  }, [location.pathname]);
+
+  const toggleGroup = (title: string) => {
+    setExpandedGroup(prev => prev === title ? null : title);
+  };
 
   return (
     <aside className="sidebar">
@@ -168,25 +182,52 @@ function Sidebar({ onLogout }: { onLogout: () => void }) {
         </button>
 
         {/* Groups */}
-        {NAV_GROUPS.map(group => (
-          <div key={group.title} style={{ marginTop: 24 }}>
-            <div className="nav-group-title">{group.title}</div>
-            {group.items.map(item => (
+        {NAV_GROUPS.map(group => {
+          const isExpanded = expandedGroup === group.title;
+          const hasActiveItem = group.items.some(item => isActive(item.path));
+          
+          return (
+            <div key={group.title} style={{ marginTop: 16 }}>
               <button
-                key={item.path}
-                onClick={() => navigate(item.path)}
-                className={`nav-main-item ${isActive(item.path) ? 'active' : ''}`}
+                onClick={() => toggleGroup(group.title)}
+                className={`nav-group-button ${hasActiveItem ? 'active-group' : ''}`}
               >
-                {item.icon}
-                <span>{item.label}</span>
-                {item.badge && (
-                  <span className="nav-badge">{item.badge}</span>
-                )}
-                {isActive(item.path) && <ChevronRight size={14} style={{ marginLeft: 'auto', opacity: 0.5 }} />}
+                <div className="nav-group-title" style={{ margin: 0, padding: 0 }}>{group.title}</div>
+                <ChevronRight 
+                  size={14} 
+                  style={{ 
+                    transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.2s ease',
+                    color: 'var(--text-muted)'
+                  }} 
+                />
               </button>
-            ))}
-          </div>
-        ))}
+              
+              <div 
+                className="nav-group-content"
+                style={{ 
+                  display: isExpanded ? 'block' : 'none',
+                  marginTop: 4
+                }}
+              >
+                {group.items.map(item => (
+                  <button
+                    key={item.path}
+                    onClick={() => navigate(item.path)}
+                    className={`nav-main-item ${isActive(item.path) ? 'active' : ''}`}
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                    {item.badge && (
+                      <span className="nav-badge">{item.badge}</span>
+                    )}
+                    {isActive(item.path) && <ChevronRight size={14} style={{ marginLeft: 'auto', opacity: 0.5 }} />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </nav>
 
       {/* Bottom */}
