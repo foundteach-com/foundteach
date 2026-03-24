@@ -1,79 +1,52 @@
-import Image from "next/image";
+"use client";
+
+import { useGameState } from "../hooks/useGameState";
+import LevelMap from "../components/LevelMap";
+import ChallengeScreen from "../components/ChallengeScreen";
+import GarzieCharacter from "../components/GarzieCharacter";
+import { Star } from "lucide-react";
 
 export default function Home() {
+  const { isMapScreen, score } = useGameState();
+
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col font-sans">
-      {/* Header */}
-      <nav className="p-6 flex justify-between items-center border-b border-white/5 backdrop-blur-md sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center font-bold text-xl text-white">F</div>
-          <span className="text-xl font-bold tracking-tight">FoundTeach <span className="text-indigo-500 underline underline-offset-4 decoration-2 text-white">Videogame</span></span>
+    <main className="min-h-screen w-full relative overflow-hidden flex flex-col bg-gradient-to-b from-[var(--color-llano-sky)] to-[var(--color-llano-sand)]">
+      
+      {/* Top HUD */}
+      <header className="w-full p-6 flex justify-between items-center z-20">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md border-2 border-[var(--color-llano-orange)]">
+            <span className="font-extrabold text-[#ea580c] text-xl">G</span>
+          </div>
+          <h1 className="font-extrabold text-2xl text-[var(--color-llano-earth)] tracking-tight">Garzie MVP</h1>
         </div>
-        <div className="hidden md:flex gap-8 text-sm font-medium text-gray-400">
-          <a href="#" className="hover:text-white transition-colors">Inicio</a>
-          <a href="#" className="hover:text-white transition-colors">Características</a>
-          <a href="#" className="hover:text-white transition-colors">Soporte</a>
-        </div>
-        <button className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:bg-gray-200 transition-all transform hover:scale-105 active:scale-95">
-          Jugar Ahora
-        </button>
-      </nav>
-
-      {/* Hero Section */}
-      <main className="flex-1 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
-        {/* Background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none -z-10"></div>
         
-        <div className="max-w-4xl space-y-8">
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
-            EL FUTURO DE LA <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600 italic">EDUCACIÓN</span> ES AQUÍ.
-          </h1>
-          
-          <p className="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto font-light leading-relaxed">
-            Bienvenido a la plataforma de videojuegos de FoundTeach. 
-            Donde las matemáticas se encuentran con la aventura épica.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-            <button className="bg-indigo-600 text-white px-8 py-4 rounded-2xl text-lg font-bold hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 group">
-              Empezar Aventura
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </button>
-            <button className="bg-white/5 border border-white/10 text-white px-8 py-4 rounded-2xl text-lg font-bold hover:bg-white/10 transition-all backdrop-blur-sm">
-              Ver Demo
-            </button>
-          </div>
+        <div className="bg-white px-6 py-2 rounded-full shadow-md border-2 border-yellow-400 flex items-center gap-2">
+          <Star className="text-yellow-400 fill-yellow-400 w-5 h-5" />
+          <span className="font-bold text-lg text-gray-800">{score}</span>
         </div>
+      </header>
 
-        {/* Floating preview section */}
-        <div className="mt-20 w-full max-w-5xl rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative">
-          <div className="aspect-video bg-gradient-to-br from-indigo-900/20 to-black relative flex items-center justify-center group cursor-pointer">
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 grayscale group-hover:opacity-60 group-hover:grayscale-0 transition-all duration-700"></div>
-            <div className="w-20 h-20 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20 group-hover:scale-110 transition-all z-10 shadow-2xl">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white fill-current" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
-            <div className="absolute bottom-6 left-6 text-left">
-              <p className="text-sm font-bold text-indigo-400 tracking-widest uppercase">Próximamente</p>
-              <h3 className="text-2xl font-bold">GeoMath: Quest of Numbers</h3>
-            </div>
-          </div>
+      {/* Main Content Area */}
+      <div className="flex-1 w-full flex items-center justify-center relative z-10 p-4">
+        <div className="w-full max-w-5xl h-full max-h-[800px] flex items-center justify-center">
+          {isMapScreen ? <LevelMap /> : <ChallengeScreen />}
         </div>
-      </main>
+      </div>
 
-      {/* Footer */}
-      <footer className="p-10 border-t border-white/5 text-gray-500 text-sm flex flex-col md:flex-row justify-between items-center gap-6 mt-auto">
-        <div>© 2026 FoundTeach EdTech S.A.S. Todos los derechos reservados.</div>
-        <div className="flex gap-8">
-          <a href="#" className="hover:text-white transition-colors">Términos</a>
-          <a href="#" className="hover:text-white transition-colors">Privacidad</a>
-          <a href="#" className="hover:text-white transition-colors">Cookies</a>
+      {/* Garzie HUD (Bottom area) */}
+      <div className="fixed bottom-0 left-0 w-full p-8 flex justify-center pointer-events-none z-30">
+        <div className="max-w-4xl w-full pointer-events-auto">
+          <GarzieCharacter />
         </div>
-      </footer>
-    </div>
+      </div>
+      
+      {/* Sun Decoration */}
+      <div className="absolute top-10 right-10 w-32 h-32 bg-yellow-300 rounded-full blur-2xl opacity-50 z-0 pointer-events-none" />
+      
+      {/* Ground Decoration (Llanos horizon) */}
+      <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-[var(--color-llano-green)]/20 to-transparent z-0 pointer-events-none" />
+
+    </main>
   );
 }

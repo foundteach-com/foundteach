@@ -19,4 +19,19 @@ export class VideogameController {
   endSession(@Param('id') id: string, @Body() body: { score: number; level: number; data?: any }) {
     return this.videogameService.endSession(id, body.score, body.level, body.data);
   }
+
+  // --- PLAYER PROGRESSION ---
+
+  @Get('player/:studentCode')
+  getPlayer(@Param('studentCode') studentCode: string) {
+    return this.videogameService.getPlayerByCode(studentCode);
+  }
+
+  @Post('player/:studentCode/progress')
+  updateProgress(
+    @Param('studentCode') studentCode: string,
+    @Body() body: { newLevel: number; pointsToAdd: number }
+  ) {
+    return this.videogameService.updateProgress(studentCode, body.newLevel, body.pointsToAdd);
+  }
 }

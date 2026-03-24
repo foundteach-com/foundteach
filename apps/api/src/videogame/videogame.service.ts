@@ -32,4 +32,42 @@ export class VideogameService {
       orderBy: { startedAt: 'desc' },
     });
   }
+
+  // --- PLAYER PROGRESSION ---
+  
+  async getPlayerByCode(studentCode: string) {
+    let player = await this.prisma.gamePlayer.findUnique({
+      where: { studentCode },
+    });
+
+    if (!player) {
+      // Create guest player for demo if doesn't exist
+      player = await this.prisma.gamePlayer.create({
+        data: {
+          name: `Estudiante ${studentCode}`,
+          studentCode,
+          totalScore: 0,
+          highestLevel: 1,
+          roundsPlayed: 0,
+        },
+      });
+    }
+
+    return player;
+  }
+
+  async updateProgress(studentCode: string, newLevel: number, pointsToAdd: number) {
+    const player = await this.getPlayerByCode(studentCode);
+
+    return this.prisma.gamePlayer.update({
+      where: { studentCode },
+      data: {
+        totalScore: player.totalScore + pointsToAdd,
+        highestLevel: Math.max(player.highestLevel, newLevel),
+        lastLevel: newLevel,
+        roundsPlayed: player.roundsPlayed + 1,
+      },
+    });
+  }
 }
+
