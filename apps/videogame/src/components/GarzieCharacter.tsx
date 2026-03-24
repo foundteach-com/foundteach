@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { useGameState, GarzieState } from "../hooks/useGameState";
 
-const GarzieVariants = {
+const GarzieVariants: Variants = {
   IDLE: {
     y: [0, -5, 0],
     rotate: [0, 2, -2, 0],
