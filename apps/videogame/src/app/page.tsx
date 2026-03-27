@@ -16,10 +16,27 @@ export default function AuthLandingPage() {
   };
 
   return (
-    <main className="min-h-screen w-full relative overflow-hidden flex items-center justify-center bg-zinc-900 font-sans">
+    <main className="min-h-screen w-full relative overflow-hidden flex items-center justify-center bg-black font-sans">
+      
+      {/* Video Background Showcase */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover scale-105"
+        >
+          <source src="https://foundteach-assets.sfo3.cdn.digitaloceanspaces.com/banner-inicio-sesion-principal-videojuego.mp4" type="video/mp4" />
+        </video>
+        
+        {/* Premium Overlay: oscurece el fondo pero permite ver la acción (Glassmorphism integration) */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/80 backdrop-blur-[2px]" />
+      </div>
+
       {/* Background Animated Gradients / Blob effects */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600/30 blur-[120px] rounded-full mix-blend-screen pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-orange-600/30 blur-[130px] rounded-full mix-blend-screen pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600/20 blur-[120px] rounded-full mix-blend-screen pointer-events-none z-0" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-orange-600/20 blur-[130px] rounded-full mix-blend-screen pointer-events-none z-0" />
       
       {/* Container */}
       <div className="relative z-10 w-full max-w-5xl flex flex-col md:flex-row items-center justify-between p-6 gap-12">
