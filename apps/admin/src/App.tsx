@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck, GitBranch, Rocket, Bug, UserCheck, Clock, Wallet, Star, BookOpen, GraduationCap, ClipboardCheck, BarChart3, TrendingUp, FileBarChart2, Bell, MessageSquare,
+  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck, GitBranch, Rocket, Bug, UserCheck, Clock, Wallet, Star, BookOpen, GraduationCap, ClipboardCheck, BarChart3, TrendingUp, FileBarChart2, Bell, MessageSquare, Package,
 } from 'lucide-react';
 import { GamePlayersPage } from './pages/GamePlayersPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -34,6 +34,7 @@ import { DashboardBIPage } from './pages/DashboardBIPage';
 import { ReportesPage } from './pages/ReportesPage';
 import { NotificacionesPage } from './pages/NotificacionesPage';
 import { MensajesPage } from './pages/MensajesPage';
+import { InventariosPage } from './pages/InventariosPage';
 import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -88,6 +89,12 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Clientes',      path: '/crm/clients',   icon: <Handshake size={17} /> },
       { label: 'Pipeline',      path: '/crm/pipeline',  icon: <KanbanSquare size={17} /> },
       { label: 'Cotizaciones',  path: '/crm/quotes',    icon: <ClipboardList size={17} /> },
+    ],
+  },
+  {
+    title: 'Inventarios',
+    items: [
+      { label: 'Productos',  path: '/inventory/products', icon: <Package size={17} /> },
     ],
   },
   {
@@ -334,6 +341,7 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="/bi/reports" element={<ReportesPage />} />
             <Route path="/comms/notifications" element={<NotificacionesPage />} />
             <Route path="/comms/messages" element={<MensajesPage />} />
+            <Route path="/inventory/products" element={<InventariosPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
