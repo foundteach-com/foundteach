@@ -92,43 +92,62 @@ export function InventariosPage() {
   );
 
   return (
-    <div className="page-fade-in">
+    <div className="page-fade-in" style={{ animation: 'fadeIn 0.5s ease-out' }}>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .product-row:hover {
+          background: rgba(37, 99, 235, 0.03) !important;
+          transform: scale(1.002);
+        }
+        .btn-hover:hover {
+          transform: translateY(-2px);
+          filter: brightness(1.1);
+        }
+      `}</style>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Package size={28} color="var(--primary-color)" />
+          <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ background: 'rgba(37,99,235,0.1)', padding: 12, borderRadius: 16 }}>
+              <Package size={32} color="var(--primary-color)" />
+            </div>
             Inventarios
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: 4 }}>
-            Gestión de catálogo de productos y servicios de Ospina Comercializadora.
+          <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: 6, fontWeight: 500 }}>
+            Catálogo maestro de productos y servicios · <span style={{ color: 'var(--primary-color)' }}>Ospina Comercializadora</span>
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 12 }}>
+        <div style={{ display: 'flex', gap: 14 }}>
           <button 
             onClick={exportToCSV}
+            className="btn-hover"
             style={{ 
-              display: 'flex', alignItems: 'center', gap: 8, 
+              display: 'flex', alignItems: 'center', gap: 10, 
               background: 'var(--surface-color)', color: 'var(--text-main)', 
-              padding: '10px 18px', borderRadius: 12, fontWeight: 700, 
+              padding: '12px 22px', borderRadius: 14, fontWeight: 700, 
               border: '1px solid var(--border-color)', cursor: 'pointer',
-              transition: 'all 0.2s'
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
             }}
-            onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface-hover)'}
-            onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface-color)'}
           >
-            <Download size={18} />
+            <Download size={20} />
             Exportar Productos
           </button>
           <button 
+            className="btn-hover"
             style={{ 
-              display: 'flex', alignItems: 'center', gap: 8, 
-              background: 'var(--primary-color)', color: 'white', 
-              padding: '10px 18px', borderRadius: 12, fontWeight: 700, 
+              display: 'flex', alignItems: 'center', gap: 10, 
+              background: 'linear-gradient(135deg, var(--primary-color), #4f46e5)', 
+              color: 'white', 
+              padding: '12px 22px', borderRadius: 14, fontWeight: 700, 
               border: 'none', cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)'
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 6px 18px rgba(37, 99, 235, 0.3)'
             }}
           >
-            <Plus size={18} />
+            <Plus size={20} />
             Nuevo Producto
           </button>
         </div>
