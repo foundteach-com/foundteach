@@ -34,7 +34,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     title: 'Área Administrativa',
     items: [
-      { label: 'General', path: '/admin-area', icon: <Briefcase size={17} /> },
+      { label: 'Administración', path: '/admin-area', icon: <Briefcase size={17} /> },
     ],
   },
   {
