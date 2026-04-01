@@ -1,40 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, LogOut, Globe, Mail, Gamepad2, Settings, ChevronRight, Users, Building2, BarChart2, FolderOpen, DollarSign, FileText, ChartBar, Handshake, KanbanSquare, ClipboardList, FolderKanban, ListTodo, TicketCheck, GitBranch, Rocket, Bug, UserCheck, Clock, Wallet, Star, BookOpen, GraduationCap, ClipboardCheck, BarChart3, TrendingUp, FileBarChart2, Bell, MessageSquare, Package,
+  LayoutDashboard, LogOut, Settings, ChevronRight,
 } from 'lucide-react';
-import { GamePlayersPage } from './pages/GamePlayersPage';
-import { MessagesPage } from './pages/MessagesPage';
-import { WebServicesPage } from './pages/WebServicesPage';
-import { UsersPage } from './pages/UsersPage';
-import { CompanyPage } from './pages/CompanyPage';
-import { KpiPage } from './pages/KpiPage';
-import { DocumentsPage } from './pages/DocumentsPage';
-import { TransactionsPage } from './pages/TransactionsPage';
-import { InvoicesPage } from './pages/InvoicesPage';
-import { FinanceReportPage } from './pages/FinanceReportPage';
-import { ClientesPage } from './pages/ClientesPage';
-import { PipelinePage } from './pages/PipelinePage';
-import { QuotesPage } from './pages/QuotesPage';
-import { ProjectsPage } from './pages/ProjectsPage';
-import { TasksPage } from './pages/TasksPage';
-import { TicketsPage } from './pages/TicketsPage';
-import { ReposPage } from './pages/ReposPage';
-import { DeploymentsPage } from './pages/DeploymentsPage';
-import { BugsPage } from './pages/BugsPage';
-import { ColaboradoresPage } from './pages/ColaboradoresPage';
-import { HorasPage } from './pages/HorasPage';
-import { NominaPage } from './pages/NominaPage';
-import { EvaluacionesPage } from './pages/EvaluacionesPage';
-import { CursosPage } from './pages/CursosPage';
-import { EstudiantesEduPage } from './pages/EstudiantesEduPage';
-import { EvaluacionesEduPage } from './pages/EvaluacionesEduPage';
-import { AnaliticaEduPage } from './pages/AnaliticaEduPage';
-import { DashboardBIPage } from './pages/DashboardBIPage';
-import { ReportesPage } from './pages/ReportesPage';
-import { NotificacionesPage } from './pages/NotificacionesPage';
-import { MensajesPage } from './pages/MensajesPage';
-import { InventariosPage } from './pages/InventariosPage';
 import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -52,122 +20,16 @@ interface NavGroup {
   items: NavItem[];
 }
 
-const NAV_GROUPS: NavGroup[] = [
-  {
-    title: 'Sitio Web',
-    items: [
-      { label: 'Servicios',  path: '/web/services', icon: <Globe size={17} /> },
-      { label: 'Mensajes',   path: '/web/messages', icon: <Mail size={17} /> },
-    ],
-  },
-  {
-    title: 'Plataforma GeoMath',
-    items: [
-      { label: 'Jugadores',  path: '/geomath/players', icon: <Gamepad2 size={17} /> },
-    ],
-  },
-  {
-    title: 'Administración',
-    items: [
-      { label: 'KPIs',        path: '/admin/kpis',       icon: <BarChart2 size={17} /> },
-      { label: 'Usuarios',    path: '/admin/users',      icon: <Users size={17} /> },
-      { label: 'Empresa',     path: '/admin/company',    icon: <Building2 size={17} /> },
-      { label: 'Documentos',  path: '/admin/documents',  icon: <FolderOpen size={17} /> },
-    ],
-  },
-  {
-    title: 'Finanzas',
-    items: [
-      { label: 'Ingresos & Gastos', path: '/finance/transactions', icon: <DollarSign size={17} /> },
-      { label: 'Facturas',          path: '/finance/invoices',     icon: <FileText size={17} /> },
-      { label: 'Reportes',          path: '/finance/report',       icon: <ChartBar size={17} /> },
-    ],
-  },
-  {
-    title: 'Comercial',
-    items: [
-      { label: 'Clientes',      path: '/crm/clients',   icon: <Handshake size={17} /> },
-      { label: 'Pipeline',      path: '/crm/pipeline',  icon: <KanbanSquare size={17} /> },
-      { label: 'Cotizaciones',  path: '/crm/quotes',    icon: <ClipboardList size={17} /> },
-    ],
-  },
-  {
-    title: 'Inventarios',
-    items: [
-      { label: 'Productos',  path: '/inventory/products', icon: <Package size={17} /> },
-    ],
-  },
-  {
-    title: 'Operaciones',
-    items: [
-      { label: 'Proyectos',   path: '/ops/projects', icon: <FolderKanban size={17} /> },
-      { label: 'Tareas',      path: '/ops/tasks',    icon: <ListTodo size={17} /> },
-      { label: 'Tickets',     path: '/ops/tickets',  icon: <TicketCheck size={17} /> },
-    ],
-  },
-  {
-    title: 'Tecnología',
-    items: [
-      { label: 'Repositorios',  path: '/dev/repos',        icon: <GitBranch size={17} /> },
-      { label: 'Deployments',   path: '/dev/deployments',  icon: <Rocket size={17} /> },
-      { label: 'Bugs',          path: '/dev/bugs',         icon: <Bug size={17} /> },
-    ],
-  },
-  {
-    title: 'Talento Humano',
-    items: [
-      { label: 'Colaboradores',  path: '/hcm/staff',    icon: <UserCheck size={17} /> },
-      { label: 'Horas',          path: '/hcm/hours',    icon: <Clock size={17} /> },
-      { label: 'Nómina',         path: '/hcm/payroll',  icon: <Wallet size={17} /> },
-      { label: 'Evaluaciones',   path: '/hcm/reviews',  icon: <Star size={17} /> },
-    ],
-  },
-  {
-    title: 'Educación',
-    items: [
-      { label: 'Cursos',        path: '/edu/courses',      icon: <BookOpen size={17} /> },
-      { label: 'Estudiantes',   path: '/edu/students',     icon: <GraduationCap size={17} /> },
-      { label: 'Evaluaciones',  path: '/edu/assessments',  icon: <ClipboardCheck size={17} /> },
-      { label: 'Analítica',     path: '/edu/analytics',    icon: <BarChart3 size={17} /> },
-    ],
-  },
-  {
-    title: 'Analítica (BI)',
-    items: [
-      { label: 'Dashboard',  path: '/bi/dashboard',  icon: <TrendingUp size={17} /> },
-      { label: 'Reportes',   path: '/bi/reports',    icon: <FileBarChart2 size={17} /> },
-    ],
-  },
-  {
-    title: 'Comunicaciones',
-    items: [
-      { label: 'Notificaciones',  path: '/comms/notifications',  icon: <Bell size={17} /> },
-      { label: 'Mensajes',        path: '/comms/messages',       icon: <MessageSquare size={17} /> },
-    ],
-  },
-];
+const NAV_GROUPS: NavGroup[] = [];
+
 
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 function Sidebar({ onLogout }: { onLogout: () => void }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
 
   const isActive = (path: string) => location.pathname.startsWith(path);
-
-  useEffect(() => {
-    for (const group of NAV_GROUPS) {
-      if (group.items.some(item => isActive(item.path))) {
-        setExpandedGroup(group.title);
-        break;
-      }
-    }
-  }, [location.pathname]);
-
-  const toggleGroup = (title: string) => {
-    setExpandedGroup(prev => prev === title ? null : title);
-  };
 
   return (
     <aside className="sidebar">
@@ -188,53 +50,6 @@ function Sidebar({ onLogout }: { onLogout: () => void }) {
           {location.pathname === '/' && <ChevronRight size={14} style={{ marginLeft: 'auto', opacity: 0.5 }} />}
         </button>
 
-        {/* Groups */}
-        {NAV_GROUPS.map(group => {
-          const isExpanded = expandedGroup === group.title;
-          const hasActiveItem = group.items.some(item => isActive(item.path));
-          
-          return (
-            <div key={group.title} style={{ marginTop: 16 }}>
-              <button
-                onClick={() => toggleGroup(group.title)}
-                className={`nav-group-button ${hasActiveItem ? 'active-group' : ''}`}
-              >
-                <div className="nav-group-title" style={{ margin: 0, padding: 0 }}>{group.title}</div>
-                <ChevronRight 
-                  size={14} 
-                  style={{ 
-                    transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.2s ease',
-                    color: 'var(--text-muted)'
-                  }} 
-                />
-              </button>
-              
-              <div 
-                className="nav-group-content"
-                style={{ 
-                  display: isExpanded ? 'block' : 'none',
-                  marginTop: 4
-                }}
-              >
-                {group.items.map(item => (
-                  <button
-                    key={item.path}
-                    onClick={() => navigate(item.path)}
-                    className={`nav-main-item ${isActive(item.path) ? 'active' : ''}`}
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                    {item.badge && (
-                      <span className="nav-badge">{item.badge}</span>
-                    )}
-                    {isActive(item.path) && <ChevronRight size={14} style={{ marginLeft: 'auto', opacity: 0.5 }} />}
-                  </button>
-                ))}
-              </div>
-            </div>
-          );
-        })}
       </nav>
 
       {/* Bottom */}
@@ -310,38 +125,6 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
         <div className="page-container">
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/web/services" element={<WebServicesPage />} />
-            <Route path="/web/messages" element={<MessagesPage />} />
-            <Route path="/geomath/players" element={<GamePlayersPage />} />
-            <Route path="/admin/kpis" element={<KpiPage />} />
-            <Route path="/admin/users" element={<UsersPage />} />
-            <Route path="/admin/company" element={<CompanyPage />} />
-            <Route path="/admin/documents" element={<DocumentsPage />} />
-            <Route path="/finance/transactions" element={<TransactionsPage />} />
-            <Route path="/finance/invoices" element={<InvoicesPage />} />
-            <Route path="/finance/report" element={<FinanceReportPage />} />
-            <Route path="/crm/clients" element={<ClientesPage />} />
-            <Route path="/crm/pipeline" element={<PipelinePage />} />
-            <Route path="/crm/quotes" element={<QuotesPage />} />
-            <Route path="/ops/projects" element={<ProjectsPage />} />
-            <Route path="/ops/tasks" element={<TasksPage />} />
-            <Route path="/ops/tickets" element={<TicketsPage />} />
-            <Route path="/dev/repos" element={<ReposPage />} />
-            <Route path="/dev/deployments" element={<DeploymentsPage />} />
-            <Route path="/dev/bugs" element={<BugsPage />} />
-            <Route path="/hcm/staff" element={<ColaboradoresPage />} />
-            <Route path="/hcm/hours" element={<HorasPage />} />
-            <Route path="/hcm/payroll" element={<NominaPage />} />
-            <Route path="/hcm/reviews" element={<EvaluacionesPage />} />
-            <Route path="/edu/courses" element={<CursosPage />} />
-            <Route path="/edu/students" element={<EstudiantesEduPage />} />
-            <Route path="/edu/assessments" element={<EvaluacionesEduPage />} />
-            <Route path="/edu/analytics" element={<AnaliticaEduPage />} />
-            <Route path="/bi/dashboard" element={<DashboardBIPage />} />
-            <Route path="/bi/reports" element={<ReportesPage />} />
-            <Route path="/comms/notifications" element={<NotificacionesPage />} />
-            <Route path="/comms/messages" element={<MensajesPage />} />
-            <Route path="/inventory/products" element={<InventariosPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
@@ -365,74 +148,14 @@ function Dashboard() {
         </p>
       </div>
 
-      {/* Quick Access Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 }}>
-        {[
-          {
-            icon: '🌐',
-            label: 'Servicios del Sitio',
-            desc: 'Edita los servicios que aparecen en foundteach.com',
-            path: '/web/services',
-            color: '#2563eb',
-          },
-          {
-            icon: '📩',
-            label: 'Mensajes de Contacto',
-            desc: 'Revisa los mensajes recibidos a través del sitio web',
-            path: '/web/messages',
-            color: '#d97706',
-          },
-          {
-            icon: '🎮',
-            label: 'Jugadores GeoMath',
-            desc: 'Administra los jugadores de la plataforma educativa',
-            path: '/geomath/players',
-            color: '#059669',
-          },
-        ].map(card => (
-          <DashboardCard key={card.label} {...card} />
-        ))}
+      {/* Próximamente: Estadísticas y accesos rápidos */}
+      <div style={{ padding: '40px', border: '2px dashed var(--border-color)', borderRadius: 16, textAlign: 'center', color: 'var(--text-muted)' }}>
+        Estructura vacía. Listo para nuevos módulos.
       </div>
     </div>
   );
 }
 
-function DashboardCard({ icon, label, desc, path, color }: {
-  icon: string; label: string; desc: string; path: string; color: string;
-}) {
-  const navigate = useNavigate();
-  return (
-    <button
-      onClick={() => navigate(path)}
-      style={{
-        background: 'var(--surface-color)',
-        border: '1px solid var(--border-color)',
-        borderRadius: 16,
-        padding: '28px 24px',
-        textAlign: 'left',
-        cursor: 'pointer',
-        transition: 'all 0.2s',
-        borderTop: `3px solid ${color}`,
-        width: '100%',
-      }}
-      onMouseEnter={e => {
-        (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-3px)';
-        (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)';
-      }}
-      onMouseLeave={e => {
-        (e.currentTarget as HTMLButtonElement).style.transform = '';
-        (e.currentTarget as HTMLButtonElement).style.boxShadow = '';
-      }}
-    >
-      <div style={{ fontSize: '2.2rem', marginBottom: 14 }}>{icon}</div>
-      <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: 6 }}>{label}</div>
-      <div style={{ fontSize: '0.87rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>{desc}</div>
-      <div style={{ marginTop: 16, fontSize: '0.82rem', fontWeight: 700, color, display: 'flex', alignItems: 'center', gap: 4 }}>
-        Ir al módulo <ChevronRight size={14} />
-      </div>
-    </button>
-  );
-}
 
 // ─── Settings ─────────────────────────────────────────────────────────────────
 function SettingsPage() {
