@@ -1,9 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, LogOut, Settings, ChevronRight,
+  Briefcase, Wrench, Laptop, BookOpen, Palette, Megaphone, Calculator, Scale
 } from 'lucide-react';
+import { AdminAreaPage } from './pages/AdminAreaPage';
+import { OpsAreaPage } from './pages/OpsAreaPage';
+import { TechAreaPage } from './pages/TechAreaPage';
+import { AcademicAreaPage } from './pages/AcademicAreaPage';
+import { DesignAreaPage } from './pages/DesignAreaPage';
+import { MarketingAreaPage } from './pages/MarketingAreaPage';
+import { AccountantPage } from './pages/AccountantPage';
+import { LawyerPage } from './pages/LawyerPage';
 import './App.css';
+
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
 
@@ -20,16 +30,72 @@ interface NavGroup {
   items: NavItem[];
 }
 
-const NAV_GROUPS: NavGroup[] = [];
-
-
+const NAV_GROUPS: NavGroup[] = [
+  {
+    title: 'Área Administrativa',
+    items: [
+      { label: 'General', path: '/admin-area', icon: <Briefcase size={17} /> },
+    ],
+  },
+  {
+    title: 'Área Operativa',
+    items: [
+      { label: 'Operaciones', path: '/ops-area', icon: <Wrench size={17} /> },
+    ],
+  },
+  {
+    title: 'Área Tecnológica',
+    items: [
+      { label: 'Tecnología', path: '/tech-area', icon: <Laptop size={17} /> },
+    ],
+  },
+  {
+    title: 'Área Académica',
+    items: [
+      { label: 'Académico', path: '/academic-area', icon: <BookOpen size={17} /> },
+    ],
+  },
+  {
+    title: 'Área de Diseño',
+    items: [
+      { label: 'Diseño', path: '/design-area', icon: <Palette size={17} /> },
+    ],
+  },
+  {
+    title: 'Área de Marketing',
+    items: [
+      { label: 'Marketing', path: '/marketing-area', icon: <Megaphone size={17} /> },
+    ],
+  },
+  {
+    title: 'Áreas Externas',
+    items: [
+      { label: 'Contador', path: '/external/accountant', icon: <Calculator size={17} /> },
+      { label: 'Abogado', path: '/external/lawyer', icon: <Scale size={17} /> },
+    ],
+  },
+];
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 function Sidebar({ onLogout }: { onLogout: () => void }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
 
   const isActive = (path: string) => location.pathname.startsWith(path);
+
+  useEffect(() => {
+    for (const group of NAV_GROUPS) {
+      if (group.items.some(item => isActive(item.path))) {
+        setExpandedGroup(group.title);
+        break;
+      }
+    }
+  }, [location.pathname]);
+
+  const toggleGroup = (title: string) => {
+    setExpandedGroup(prev => prev === title ? null : title);
+  };
 
   return (
     <aside className="sidebar">
@@ -50,6 +116,53 @@ function Sidebar({ onLogout }: { onLogout: () => void }) {
           {location.pathname === '/' && <ChevronRight size={14} style={{ marginLeft: 'auto', opacity: 0.5 }} />}
         </button>
 
+        {/* Groups */}
+        {NAV_GROUPS.map(group => {
+          const isExpanded = expandedGroup === group.title;
+          const hasActiveItem = group.items.some(item => isActive(item.path));
+          
+          return (
+            <div key={group.title} style={{ marginTop: 16 }}>
+              <button
+                onClick={() => toggleGroup(group.title)}
+                className={`nav-group-button ${hasActiveItem ? 'active-group' : ''}`}
+              >
+                <div className="nav-group-title" style={{ margin: 0, padding: 0 }}>{group.title}</div>
+                <ChevronRight 
+                  size={14} 
+                  style={{ 
+                    transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.2s ease',
+                    color: 'var(--text-muted)'
+                  }} 
+                />
+              </button>
+              
+              <div 
+                className="nav-group-content"
+                style={{ 
+                  display: isExpanded ? 'block' : 'none',
+                  marginTop: 4
+                }}
+              >
+                {group.items.map(item => (
+                  <button
+                    key={item.path}
+                    onClick={() => navigate(item.path)}
+                    className={`nav-main-item ${isActive(item.path) ? 'active' : ''}`}
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                    {item.badge && (
+                      <span className="nav-badge">{item.badge}</span>
+                    )}
+                    {isActive(item.path) && <ChevronRight size={14} style={{ marginLeft: 'auto', opacity: 0.5 }} />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </nav>
 
       {/* Bottom */}
@@ -125,6 +238,14 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
         <div className="page-container">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/admin-area" element={<AdminAreaPage />} />
+            <Route path="/ops-area" element={<OpsAreaPage />} />
+            <Route path="/tech-area" element={<TechAreaPage />} />
+            <Route path="/academic-area" element={<AcademicAreaPage />} />
+            <Route path="/design-area" element={<DesignAreaPage />} />
+            <Route path="/marketing-area" element={<MarketingAreaPage />} />
+            <Route path="/external/accountant" element={<AccountantPage />} />
+            <Route path="/external/lawyer" element={<LawyerPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
