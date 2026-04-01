@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import {
   Wrench, FolderKanban, ListTodo, TicketCheck, PackageCheck,
-  Plus, Trash2, Edit3, X, Save, ChevronDown, Clock,
+  Plus, Trash2, X, ChevronDown, Clock,
   CheckCircle, AlertCircle, Circle, Loader, TrendingUp,
-  Target, BarChart2, Calendar,
+  BarChart2, Calendar,
 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
