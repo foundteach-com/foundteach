@@ -12,39 +12,36 @@ interface Service {
   sortOrder: number;
 }
 
-// ─── Servicios por defecto (fallback si la API no responde) ──────────────────
+// ─── Servicios por defecto ───────────────────────────────────────────────────
 const DEFAULT_SERVICES: Service[] = [
   {
     id: 'default-1',
-    title: 'Desarrollo Web y Móvil',
-    description:
-      'Desarrollo de páginas web corporativas, sistemas a medida (ERP, CRM, plataformas), aplicaciones móviles (Android / iOS), integración con APIs y mantenimiento.',
+    title: 'Desarrollo Web & Móvil',
+    description: 'Arquitecturas limpias y alto rendimiento. Construimos ERPs, Sistemas SaaS y Aplicaciones Nativas listas para escalar.',
     icon: '💻',
     sortOrder: 0,
   },
   {
     id: 'default-2',
-    title: 'Business Intelligence con Power BI',
-    description:
-      'Creación de dashboards interactivos, integración de datos (Excel, bases de datos, APIs), automatización de reportes, modelado de datos y capacitación.',
+    title: 'Business Intelligence',
+    description: 'Transformamos tus datos en tableros de Power BI en tiempo real para decisiones estratégicas inmediatas.',
     icon: '📊',
     sortOrder: 1,
   },
   {
     id: 'default-3',
-    title: 'Consultoría en Automatización y Transformación Digital',
-    description:
-      'Automatización de procesos, integración entre sistemas, implementación de herramientas digitales, optimización de flujos de trabajo y diagnóstico tecnológico.',
-    icon: '⚙️',
+    title: 'Consultoría y Automatización',
+    description: 'Conectamos tus sistemas ineficientes utilizando APIs y automatizamos tus flujos de trabajo repetitivos.',
+    icon: '⚡',
     sortOrder: 2,
   },
 ];
 
-// ─── Carga servicios desde la API (Server Component) ────────────────────────
+// ─── Carga de datos ────────────────────────────────────────────────────────
 async function getServices(): Promise<Service[]> {
   try {
     const res = await fetch('https://api.foundteach.com/api/services/public', {
-      next: { revalidate: 60 }, // Revalida cada 60 segundos (ISR)
+      next: { revalidate: 60 },
     });
     if (!res.ok) return DEFAULT_SERVICES;
     const data = await res.json();
@@ -58,39 +55,26 @@ export default async function Home() {
   const services = await getServices();
   return (
     <main>
+      {/* Abstract Background Orbs */}
+      <div className="bg-orbs">
+        <div className="bg-orb bg-orb-1"></div>
+        <div className="bg-orb bg-orb-2"></div>
+        <div className="bg-orb bg-orb-3"></div>
+      </div>
+
       {/* Header */}
       <header className="header">
         <nav className="nav container">
-          <Link
-            href="/"
-            className="logo-text"
-            style={{ display: "flex", alignItems: "center", gap: "10px" }}
-          >
-            <Image
-              src="/logo_foundteach.png"
-              alt="FoundTeach Logo"
-              width={32}
-              height={32}
-              style={{ height: "32px", width: "auto" }}
-            />
+          <Link href="/" className="logo-text" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <Image src="/logo_foundteach.png" alt="FoundTeach Logo" width={34} height={34} style={{ height: "34px", width: "auto" }} />
             FoundTeach
           </Link>
           <ul className="nav-links">
-            <li>
-              <Link href="/" className="active">INICIO</Link>
-            </li>
-            <li>
-              <Link href="#nosotros">NOSOTROS</Link>
-            </li>
-            <li>
-              <Link href="#servicios">SERVICIOS</Link>
-            </li>
-            <li>
-              <Link href="#tecnologias">TECNOLOGÍAS</Link>
-            </li>
-            <li>
-              <Link href="#contacto">CONTACTO</Link>
-            </li>
+            <li><Link href="/" className="active">INICIO</Link></li>
+            <li><Link href="#nosotros">NOSOTROS</Link></li>
+            <li><Link href="#servicios">SERVICIOS</Link></li>
+            <li><Link href="#tecnologias">STACK</Link></li>
+            <li><Link href="#contacto">CONTACTO</Link></li>
           </ul>
           <MobileMenu />
         </nav>
@@ -98,136 +82,94 @@ export default async function Home() {
 
       {/* Hero Section */}
       <section className="hero-premium">
-        <div className="hero-bg-gradient"></div>
         <div className="container hero-premium-layout">
-          <div className="hero-text-side">
-            <p className="hero-eyebrow">Tu Socio Tecnológico</p>
+          <div className="hero-text-side animate-on-scroll is-visible">
+            <span className="hero-eyebrow">Tu Socio Tecnológico Élite</span>
             <h1 className="hero-title-main">
-              TRANSFORMAMOS IDEAS EN <br />
-              <span className="highlight-premium">SOFTWARE DE IMPACTO</span>
+              Construimos <br />
+              <span className="gradient-text">Software de Impacto</span>
             </h1>
             <p className="hero-subtitle">
-              Diseñamos y desarrollamos aplicaciones web y móviles a medida.
-              <br />
-              Ayudamos a escalar tu negocio con tecnología moderna y segura.
+              Diseñamos ecosistemas digitales a medida, escalables y seguros. Llevamos la ingeniería de software de primer nivel directamente a tu empresa.
             </p>
             <div className="hero-cta-group">
-              <Link
-                href="https://wa.me/573208325534?text=Hola,%20me%20interesa%20cotizar%20un%20proyecto%20de%20software."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-premium-cta"
-              >
-                COTIZAR AHORA
+              <Link href="https://wa.me/573208325534" target="_blank" className="btn btn-premium-cta">
+                Iniciar Proyecto
               </Link>
-              <Link href="#nosotros" className="btn btn-ghost">
-                Conócenos →
+              <Link href="#servicios" className="btn btn-ghost">
+                Ver servicios
               </Link>
             </div>
           </div>
 
           <div className="hero-visual-side">
-            <div className="active-bob" style={{ position: "relative", width: "100%", maxWidth: "550px", aspectRatio: "1/1" }}>
-              <Image
-                src="/hero-laptop.png"
-                alt="Equipo de computo escribiendo código 3D"
-                fill
-                style={{
-                  objectFit: "contain",
-                  mixBlendMode: "multiply",
-                  filter: "contrast(1.05)"
-                }}
-                priority
-              />
+            <div className="hero-glow-back"></div>
+            <div className="active-bob" style={{ position: "relative", width: "100%", maxWidth: "600px", aspectRatio: "1/1", zIndex: 10 }}>
+              <Image src="/hero-laptop.png" alt="Software Engineering" fill style={{ objectFit: "contain", filter: "contrast(1.1) brightness(1.1) drop-shadow(0 20px 40px rgba(0,240,255,0.2))" }} priority />
             </div>
           </div>
         </div>
       </section>
 
       {/* Stats Bar */}
-      <section className="stats-bar">
+      <section className="stats-bar animate-on-scroll">
         <div className="container stats-grid">
-          <div className="stat-item">
-            <span className="stat-number">+1</span>
-            <span className="stat-label">Proyectos entregados</span>
-          </div>
+          <div className="stat-item"><span className="stat-number">+10</span><span className="stat-label">Proyectos Exitosos</span></div>
           <div className="stat-divider"></div>
-          <div className="stat-item">
-            <span className="stat-number">+1</span>
-            <span className="stat-label">Clientes satisfechos</span>
-          </div>
+          <div className="stat-item"><span className="stat-number">99%</span><span className="stat-label">Uptime Garantizado</span></div>
           <div className="stat-divider"></div>
-          <div className="stat-item">
-            <span className="stat-number">+1</span>
-            <span className="stat-label">Años de experiencia</span>
-          </div>
+          <div className="stat-item"><span className="stat-number">5+</span><span className="stat-label">Años de Expertise</span></div>
           <div className="stat-divider"></div>
-          <div className="stat-item">
-            <span className="stat-number">100%</span>
-            <span className="stat-label">Compromiso con el cliente</span>
-          </div>
+          <div className="stat-item"><span className="stat-number">100%</span><span className="stat-label">Código Transparente</span></div>
         </div>
       </section>
 
       {/* Nosotros Section */}
-      <section id="nosotros" className="section section-nosotros">
+      <section id="nosotros" className="section">
         <div className="container nosotros-layout">
-          <div className="nosotros-text">
-            <p className="section-eyebrow">Quiénes somos</p>
+          <div className="nosotros-text animate-on-scroll">
+            <p className="section-eyebrow">ADN FoundTeach</p>
             <h2 className="section-title-left">
-              Ingeniería de software con <span className="highlight-premium">propósito</span>
+              Desarrollamos con <br /><span className="highlight-premium">Arquitectura y Propósito</span>
             </h2>
             <p className="nosotros-description">
-              FoundTeach EdTech S.A.S es una empresa de ingeniería de software enfocada en construir
-              soluciones digitales que resuelvan problemas reales. Trabajamos con startups,
-              pymes y empresas que quieren dar el salto tecnológico sin perder el tiempo.
-            </p>
-            <p className="nosotros-description">
-              Nos apasiona el código limpio, la arquitectura sólida y los productos que
-              los usuarios disfrutan usar. No somos una agencia más: somos el equipo técnico
-              que tu empresa necesita.
+              No somos una agencia genérica ni ensamblamos plantillas. Somos ingenieros de software dedicados a orquestar plataformas sólidas que no colapsan cuando tu negocio escala.
             </p>
             <div className="nosotros-values">
               <div className="value-item">
-                <span className="value-icon">🎯</span>
-                <div>
-                  <strong>Enfoque en resultados</strong>
-                  <p>Cada línea de código tiene un propósito claro.</p>
-                </div>
-              </div>
-              <div className="value-item">
-                <span className="value-icon">🤝</span>
-                <div>
-                  <strong>Transparencia total</strong>
-                  <p>Comunicación directa en cada etapa del proyecto.</p>
-                </div>
-              </div>
-              <div className="value-item">
                 <span className="value-icon">⚡</span>
                 <div>
-                  <strong>Agilidad real</strong>
-                  <p>Entregas rápidas sin sacrificar la calidad.</p>
+                  <strong>Agilidad Radical</strong>
+                  <p>Iteramos rápido. Prototipamos y construimos con velocidad sin comprometer el testing.</p>
+                </div>
+              </div>
+              <div className="value-item">
+                <span className="value-icon">🛡️</span>
+                <div>
+                  <strong>Código a Prueba de Balas</strong>
+                  <p>Implementamos patrones de diseño y estándares de seguridad de grado bancario.</p>
                 </div>
               </div>
             </div>
           </div>
-          <div className="nosotros-visual">
+          <div className="nosotros-visual animate-on-scroll">
+            <div className="nosotros-background-glow"></div>
             <div className="nosotros-card-grid">
-              <div className="nosotros-card accent-blue">
-                <span className="nosotros-card-icon">💡</span>
-                <p>Soluciones a medida con las últimas tecnologías del mercado</p>
+              <div className="nosotros-card glass-panel">
+                <span className="nosotros-card-icon">💎</span>
+                <p>Interfaces cristalinas y experiencias de usuario (UX) memorables.</p>
               </div>
-              <div className="nosotros-card accent-pink">
+              <div className="nosotros-card glass-panel" style={{ marginTop: "30px" }}>
+                <span className="nosotros-card-icon">🧠</span>
+                <p>Lógica de negocio robusta corriendo en infraestructuras Cloud.</p>
+              </div>
+              <div className="nosotros-card glass-panel" style={{ marginTop: "-30px" }}>
                 <span className="nosotros-card-icon">🚀</span>
-                <p>Prototipado ágil y validación de productos en tiempo récord</p>
+                <p>Despliegues continuos automatizados (CI/CD) sin interrupciones.</p>
               </div>
-              <div className="nosotros-card accent-light">
-                <span className="nosotros-card-icon">🤝</span>
-                <p>Acompañamiento cercano y comunicación 100% transparente</p>
-              </div>
-              <div className="nosotros-card accent-dark">
-                <span className="nosotros-card-icon">📈</span>
-                <p>Arquitecturas de código listas para crecer junto a ti</p>
+              <div className="nosotros-card glass-panel">
+                <span className="nosotros-card-icon">🔐</span>
+                <p>Auditorías estrictas y protección total de tus datos sensibles.</p>
               </div>
             </div>
           </div>
@@ -235,48 +177,38 @@ export default async function Home() {
       </section>
 
       {/* Services Section */}
-      <section id="servicios" className="section section-services-bg">
+      <section id="servicios" className="section">
         <div className="container">
-          <p className="section-eyebrow text-center">Lo que hacemos</p>
-          <h2 className="section-title">Nuestros Servicios</h2>
-          <div className="services-grid">
+          <p className="section-eyebrow text-center">Nuestra Oferta</p>
+          <h2 className="section-title">Dominio Tecnológico Total</h2>
+          <div className="services-grid animate-on-scroll">
             {services.map((service) => (
-              <div
-                key={service.id}
-                className="service-card"
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-              >
+              <div key={service.id} className="service-card glass-panel">
                 <div className="service-card-icon">{service.icon || '💻'}</div>
-                <h3 style={{ lineHeight: '1.4', textAlign: 'center' }}>{service.title}</h3>
-                <p style={{ textAlign: 'left', fontSize: '0.93rem', color: '#666', lineHeight: '1.7', marginTop: '0.5rem', width: '100%' }}>
-                  {service.description}
-                </p>
+                <h3>{service.title}</h3>
+                <p>{service.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-
       {/* Tecnologías Section */}
       <section id="tecnologias" className="section">
         <div className="container">
-          <p className="section-eyebrow text-center">Nuestro stack</p>
-          <h2 className="section-title">Tecnologías que dominamos</h2>
-          <div className="tech-grid">
+          <p className="section-eyebrow text-center">Powering the Future</p>
+          <h2 className="section-title">El Stack Definitivo</h2>
+          <div className="tech-grid animate-on-scroll">
             {[
-              { name: "React", category: "Frontend" },
-              { name: "Next.js", category: "Frontend" },
-              { name: "TypeScript", category: "Lenguaje" },
-              { name: "Node.js", category: "Backend" },
-              { name: "NestJS", category: "Backend" },
-              { name: "PostgreSQL", category: "Base de Datos" },
-              { name: "Prisma", category: "ORM" },
-              { name: "React Native", category: "Móvil" },
-              { name: "AWS", category: "Cloud" },
-              { name: "Docker", category: "DevOps" },
-              { name: "Git & GitHub", category: "DevOps" },
-              { name: "OpenAI API", category: "IA" },
+              { name: "Next.js 16", category: "Core Web" },
+              { name: "React 19", category: "UI Library" },
+              { name: "TypeScript", category: "Strict Typing" },
+              { name: "NestJS", category: "Backend Engine" },
+              { name: "PostgreSQL", category: "Relational DB" },
+              { name: "Prisma", category: "Modern ORM" },
+              { name: "Docker", category: "Containerization" },
+              { name: "AWS & DigitalOcean", category: "Cloud" },
+              { name: "Power BI", category: "Data Vis" },
             ].map((tech) => (
               <div key={tech.name} className="tech-pill">
                 <span className="tech-name">{tech.name}</span>
@@ -288,40 +220,28 @@ export default async function Home() {
       </section>
 
       {/* Contacto Section */}
-      <section id="contacto" className="section section-contact-bg">
+      <section id="contacto" className="section">
         <div className="container contact-layout">
-          <div className="contact-info">
-            <p className="section-eyebrow">Hablemos</p>
+          <div className="contact-info animate-on-scroll">
+            <p className="section-eyebrow">A un mensaje de distancia</p>
             <h2 className="section-title-left">
-              ¿Listo para construir algo <span className="highlight-premium">increíble?</span>
+              Llevemos tu <span className="highlight-premium">Visión</span> al Siguiente Nivel
             </h2>
             <p className="contact-description">
-              Cuéntanos tu idea. Nuestro equipo la analiza y te respondemos con
-              una propuesta técnica en menos de 48 horas.
+              Nuestro equipo analizará tus requerimientos técnicos y te entregará una propuesta arquitectónica en tiempo récord. Déjanos tus datos o contáctanos directamente.
             </p>
             <div className="contact-options">
-              <Link
-                href="https://wa.me/573208325534"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="contact-option"
-              >
+              <Link href="https://wa.me/573208325534" target="_blank" className="contact-option glass-panel">
                 <span className="contact-option-icon">💬</span>
-                <div>
-                  <strong>WhatsApp directo</strong>
-                  <p>+57 320 832 5534</p>
-                </div>
+                <div><strong>Línea Directa WhatsApp</strong><p>+57 320 832 5534</p></div>
               </Link>
-              <a href="mailto:manuel.martinez@mannez.com" className="contact-option">
+              <a href="mailto:manuel.martinez@mannez.com" className="contact-option glass-panel">
                 <span className="contact-option-icon">📧</span>
-                <div>
-                  <strong>Correo electrónico</strong>
-                  <p>manuel.martinez@mannez.com</p>
-                </div>
+                <div><strong>Correo Corporativo</strong><p>manuel.martinez@mannez.com</p></div>
               </a>
             </div>
           </div>
-          <div className="contact-form-wrapper">
+          <div className="contact-form-wrapper glass-panel animate-on-scroll" style={{ animationDelay: "0.2s" }}>
             <ContactForm />
           </div>
         </div>
@@ -331,59 +251,40 @@ export default async function Home() {
       <footer className="footer">
         <div className="container footer-layout">
           <div className="footer-brand">
-            <Link
-              href="/"
-              className="logo-text"
-              style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1rem" }}
-            >
-              <Image
-                src="/logo_foundteach.png"
-                alt="FoundTeach Logo"
-                width={28}
-                height={28}
-                style={{ height: "28px", width: "auto" }}
-              />
-              FoundTeach EdTech S.A.S
+            <Link href="/" className="logo-text" style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1.5rem" }}>
+              <Image src="/logo_foundteach.png" alt="FoundTeach Logo" width={30} height={30} style={{ height: "30px", width: "auto" }} />
+              FoundTeach
             </Link>
             <p className="footer-tagline">
-              Ingeniería de software con propósito. <br />
-              Construimos el futuro digital de tu empresa.
+              FoundTeach EdTech S.A.S.<br />
+              Ingeniería de software ultra premium para empresas pioneras.
             </p>
           </div>
           <div className="footer-links-group">
-            <h4>Navegación</h4>
+            <h4>Secciones</h4>
             <ul>
-              <li><Link href="#nosotros">Nosotros</Link></li>
-              <li><Link href="#servicios">Servicios</Link></li>
-              <li><Link href="#tecnologias">Tecnologías</Link></li>
-              <li><Link href="#contacto">Contacto</Link></li>
+              <li><Link href="#nosotros">Nuestra filosofía</Link></li>
+              <li><Link href="#servicios">Ecosistema</Link></li>
+              <li><Link href="#tecnologias">Stack tecnológico</Link></li>
             </ul>
           </div>
           <div className="footer-links-group">
             <h4>Plataformas</h4>
             <ul>
-              <li><Link href="https://play.foundteach.com" target="_blank">GeoMath Match 🎮</Link></li>
-              <li><Link href="https://admin.foundteach.com" target="_blank">Panel Admin</Link></li>
+              <li><Link href="https://app.foundteach.com" target="_blank">Campus Educativo API</Link></li>
+              <li><Link href="https://admin.foundteach.com" target="_blank">FoundTeach Admin ⌘</Link></li>
             </ul>
           </div>
           <div className="footer-links-group">
-            <h4>Contacto</h4>
+            <h4>Desarrollo</h4>
             <ul>
-              <li><a href="mailto:manuel.martinez@mannez.com">manuel.martinez@mannez.com</a></li>
-              <li>
-                <Link
-                  href="https://wa.me/573208325534"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  WhatsApp
-                </Link>
-              </li>
+              <li><a href="mailto:manuel.martinez@mannez.com">Soporte Técnico</a></li>
+              <li><Link href="https://wa.me/573208325534" target="_blank">Cotizar Proyecto</Link></li>
             </ul>
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 FoundTeach EdTech S.A.S · Servicios de Ingeniería de Software • Manuel Antonio Martínez Sogamoso</p>
+          <p>© {new Date().getFullYear()} FoundTeach EdTech S.A.S · All systems operational.</p>
         </div>
       </footer>
     </main>
