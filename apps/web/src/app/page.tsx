@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ContactForm } from "@/components/ContactForm";
-import { MobileMenu } from "@/components/MobileMenu";
+import { Header } from "@/components/Header";
 
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 interface Service {
@@ -62,23 +62,8 @@ export default async function Home() {
         <div className="bg-orb bg-orb-3"></div>
       </div>
 
-      {/* Header */}
-      <header className="header">
-        <nav className="nav container">
-          <Link href="/" className="logo-text" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <Image src="/logo_foundteach.png" alt="FoundTeach Logo" width={34} height={34} style={{ height: "34px", width: "auto" }} />
-            FoundTeach
-          </Link>
-          <ul className="nav-links">
-            <li><Link href="/" className="active">INICIO</Link></li>
-            <li><Link href="#nosotros">NOSOTROS</Link></li>
-            <li><Link href="#servicios">SERVICIOS</Link></li>
-            <li><Link href="#tecnologias">STACK</Link></li>
-            <li><Link href="#contacto">CONTACTO</Link></li>
-          </ul>
-          <MobileMenu />
-        </nav>
-      </header>
+      {/* Header Interactivo */}
+      <Header />
 
       {/* Hero Section */}
       <section className="hero-premium">
