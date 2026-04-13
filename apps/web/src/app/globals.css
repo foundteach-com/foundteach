@@ -116,10 +116,10 @@ a { text-decoration: none; color: inherit; }
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .header.scrolled {
-  height: 70px;
-  background: rgba(255, 255, 255, 0.85);
+  height: 55px;
+  background: #FFFFFF;
   border-bottom: 1px solid var(--color-border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
 }
 .nav {
   width: 100%;
@@ -135,14 +135,14 @@ a { text-decoration: none; color: inherit; }
   transition: var(--transition);
 }
 .header.scrolled .logo-text {
-  font-size: 1.3rem;
+  font-size: 1.15rem;
 }
 .header-logo-img {
   transition: var(--transition);
 }
 .header.scrolled .header-logo-img {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 }
 .nav-links {
   display: flex;
