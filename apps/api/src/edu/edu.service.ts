@@ -93,7 +93,7 @@ export class EduService {
       orderBy: { createdAt: 'desc' },
       include: {
         course: { select: { id: true, title: true } },
-        enrollment: { select: { id: true, studentName: true } },
+        enrollment: { select: { id: true, student: { select: { firstName: true, lastName: true } } } },
       },
     });
   }

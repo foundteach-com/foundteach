@@ -36,15 +36,19 @@ export class VideogameService {
   // --- PLAYER PROGRESSION ---
   
   async getPlayerByCode(studentCode: string) {
-    let player = await this.prisma.gamePlayer.findUnique({
+    let player = await this.prisma.user.findUnique({
       where: { studentCode },
     });
 
     if (!player) {
       // Create guest player for demo if doesn't exist
-      player = await this.prisma.gamePlayer.create({
+      player = await this.prisma.user.create({
         data: {
-          name: `Estudiante ${studentCode}`,
+          firstName: 'Estudiante',
+          lastName: studentCode,
+          email: `${studentCode}@guest.foundteach.com`, // needed for User
+          password: Math.random().toString(36).substring(2, 10),
+          role: 'STUDENT',
           studentCode,
           totalScore: 0,
           highestLevel: 1,
@@ -59,7 +63,7 @@ export class VideogameService {
   async updateProgress(studentCode: string, newLevel: number, pointsToAdd: number) {
     const player = await this.getPlayerByCode(studentCode);
 
-    return this.prisma.gamePlayer.update({
+    return this.prisma.user.update({
       where: { studentCode },
       data: {
         totalScore: player.totalScore + pointsToAdd,

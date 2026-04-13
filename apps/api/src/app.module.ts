@@ -14,7 +14,7 @@ import { SdModule } from './sd/sd.module';
 import { FiModule } from './fi/fi.module';
 import { CompanyModule } from './company/company.module';
 import { DocumentsModule } from './documents/documents.module';
-import { FinanceModule } from './finance/finance.module';
+
 import { OpsModule } from './ops/ops.module';
 import { DevModule } from './dev/dev.module';
 import { EduModule } from './edu/edu.module';
@@ -45,7 +45,7 @@ import { MediaModule } from './media/media.module';
     FiModule,
     CompanyModule,
     DocumentsModule,
-    FinanceModule,
+
     OpsModule,
     DevModule,
     EduModule,

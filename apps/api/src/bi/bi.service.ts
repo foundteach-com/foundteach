@@ -55,8 +55,8 @@ export class BiService {
           where: { status: 'PAID', issueDate: { gte: start, lte: end } },
           _sum: { total: true },
         }),
-        this.prisma.transaction.aggregate({
-          where: { type: 'EXPENSE', date: { gte: start, lte: end } },
+        this.prisma.journalEntryLine.aggregate({
+          where: { type: 'DEBIT', entry: { date: { gte: start, lte: end } } },
           _sum: { amount: true },
         }),
       ]);
