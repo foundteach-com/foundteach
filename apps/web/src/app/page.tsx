@@ -69,7 +69,7 @@ export default async function Home() {
       <section className="hero-premium">
         <div className="container hero-premium-layout">
           <div className="hero-text-side animate-on-scroll is-visible">
-            <span className="hero-eyebrow">Tu Socio Tecnológico Élite</span>
+            <span className="hero-eyebrow">Tu Socio Tecnológico</span>
             <h1 className="hero-title-main">
               Construimos <br />
               <span className="gradient-text">Software de Impacto</span>
@@ -79,7 +79,7 @@ export default async function Home() {
             </p>
             <div className="hero-cta-group">
               <Link href="https://wa.me/573208325534" target="_blank" className="btn btn-premium-cta">
-                Iniciar Proyecto
+                Cotiza
               </Link>
               <Link href="#servicios" className="btn btn-ghost">
                 Ver servicios
