@@ -105,7 +105,7 @@ export default async function Home() {
           <div className="hero-visual-side">
             <div className="hero-glow-back"></div>
             <div className="active-bob" style={{ position: "relative", width: "100%", maxWidth: "600px", aspectRatio: "1/1", zIndex: 10 }}>
-              <Image src="/hero-laptop.png" alt="Software Engineering" fill style={{ objectFit: "contain", filter: "contrast(1.1) brightness(1.1) drop-shadow(0 20px 40px rgba(0,240,255,0.2))" }} priority />
+              <Image src="/hero-laptop.png" alt="Software Engineering" fill style={{ objectFit: "contain", filter: "contrast(1.05) drop-shadow(0 20px 40px rgba(0,112,243,0.15))" }} priority />
             </div>
           </div>
         </div>
