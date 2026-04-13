@@ -87,24 +87,6 @@ O vincular Postgres al servicio API desde el panel de Postgres.
 
 ---
 
-## 4. Servicio Play (GeoMath Match)
-
-### Root Directory
-
-- **Settings** → **Source** → Root Directory: dejar **vacío** (raíz del repo)
-
-### Build & Start Commands
-
-- **Build Command**: `npm run build:play`
-- **Start Command**: `npm run start:play`
-
-### Dominio play.foundteach.com
-
-1. **Settings** → **Networking** → **+ Custom Domain**
-2. Escribir: `play.foundteach.com`
-3. Copiar el valor CNAME y configurar en DNS.
-
----
 
 ## 5. Servicio Videogame (app.foundteach.com)
 
@@ -132,6 +114,5 @@ O vincular Postgres al servicio API desde el panel de Postgres.
 | web       | _(vacío)_      | `npm run build:web`                 | `npm run start:web`     |
 | api       | `apps/api`     | `npm install && npm run build:prod` | `npm run start:prod`    |
 | admin     | _(vacío)_      | `npm run build:admin`               | `npm run start:admin`   |
-| play      | _(vacío)_      | `npm run build:play`                | `npm run start:play`    |
 | videogame | _(vacío)_      | `npm run build:videogame`           | `npm run start:videogame`|
 | Postgres  | —              | —                                   | —                       |
