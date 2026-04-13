@@ -41,7 +41,7 @@ export const Header = () => {
           <li><Link href="#tecnologias">STACK</Link></li>
           <li><Link href="#contacto">CONTACTO</Link></li>
           <li>
-            <Link href="https://wa.me/573208325534" target="_blank" className="btn btn-premium-cta" style={{ padding: "0.6rem 1.5rem", fontSize: "0.8rem", marginLeft: "1rem" }}>
+            <Link href="https://wa.me/573208325534" target="_blank" className="btn btn-premium-cta" style={{ padding: "0.6rem 1.5rem", fontSize: "0.8rem", marginLeft: "1rem", color: "#FFFFFF" }}>
               COTIZA
             </Link>
           </li>
