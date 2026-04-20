@@ -665,7 +665,7 @@ a { text-decoration: none; color: inherit; }
   border-top: 1px solid var(--color-border);
   padding: 6rem 0 0;
   position: relative;
-  background: #FFFFFF;
+  background: #F8FAFC;
 }
 .footer-layout {
   display: grid;

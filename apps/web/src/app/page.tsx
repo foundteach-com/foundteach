@@ -272,7 +272,12 @@ export default async function Home() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} FoundTeach EdTech S.A.S · All systems operational.</p>
+          <p>
+            © {new Date().getFullYear()} FoundTeach EdTech S.A.S •{" "}
+            <a href="https://www.mannez.com/manuel-antonio-martinez-sogamoso" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline", textUnderlineOffset: "4px" }}>
+              Manuel Antonio Martínez Sogamoso
+            </a>
+          </p>
         </div>
       </footer>
     </main>
