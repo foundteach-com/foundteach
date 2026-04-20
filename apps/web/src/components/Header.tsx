@@ -35,11 +35,11 @@ export const Header = () => {
           FoundTeach
         </Link>
         <ul className="nav-links" style={{ alignItems: "center" }}>
-          <li><Link href="/">INICIO</Link></li>
-          <li><Link href="/nosotros">NOSOTROS</Link></li>
-          <li><Link href="/#servicios">SERVICIOS</Link></li>
-          <li><Link href="/#tecnologias">STACK</Link></li>
-          <li><Link href="/#contacto">CONTACTO</Link></li>
+          <li><Link href="/" className="active">INICIO</Link></li>
+          <li><Link href="#nosotros">NOSOTROS</Link></li>
+          <li><Link href="#servicios">SERVICIOS</Link></li>
+          <li><Link href="#tecnologias">STACK</Link></li>
+          <li><Link href="#contacto">CONTACTO</Link></li>
           <li>
             <Link href="https://wa.me/573208325534" target="_blank" className="btn btn-premium-cta" style={{ padding: "0.6rem 1.5rem", fontSize: "0.8rem", marginLeft: "1rem", color: "#FFFFFF" }}>
               COTIZA
