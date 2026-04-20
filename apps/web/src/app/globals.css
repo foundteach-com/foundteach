@@ -343,6 +343,17 @@ a { text-decoration: none; color: inherit; }
   100% { transform: scale(1.2); opacity: 1; }
 }
 
+.active-bob {
+  animation: float-premium 6s ease-in-out infinite;
+}
+
+@keyframes float-premium {
+  0% { transform: translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 20px 40px rgba(0,112,243,0.15)); }
+  33% { transform: translateY(-15px) rotate(1deg) scale(1.02); filter: drop-shadow(0 30px 50px rgba(0,112,243,0.25)); }
+  66% { transform: translateY(10px) rotate(-1deg) scale(0.98); filter: drop-shadow(0 15px 30px rgba(0,112,243,0.10)); }
+  100% { transform: translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 20px 40px rgba(0,112,243,0.15)); }
+}
+
 /* ─── Stats Bar ───────────────────────────────────────────────────────────── */
 .stats-bar {
   padding: 4rem 0;
