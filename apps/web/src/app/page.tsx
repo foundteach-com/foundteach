@@ -99,11 +99,11 @@ export default async function Home() {
       {/* Stats Bar */}
       <section className="stats-bar animate-on-scroll">
         <div className="container stats-grid">
-          <div className="stat-item"><span className="stat-number">+10</span><span className="stat-label">Proyectos Exitosos</span></div>
+          <div className="stat-item"><span className="stat-number">+1</span><span className="stat-label">Proyectos Exitosos</span></div>
           <div className="stat-divider"></div>
           <div className="stat-item"><span className="stat-number">99%</span><span className="stat-label">Uptime Garantizado</span></div>
           <div className="stat-divider"></div>
-          <div className="stat-item"><span className="stat-number">5+</span><span className="stat-label">Años de Expertise</span></div>
+          <div className="stat-item"><span className="stat-number">+1</span><span className="stat-label">AÑOS DE EXPERIENCIA</span></div>
           <div className="stat-divider"></div>
           <div className="stat-item"><span className="stat-number">100%</span><span className="stat-label">Código Transparente</span></div>
         </div>
@@ -143,19 +143,19 @@ export default async function Home() {
           <div className="nosotros-visual animate-on-scroll">
             <div className="nosotros-background-glow"></div>
             <div className="nosotros-card-grid">
-              <div className="nosotros-card glass-panel">
+              <div className="nosotros-card glass-panel" style={{ background: "rgba(248, 250, 252, 0.8)", borderColor: "rgba(226, 232, 240, 0.6)" }}>
                 <span className="nosotros-card-icon">💎</span>
                 <p>Interfaces cristalinas y experiencias de usuario (UX) memorables.</p>
               </div>
-              <div className="nosotros-card glass-panel" style={{ marginTop: "30px" }}>
+              <div className="nosotros-card glass-panel" style={{ background: "rgba(241, 245, 249, 0.8)", borderColor: "rgba(203, 213, 225, 0.6)" }}>
                 <span className="nosotros-card-icon">🧠</span>
                 <p>Lógica de negocio robusta corriendo en infraestructuras Cloud.</p>
               </div>
-              <div className="nosotros-card glass-panel" style={{ marginTop: "-30px" }}>
+              <div className="nosotros-card glass-panel" style={{ background: "rgba(240, 249, 255, 0.8)", borderColor: "rgba(186, 230, 253, 0.6)" }}>
                 <span className="nosotros-card-icon">🚀</span>
                 <p>Despliegues continuos automatizados (CI/CD) sin interrupciones.</p>
               </div>
-              <div className="nosotros-card glass-panel">
+              <div className="nosotros-card glass-panel" style={{ background: "rgba(239, 246, 255, 0.8)", borderColor: "rgba(191, 219, 254, 0.6)" }}>
                 <span className="nosotros-card-icon">🔐</span>
                 <p>Auditorías estrictas y protección total de tus datos sensibles.</p>
               </div>
