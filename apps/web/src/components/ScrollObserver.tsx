@@ -17,7 +17,7 @@ export default function ScrollObserver() {
       });
     }, observerOptions);
 
-    document.querySelectorAll(".service-card, .section-title").forEach((el) => {
+    document.querySelectorAll(".animate-on-scroll, .service-card, .section-title").forEach((el) => {
       el.classList.add("animate-on-scroll");
       observer.observe(el);
     });

@@ -120,6 +120,9 @@ export default async function Home() {
             <p className="nosotros-description">
               No somos una agencia genérica ni ensamblamos plantillas. Somos ingenieros de software dedicados a orquestar plataformas sólidas que no colapsan cuando tu negocio escala.
             </p>
+            <p className="nosotros-description" style={{ marginTop: "-0.5rem", marginBottom: "2rem" }}>
+              Nuestra misión es llevar la ingeniería de grado corporativo a empresas emergentes, asegurando que cada línea de código tenga un propósito estratégico y un impacto medible.
+            </p>
             <div className="nosotros-values">
               <div className="value-item">
                 <span className="value-icon">⚡</span>
