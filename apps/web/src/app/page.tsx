@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ContactForm } from "@/components/ContactForm";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 interface Service {
@@ -109,57 +110,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Nosotros Section */}
-      <section id="nosotros" className="section">
-        <div className="container nosotros-layout">
-          <div className="nosotros-text animate-on-scroll">
-            <p className="section-eyebrow">ADN FoundTeach</p>
-            <h2 className="section-title-left">
-              Desarrollamos con <br /><span className="highlight-premium">Arquitectura y Propósito</span>
-            </h2>
-            <p className="nosotros-description">
-              No somos una agencia genérica ni ensamblamos plantillas. Somos ingenieros de software dedicados a orquestar plataformas sólidas que no colapsan cuando tu negocio escala.
-            </p>
-            <div className="nosotros-values">
-              <div className="value-item">
-                <span className="value-icon">⚡</span>
-                <div>
-                  <strong>Agilidad Radical</strong>
-                  <p>Iteramos rápido. Prototipamos y construimos con velocidad sin comprometer el testing.</p>
-                </div>
-              </div>
-              <div className="value-item">
-                <span className="value-icon">🛡️</span>
-                <div>
-                  <strong>Código a Prueba de Balas</strong>
-                  <p>Implementamos patrones de diseño y estándares de seguridad de grado bancario.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="nosotros-visual animate-on-scroll">
-            <div className="nosotros-background-glow"></div>
-            <div className="nosotros-card-grid">
-              <div className="nosotros-card glass-panel">
-                <span className="nosotros-card-icon">💎</span>
-                <p>Interfaces cristalinas y experiencias de usuario (UX) memorables.</p>
-              </div>
-              <div className="nosotros-card glass-panel" style={{ marginTop: "30px" }}>
-                <span className="nosotros-card-icon">🧠</span>
-                <p>Lógica de negocio robusta corriendo en infraestructuras Cloud.</p>
-              </div>
-              <div className="nosotros-card glass-panel" style={{ marginTop: "-30px" }}>
-                <span className="nosotros-card-icon">🚀</span>
-                <p>Despliegues continuos automatizados (CI/CD) sin interrupciones.</p>
-              </div>
-              <div className="nosotros-card glass-panel">
-                <span className="nosotros-card-icon">🔐</span>
-                <p>Auditorías estrictas y protección total de tus datos sensibles.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Services Section */}
       <section id="servicios" className="section">
@@ -232,46 +182,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="container footer-layout">
-          <div className="footer-brand">
-            <Link href="/" className="logo-text" style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1.5rem" }}>
-              <Image src="/logo_foundteach.png" alt="FoundTeach Logo" width={30} height={30} style={{ height: "30px", width: "auto" }} />
-              FoundTeach
-            </Link>
-            <p className="footer-tagline">
-              FoundTeach EdTech S.A.S.<br />
-              Ingeniería de software ultra premium para empresas pioneras.
-            </p>
-          </div>
-          <div className="footer-links-group">
-            <h4>Secciones</h4>
-            <ul>
-              <li><Link href="#nosotros">Nuestra filosofía</Link></li>
-              <li><Link href="#servicios">Ecosistema</Link></li>
-              <li><Link href="#tecnologias">Stack tecnológico</Link></li>
-            </ul>
-          </div>
-          <div className="footer-links-group">
-            <h4>Plataformas</h4>
-            <ul>
-              <li><Link href="https://app.foundteach.com" target="_blank">Campus Educativo API</Link></li>
-              <li><Link href="https://admin.foundteach.com" target="_blank">FoundTeach Admin ⌘</Link></li>
-            </ul>
-          </div>
-          <div className="footer-links-group">
-            <h4>Desarrollo</h4>
-            <ul>
-              <li><a href="mailto:manuel.martinez@mannez.com">Soporte Técnico</a></li>
-              <li><Link href="https://wa.me/573208325534" target="_blank">Cotizar Proyecto</Link></li>
-            </ul>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} FoundTeach EdTech S.A.S · All systems operational.</p>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

@@ -5,10 +5,10 @@ import Link from "next/link";
 
 const links = [
   { href: "/", label: "INICIO" },
-  { href: "#nosotros", label: "NOSOTROS" },
-  { href: "#servicios", label: "SERVICIOS" },
-  { href: "#tecnologias", label: "TECNOLOGÍAS" },
-  { href: "#contacto", label: "CONTACTO" },
+  { href: "/nosotros", label: "NOSOTROS" },
+  { href: "/#servicios", label: "SERVICIOS" },
+  { href: "/#tecnologias", label: "TECNOLOGÍAS" },
+  { href: "/#contacto", label: "CONTACTO" },
 ];
 
 export function MobileMenu() {
