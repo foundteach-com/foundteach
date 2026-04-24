@@ -172,7 +172,7 @@ function ReposTab({ repos, setRepos }: { repos: Repo[]; setRepos: React.Dispatch
     e.preventDefault(); setSaving(true);
     try {
       const res = await fetch(`${API_URL}/api/tech/repos`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${tok()}` }, body: JSON.stringify(form) });
-      if (res.ok) { setRepos(p => [await res.json(), ...p]); setModal(false); setForm({ name: '', url: '', branch: 'main', language: 'TypeScript', status: 'ACTIVE', description: '' }); }
+      if (res.ok) { const data = await res.json(); setRepos(p => [data, ...p]); setModal(false); setForm({ name: '', url: '', branch: 'main', language: 'TypeScript', status: 'ACTIVE', description: '' }); }
     } catch { /* ignore */ }
     setSaving(false);
   };
@@ -259,7 +259,7 @@ function DeploysTab({ deploys, setDeploys }: { deploys: Deploy[]; setDeploys: Re
     e.preventDefault(); setSaving(true);
     try {
       const res = await fetch(`${API_URL}/api/tech/deployments`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${tok()}` }, body: JSON.stringify(form) });
-      if (res.ok) { setDeploys(p => [await res.json(), ...p]); setModal(false); setForm({ service: '', environment: 'production', status: 'SUCCESS', commitSha: '', commitMsg: '', deployedBy: '' }); }
+      if (res.ok) { const data = await res.json(); setDeploys(p => [data, ...p]); setModal(false); setForm({ service: '', environment: 'production', status: 'SUCCESS', commitSha: '', commitMsg: '', deployedBy: '' }); }
     } catch { /* ignore */ }
     setSaving(false);
   };
@@ -351,7 +351,7 @@ function BugsTab({ bugs, setBugs }: { bugs: BugItem[]; setBugs: React.Dispatch<R
     e.preventDefault(); setSaving(true);
     try {
       const res = await fetch(`${API_URL}/api/tech/bugs`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${tok()}` }, body: JSON.stringify(form) });
-      if (res.ok) { setBugs(p => [await res.json(), ...p]); setModal(false); setForm({ title: '', description: '', priority: 'MEDIUM', status: 'OPEN', assignee: '', reporter: '' }); }
+      if (res.ok) { const data = await res.json(); setBugs(p => [data, ...p]); setModal(false); setForm({ title: '', description: '', priority: 'MEDIUM', status: 'OPEN', assignee: '', reporter: '' }); }
     } catch { /* ignore */ }
     setSaving(false);
   };
@@ -436,7 +436,7 @@ function ServicesTab({ services, setServices }: { services: Service[]; setServic
     e.preventDefault(); setSaving(true);
     try {
       const res = await fetch(`${API_URL}/api/tech/services`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${tok()}` }, body: JSON.stringify(form) });
-      if (res.ok) { setServices(p => [await res.json(), ...p]); setModal(false); setForm({ name: '', url: '', method: 'GET', status: 'UP', description: '' }); }
+      if (res.ok) { const data = await res.json(); setServices(p => [data, ...p]); setModal(false); setForm({ name: '', url: '', method: 'GET', status: 'UP', description: '' }); }
     } catch { /* ignore */ }
     setSaving(false);
   };
