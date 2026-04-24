@@ -35,6 +35,8 @@ const NAV_GROUPS: NavGroup[] = [
     title: 'Área Administrativa',
     items: [
       { label: 'Administración', path: '/admin-area', icon: <Briefcase size={17} /> },
+      { label: 'Área Contable', path: '/external/accountant', icon: <Calculator size={17} /> },
+      { label: 'Área Legal', path: '/external/lawyer', icon: <Scale size={17} /> },
     ],
   },
   {
@@ -67,13 +69,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Marketing', path: '/marketing-area', icon: <Megaphone size={17} /> },
     ],
   },
-  {
-    title: 'Áreas Externas',
-    items: [
-      { label: 'Contador', path: '/external/accountant', icon: <Calculator size={17} /> },
-      { label: 'Abogado', path: '/external/lawyer', icon: <Scale size={17} /> },
-    ],
-  },
+
 ];
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
