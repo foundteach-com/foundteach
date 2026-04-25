@@ -107,7 +107,26 @@ O vincular Postgres al servicio API desde el panel de Postgres.
 
 ---
 
-## 6. Resumen de Configuración en Railway
+## 6. Servicio Blog (blog.foundteach.com)
+
+### Root Directory
+
+- **Settings** → **Source** → Root Directory: dejar **vacío** (raíz del repo)
+
+### Build & Start Commands
+
+- **Build Command**: `npm run build:blog`
+- **Start Command**: `npm run start:blog`
+
+### Dominio blog.foundteach.com
+
+1. **Settings** → **Networking** → **+ Custom Domain**
+2. Escribir: `blog.foundteach.com`
+3. Copiar el valor CNAME y configurar en DNS.
+
+---
+
+## 7. Resumen de Configuración en Railway
 
 | Servicio  | Root Directory | Build Command                       | Start Command           |
 | --------- | -------------- | ----------------------------------- | ----------------------- |
@@ -115,4 +134,5 @@ O vincular Postgres al servicio API desde el panel de Postgres.
 | api       | `apps/api`     | `npm install && npm run build:prod` | `npm run start:prod`    |
 | admin     | _(vacío)_      | `npm run build:admin`               | `npm run start:admin`   |
 | videogame | _(vacío)_      | `npm run build:videogame`           | `npm run start:videogame`|
+| blog      | _(vacío)_      | `npm run build:blog`                | `npm run start:blog`    |
 | Postgres  | —              | —                                   | —                       |
