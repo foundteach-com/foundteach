@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Megaphone, Users, PenTool, BarChart2,
   Image as ImageIcon, Send, Save, Edit3,
-  TrendingUp, Target, ArrowLeft
+  TrendingUp, Target, ArrowLeft,
+  Bold, Italic, Heading1, Heading2, Quote,
+  Code, List, ListOrdered, Link
 } from 'lucide-react';
 
 interface Campaign { id: string; name: string; platform: string; budget: number; spent: number; status: string; leads: number; startDate: string; }
@@ -50,6 +52,20 @@ function EmptyState({ icon: Icon, text }: { icon: React.ComponentType<{ size?: n
 
 function TF({ label, children }: { label: string; children: React.ReactNode }) {
   return <div className="form-group"><label className="form-label">{label}</label>{children}</div>;
+}
+
+function ToolbarButton({ icon: Icon, onClick, title }: { icon: any, onClick: () => void, title: string }) {
+  return (
+    <button 
+      onClick={(e) => { e.preventDefault(); onClick(); }} 
+      title={title} 
+      style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 8, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }}
+      onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = 'var(--background-color)'}
+      onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'transparent'}
+    >
+      <Icon size={16} />
+    </button>
+  );
 }
 
 // ─── Overview ─────────────────────────────────────────────────────────────────
@@ -118,6 +134,61 @@ function OverviewTab({ campaigns, leads, posts }: { campaigns: Campaign[]; leads
 // ─── Blog Editor Tab ─────────────────────────────────────────────────────────
 function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispatch<React.SetStateAction<BlogPost[]>> }) {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const insertFormat = (format: string, defaultText: string = '') => {
+    if (!textareaRef.current || !editingPost) return;
+    const { selectionStart, selectionEnd, value } = textareaRef.current;
+    
+    let textToInsert = '';
+    let newCursorPos = selectionStart;
+
+    if (selectionStart === selectionEnd) {
+      let defaultStr = '';
+      switch(format) {
+        case 'bold': defaultStr = defaultText || 'texto fuerte'; textToInsert = `**${defaultStr}**`; newCursorPos += 2; break;
+        case 'italic': defaultStr = defaultText || 'texto cursiva'; textToInsert = `*${defaultStr}*`; newCursorPos += 1; break;
+        case 'h1': defaultStr = defaultText || 'Título 1'; textToInsert = `\n# ${defaultStr}\n`; newCursorPos += 3; break;
+        case 'h2': defaultStr = defaultText || 'Título 2'; textToInsert = `\n## ${defaultStr}\n`; newCursorPos += 4; break;
+        case 'quote': defaultStr = defaultText || 'Cita'; textToInsert = `\n> ${defaultStr}\n`; newCursorPos += 3; break;
+        case 'code': defaultStr = defaultText || 'código'; textToInsert = `\`${defaultStr}\``; newCursorPos += 1; break;
+        case 'ul': defaultStr = defaultText || 'Elemento de lista'; textToInsert = `\n- ${defaultStr}\n`; newCursorPos += 3; break;
+        case 'ol': defaultStr = defaultText || 'Elemento numerado'; textToInsert = `\n1. ${defaultStr}\n`; newCursorPos += 4; break;
+        case 'link': defaultStr = defaultText || 'texto del enlace'; textToInsert = `[${defaultStr}](url)`; newCursorPos += 1; break;
+        case 'image': defaultStr = defaultText || 'descripción de la imagen'; textToInsert = `![${defaultStr}](url)`; newCursorPos += 2; break;
+      }
+      
+      const newValue = value.substring(0, selectionStart) + textToInsert + value.substring(selectionEnd);
+      setEditingPost({ ...editingPost, content: newValue });
+
+      setTimeout(() => {
+        textareaRef.current?.focus();
+        textareaRef.current?.setSelectionRange(newCursorPos, newCursorPos + defaultStr.length);
+      }, 0);
+    } else {
+      const selectedText = value.substring(selectionStart, selectionEnd);
+      switch(format) {
+        case 'bold': textToInsert = `**${selectedText}**`; break;
+        case 'italic': textToInsert = `*${selectedText}*`; break;
+        case 'h1': textToInsert = `\n# ${selectedText}\n`; break;
+        case 'h2': textToInsert = `\n## ${selectedText}\n`; break;
+        case 'quote': textToInsert = `\n> ${selectedText}\n`; break;
+        case 'code': textToInsert = `\`${selectedText}\``; break;
+        case 'ul': textToInsert = `\n- ${selectedText}\n`; break;
+        case 'ol': textToInsert = `\n1. ${selectedText}\n`; break;
+        case 'link': textToInsert = `[${selectedText}](url)`; break;
+        case 'image': textToInsert = `![${selectedText}](url)`; break;
+      }
+      
+      const newValue = value.substring(0, selectionStart) + textToInsert + value.substring(selectionEnd);
+      setEditingPost({ ...editingPost, content: newValue });
+
+      setTimeout(() => {
+        textareaRef.current?.focus();
+        textareaRef.current?.setSelectionRange(selectionStart, selectionStart + textToInsert.length);
+      }, 0);
+    }
+  };
   
   // Lista de Posts
   if (!editingPost) {
@@ -213,11 +284,30 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
               placeholder="Escribe un título atrapante..." 
               value={editingPost.title}
               onChange={e => setEditingPost({ ...editingPost, title: e.target.value })}
-              style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-main)', outline: 'none', marginBottom: 24, padding: 0 }}
+              style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-main)', outline: 'none', marginBottom: 16, padding: 0 }}
             />
+
+            {/* Toolbar */}
+            <div style={{ display: 'flex', gap: 4, marginBottom: 16, padding: '8px 0', borderBottom: '1px solid var(--border-color)', borderTop: '1px solid var(--border-color)', flexWrap: 'wrap' }}>
+              <ToolbarButton icon={Bold} onClick={() => insertFormat('bold')} title="Negrita" />
+              <ToolbarButton icon={Italic} onClick={() => insertFormat('italic')} title="Cursiva" />
+              <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
+              <ToolbarButton icon={Heading1} onClick={() => insertFormat('h1')} title="Título 1" />
+              <ToolbarButton icon={Heading2} onClick={() => insertFormat('h2')} title="Título 2" />
+              <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
+              <ToolbarButton icon={Quote} onClick={() => insertFormat('quote')} title="Cita" />
+              <ToolbarButton icon={Code} onClick={() => insertFormat('code')} title="Código" />
+              <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
+              <ToolbarButton icon={List} onClick={() => insertFormat('ul')} title="Lista" />
+              <ToolbarButton icon={ListOrdered} onClick={() => insertFormat('ol')} title="Lista numerada" />
+              <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
+              <ToolbarButton icon={Link} onClick={() => insertFormat('link')} title="Enlace" />
+              <ToolbarButton icon={ImageIcon} onClick={() => insertFormat('image')} title="Imagen" />
+            </div>
 
             {/* Content Textarea */}
             <textarea 
+              ref={textareaRef}
               placeholder="Escribe el contenido aquí. Puedes utilizar formato Markdown..."
               value={editingPost.content}
               onChange={e => setEditingPost({ ...editingPost, content: e.target.value })}
