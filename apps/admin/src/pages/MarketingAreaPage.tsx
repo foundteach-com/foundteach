@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import {
   Megaphone, Users, PenTool, BarChart2,
-  Plus, Trash2, X, ChevronDown, Clock,
-  CheckCircle, Circle, Image as ImageIcon, Send, Save, Edit3, Loader,
-  TrendingUp, MousePointerClick, Target, ArrowLeft
+  Image as ImageIcon, Send, Save, Edit3,
+  TrendingUp, Target, ArrowLeft
 } from 'lucide-react';
-
-const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
-const tok = () => localStorage.getItem('admin_token') || '';
 
 interface Campaign { id: string; name: string; platform: string; budget: number; spent: number; status: string; leads: number; startDate: string; }
 interface Lead { id: string; name: string; email: string; source: string; status: string; createdAt: string; }
@@ -43,7 +39,7 @@ function KpiCard({ label, value, sub, icon: Icon, color }: { label: string; valu
   );
 }
 
-function EmptyState({ icon: Icon, text }: { icon: React.ComponentType<{ size?: number }>; text: string }) {
+function EmptyState({ icon: Icon, text }: { icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; text: string }) {
   return (
     <div style={{ background: 'var(--surface-color)', borderRadius: 16, border: '2px dashed var(--border-color)', padding: 48, textAlign: 'center', color: 'var(--text-muted)' }}>
       <Icon size={32} style={{ margin: '0 auto', opacity: 0.5 }} />
@@ -52,45 +48,8 @@ function EmptyState({ icon: Icon, text }: { icon: React.ComponentType<{ size?: n
   );
 }
 
-function MktModal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
-  return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={{ background: 'var(--surface-color)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 500, boxShadow: '0 24px 48px rgba(0,0,0,0.15)', border: '1px solid var(--border-color)', maxHeight: '90vh', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-          <h3 style={{ fontWeight: 800, fontSize: '1.1rem' }}>{title}</h3>
-          <button onClick={onClose} style={{ width: 30, height: 30, borderRadius: 8, background: 'var(--surface-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}><X size={16} /></button>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-}
-
 function TF({ label, children }: { label: string; children: React.ReactNode }) {
   return <div className="form-group"><label className="form-label">{label}</label>{children}</div>;
-}
-
-function Sel({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }) {
-  return (
-    <div style={{ position: 'relative' }}>
-      <select value={value} onChange={e => onChange(e.target.value)} className="form-input" style={{ appearance: 'none', paddingRight: 32 }}>
-        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-      </select>
-      <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-muted)', display: 'flex' }}><ChevronDown size={14} /></span>
-    </div>
-  );
-}
-
-function SubmitBtn({ loading, label, icon: Icon = CheckCircle, variant = 'primary' }: { loading?: boolean; label: string; icon?: React.ComponentType<{ size?: number }>; variant?: 'primary' | 'secondary' }) {
-  const bg = variant === 'primary' ? 'var(--primary-color)' : 'var(--surface-hover)';
-  const color = variant === 'primary' ? 'white' : 'var(--text-main)';
-  return (
-    <button type="submit" disabled={loading} style={{ background: bg, color, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 20px', borderRadius: 8, fontWeight: 700, fontSize: '0.875rem', border: variant === 'secondary' ? '1px solid var(--border-color)' : 'none', cursor: 'pointer', transition: 'opacity 0.2s' }}>
-      {loading ? <Loader size={15} className="spin" /> : <Icon size={15} />}
-      {label}
-    </button>
-  );
 }
 
 // ─── Overview ─────────────────────────────────────────────────────────────────
@@ -306,11 +265,11 @@ export function MarketingAreaPage() {
   const [activeTab, setActiveTab]   = useState('overview');
   
   // Mock Data (En una implementación real se obtendría del API)
-  const [campaigns, setCampaigns] = useState<Campaign[]>([
+  const [campaigns] = useState<Campaign[]>([
     { id: '1', name: 'Lanzamiento FoundTeach Pro', platform: 'Meta Ads', budget: 500000, spent: 120000, status: 'ACTIVE', leads: 45, startDate: '2026-04-01' },
     { id: '2', name: 'Retargeting Usuarios Activos', platform: 'Google Ads', budget: 200000, spent: 50000, status: 'ACTIVE', leads: 12, startDate: '2026-04-15' }
   ]);
-  const [leads, setLeads] = useState<Lead[]>([
+  const [leads] = useState<Lead[]>([
     { id: '1', name: 'Laura Gómez', email: 'laura@email.com', source: 'Lanzamiento FoundTeach Pro', status: 'NEW', createdAt: new Date().toISOString() },
     { id: '2', name: 'Carlos Ruíz', email: 'carlos@email.com', source: 'Orgánico (Blog)', status: 'CONTACTED', createdAt: new Date().toISOString() }
   ]);
