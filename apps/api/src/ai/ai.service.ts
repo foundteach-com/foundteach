@@ -1,4 +1,5 @@
 import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import { PrismaClient } from '@prisma/client';
 
@@ -9,9 +10,11 @@ export class AiService {
   private readonly logger = new Logger(AiService.name);
   private openai: OpenAI;
 
-  constructor() {
+  constructor(private configService: ConfigService) {
+    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
+    
     this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY || 'dummy_key',
+      apiKey: apiKey || 'missing_api_key',
     });
   }
 
