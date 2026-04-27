@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Scale, FileText, Upload, Trash2, X, Clock, Loader, Download, Eye, FileSignature, RefreshCw, BarChart2
+  Scale, FileText, Upload, Trash2, X, Clock, Loader, Download, Eye, FileSignature, RefreshCw, BarChart2, Plus, Search
 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
@@ -27,6 +27,15 @@ interface ContractItem {
   salary: number;
   currency: string;
   createdAt: string;
+  employee?: { firstName: string; lastName: string; documentNumber: string };
+}
+
+interface EmployeeItem {
+  id: string;
+  firstName: string;
+  lastName: string;
+  documentNumber: string;
+  position: string;
 }
 
 const fmtDate = (iso?: string) => iso ? new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
@@ -42,6 +51,13 @@ const CONTRACT_STATUS = {
   SUSPENDED: { label: 'Suspendido', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
   TERMINATED: { label: 'Terminado', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
 } as const;
+
+const CONTRACT_TYPES = {
+  FIXED_TERM: 'Término Fijo',
+  INDEFINITE: 'Término Indefinido',
+  SERVICE_CONTRACT: 'Prestación de Servicios',
+  INTERNSHIP: 'Práctica / Pasantía'
+};
 
 type StatusMap = Record<string, { label: string; color: string; bg: string }>;
 
@@ -97,9 +113,9 @@ function OverviewTab({ documents, contracts }: { documents: DocumentItem[]; cont
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 16, marginBottom: 28 }}>
-        <KpiCard label="Documentos"        value={documents.length}    sub="archivos legales"         icon={FileText} color="#2563eb" />
-        <KpiCard label="Contratos Activos" value={activeContracts}     sub="en curso"                 icon={FileSignature} color="#059669" />
-        <KpiCard label="Litigios"          value={0}                   sub="casos abiertos"           icon={Scale}       color="#ef4444" />
+        <KpiCard label="Documentos Legales" value={documents.length}    sub="archivos guardados"       icon={FileText} color="#2563eb" />
+        <KpiCard label="Contratos Activos"  value={activeContracts}     sub="en curso"                 icon={FileSignature} color="#059669" />
+        <KpiCard label="Casos Abiertos"     value={0}                   sub="Módulo próximo"           icon={Scale}       color="#ef4444" />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 18 }}>
@@ -138,6 +154,9 @@ function DocumentsTab({ documents, setDocuments }: { documents: DocumentItem[]; 
   const [saving, setSaving] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState('');
+  const [search, setSearch] = useState('');
+
+  const filteredDocs = documents.filter(d => d.name.toLowerCase().includes(search.toLowerCase()));
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -174,16 +193,19 @@ function DocumentsTab({ documents, setDocuments }: { documents: DocumentItem[]; 
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>{documents.length} documento{documents.length !== 1 ? 's' : ''}</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--surface-color)', padding: '6px 12px', borderRadius: 8, border: '1px solid var(--border-color)', flex: 1, maxWidth: 300 }}>
+          <Search size={16} style={{ color: 'var(--text-muted)' }} />
+          <input type="text" placeholder="Buscar documento..." value={search} onChange={e => setSearch(e.target.value)} style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '0.85rem' }} />
+        </div>
         <button onClick={() => setModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 18px', background: 'var(--primary-color)', color: 'white', borderRadius: 8, fontWeight: 700, fontSize: '0.875rem' }}>
           <Upload size={14} /> Subir Documento
         </button>
       </div>
 
-      {documents.length === 0 ? <EmptyState icon={FileText} text="No hay documentos legales." /> : (
+      {filteredDocs.length === 0 ? <EmptyState icon={FileText} text={documents.length === 0 ? "No hay documentos legales." : "No hay resultados para la búsqueda."} /> : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 14 }}>
-          {documents.map(d => (
+          {filteredDocs.map(d => (
             <div key={d.id} style={{ background: 'var(--surface-color)', borderRadius: 14, border: '1px solid var(--border-color)', padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(37,99,235,0.1)', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -229,41 +251,150 @@ function DocumentsTab({ documents, setDocuments }: { documents: DocumentItem[]; 
 }
 
 // ─── Contracts Tab ────────────────────────────────────────────────────────────
-function ContractsTab({ contracts }: { contracts: ContractItem[] }) {
+function ContractsTab({ contracts, setContracts, employees }: { contracts: ContractItem[]; setContracts: React.Dispatch<React.SetStateAction<ContractItem[]>>; employees: EmployeeItem[] }) {
+  const [modal, setModal] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState('');
+  
+  const [form, setForm] = useState({
+    employeeId: '',
+    contractType: 'FIXED_TERM',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: '',
+    salary: 0,
+    currency: 'COP',
+    description: ''
+  });
+
+  const filteredContracts = contracts.filter(c => {
+    const term = search.toLowerCase();
+    const empName = c.employee ? `${c.employee.firstName} ${c.employee.lastName}`.toLowerCase() : '';
+    return empName.includes(term) || c.employee?.documentNumber.includes(term) || c.contractType.toLowerCase().includes(term);
+  });
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const res = await fetch(`${API_URL}/api/hcm/contracts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${tok()}` },
+        body: JSON.stringify({
+          ...form,
+          salary: Number(form.salary),
+          endDate: form.endDate ? form.endDate : undefined
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // Buscar el empleado para agregarlo visualmente al nuevo contrato
+        const emp = employees.find(x => x.id === data.employeeId);
+        setContracts(p => [{ ...data, employee: emp }, ...p]);
+        setModal(false);
+        setForm({ employeeId: '', contractType: 'FIXED_TERM', startDate: new Date().toISOString().split('T')[0], endDate: '', salary: 0, currency: 'COP', description: '' });
+      }
+    } catch { /* ignore */ }
+    setSaving(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('¿Eliminar contrato? Esta acción no se puede deshacer.')) return;
+    await fetch(`${API_URL}/api/hcm/contracts/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${tok()}` } });
+    setContracts(p => p.filter(x => x.id !== id));
+  };
+
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>{contracts.length} contrato{contracts.length !== 1 ? 's' : ''} registrado{contracts.length !== 1 ? 's' : ''}</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--surface-color)', padding: '6px 12px', borderRadius: 8, border: '1px solid var(--border-color)', flex: 1, maxWidth: 300 }}>
+          <Search size={16} style={{ color: 'var(--text-muted)' }} />
+          <input type="text" placeholder="Buscar por nombre o documento..." value={search} onChange={e => setSearch(e.target.value)} style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '0.85rem' }} />
+        </div>
+        <button onClick={() => setModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 18px', background: 'var(--primary-color)', color: 'white', borderRadius: 8, fontWeight: 700, fontSize: '0.875rem' }}>
+          <Plus size={14} /> Nuevo Contrato
+        </button>
       </div>
 
-      {contracts.length === 0 ? <EmptyState icon={FileSignature} text="No hay contratos registrados en el sistema." /> : (
+      {filteredContracts.length === 0 ? <EmptyState icon={FileSignature} text={contracts.length === 0 ? "No hay contratos registrados en el sistema." : "No hay resultados."} /> : (
         <div style={{ background: 'var(--surface-color)', borderRadius: 16, border: '1px solid var(--border-color)', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: 'var(--background-color)' }}>
-                {['ID Empleado', 'Tipo', 'Inicio', 'Fin', 'Salario', 'Estado'].map(h => (
+                {['Empleado', 'Tipo', 'Inicio', 'Fin', 'Salario', 'Estado', ''].map(h => (
                   <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {contracts.map((c, i) => (
+              {filteredContracts.map((c, i) => (
                 <tr key={c.id} style={{ borderTop: i === 0 ? 'none' : '1px solid var(--border-color)' }}
                   onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = 'var(--background-color)'}
                   onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = ''}>
-                  <td style={{ padding: '12px 16px', fontSize: '0.85rem', fontWeight: 600 }}>{c.employeeId.substring(0,8)}...</td>
-                  <td style={{ padding: '12px 16px', fontSize: '0.85rem' }}>{c.contractType.replace('_', ' ')}</td>
+                  <td style={{ padding: '12px 16px' }}>
+                    <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{c.employee ? `${c.employee.firstName} ${c.employee.lastName}` : c.employeeId.substring(0,8)}</div>
+                    {c.employee && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{c.employee.documentNumber}</div>}
+                  </td>
+                  <td style={{ padding: '12px 16px', fontSize: '0.85rem' }}>{(CONTRACT_TYPES as any)[c.contractType] || c.contractType}</td>
                   <td style={{ padding: '12px 16px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{fmtDate(c.startDate)}</td>
                   <td style={{ padding: '12px 16px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{fmtDate(c.endDate)}</td>
                   <td style={{ padding: '12px 16px', fontSize: '0.85rem', fontWeight: 600 }}>
                     {new Intl.NumberFormat('es-CO', { style: 'currency', currency: c.currency, maximumFractionDigits: 0 }).format(c.salary)}
                   </td>
                   <td style={{ padding: '12px 16px' }}><Badge value={c.status} map={CONTRACT_STATUS as unknown as StatusMap} /></td>
+                  <td style={{ padding: '12px 16px' }}>
+                    <button onClick={() => handleDelete(c.id)} style={{ color: '#ef4444', padding: 5, borderRadius: 6, background: 'rgba(239,68,68,0.08)' }}><Trash2 size={13} /></button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+      )}
+
+      {modal && (
+        <LegalModal title="Nuevo Contrato" onClose={() => setModal(false)}>
+          <form onSubmit={handleCreate}>
+            <div className="form-group">
+              <label className="form-label">Empleado</label>
+              <select className="form-input" value={form.employeeId} onChange={e => setForm(p => ({ ...p, employeeId: e.target.value }))} required>
+                <option value="">Selecciona un empleado...</option>
+                {employees.map(emp => (
+                  <option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName} ({emp.documentNumber})</option>
+                ))}
+              </select>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+              <div className="form-group">
+                <label className="form-label">Tipo de Contrato</label>
+                <select className="form-input" value={form.contractType} onChange={e => setForm(p => ({ ...p, contractType: e.target.value }))} required>
+                  {Object.entries(CONTRACT_TYPES).map(([k, v]) => (
+                    <option key={k} value={k}>{v}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Salario Bruto</label>
+                <input type="number" className="form-input" value={form.salary} onChange={e => setForm(p => ({ ...p, salary: Number(e.target.value) }))} required min={0} />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+              <div className="form-group">
+                <label className="form-label">Fecha de Inicio</label>
+                <input type="date" className="form-input" value={form.startDate} onChange={e => setForm(p => ({ ...p, startDate: e.target.value }))} required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Fecha de Fin (Opcional)</label>
+                <input type="date" className="form-input" value={form.endDate} onChange={e => setForm(p => ({ ...p, endDate: e.target.value }))} />
+              </div>
+            </div>
+
+            <button type="submit" disabled={saving || !form.employeeId} className="btn-primary" style={{ marginTop: 24, width: '100%' }}>
+              {saving ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}><Loader size={15} /> Creando…</span> : 'Registrar Contrato'}
+            </button>
+          </form>
+        </LegalModal>
       )}
     </div>
   );
@@ -279,6 +410,7 @@ export function LawyerPage() {
   const [activeTab, setActiveTab]   = useState('overview');
   const [documents,   setDocuments] = useState<DocumentItem[]>([]);
   const [contracts,   setContracts] = useState<ContractItem[]>([]);
+  const [employees,   setEmployees] = useState<EmployeeItem[]>([]);
   const [loaded,      setLoaded]    = useState(false);
   const [loading,     setLoading]   = useState(false);
 
@@ -286,12 +418,14 @@ export function LawyerPage() {
     setLoading(true);
     try {
       const headers = { Authorization: `Bearer ${tok()}` };
-      const [rD, rC] = await Promise.all([
+      const [rD, rC, rE] = await Promise.all([
         fetch(`${API_URL}/api/documents?category=legal`, { headers }),
         fetch(`${API_URL}/api/hcm/contracts`,            { headers }),
+        fetch(`${API_URL}/api/hcm/employees`,            { headers }),
       ]);
       if (rD.ok) setDocuments(await rD.json());
       if (rC.ok) setContracts(await rC.json());
+      if (rE.ok) setEmployees(await rE.json());
     } catch { /* ignore */ }
     setLoading(false);
     setLoaded(true);
@@ -311,7 +445,7 @@ export function LawyerPage() {
     switch (activeTab) {
       case 'overview':  return <OverviewTab documents={documents} contracts={contracts} />;
       case 'documents': return <DocumentsTab documents={documents} setDocuments={setDocuments} />;
-      case 'contracts': return <ContractsTab contracts={contracts} />;
+      case 'contracts': return <ContractsTab contracts={contracts} setContracts={setContracts} employees={employees} />;
       default:          return null;
     }
   };
