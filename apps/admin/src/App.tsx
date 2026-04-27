@@ -12,6 +12,7 @@ import { DesignAreaPage } from './pages/DesignAreaPage';
 import { MarketingAreaPage } from './pages/MarketingAreaPage';
 import { AccountantPage } from './pages/AccountantPage';
 import { LawyerPage } from './pages/LawyerPage';
+import { AdminChat } from './components/AdminChat';
 import './App.css';
 
 
@@ -246,6 +247,7 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
+        <AdminChat />
       </main>
     </div>
   );

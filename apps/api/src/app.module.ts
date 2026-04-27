@@ -24,7 +24,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { VideogameModule } from './videogame/videogame.module';
 import { MediaModule } from './media/media.module';
-
+import { AiModule } from './ai/ai.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -53,6 +53,7 @@ import { MediaModule } from './media/media.module';
     CommsModule,
     VideogameModule,
     MediaModule,
+    AiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
