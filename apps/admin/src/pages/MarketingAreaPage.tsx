@@ -144,19 +144,19 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
     let newCursorPos = selectionStart;
 
     if (selectionStart === selectionEnd) {
-      let defaultStr = '';
+      let defaultLength = 0;
       switch(format) {
-        case 'bold': defaultStr = defaultText || 'texto fuerte'; textToInsert = `**${defaultStr}**`; newCursorPos += 2; break;
-        case 'italic': defaultStr = defaultText || 'texto cursiva'; textToInsert = `*${defaultStr}*`; newCursorPos += 1; break;
-        case 'h1': defaultStr = defaultText || 'Título 1'; textToInsert = `\n# ${defaultStr}\n`; newCursorPos += 3; break;
-        case 'h2': defaultStr = defaultText || 'Título 2'; textToInsert = `\n## ${defaultStr}\n`; newCursorPos += 4; break;
-        case 'quote': defaultStr = defaultText || 'Cita'; textToInsert = `\n> ${defaultStr}\n`; newCursorPos += 3; break;
-        case 'code': defaultStr = defaultText || 'código'; textToInsert = `\`${defaultStr}\``; newCursorPos += 1; break;
-        case 'ul': defaultStr = defaultText || 'Elemento de lista'; textToInsert = `\n- ${defaultStr}\n`; newCursorPos += 3; break;
-        case 'ol': defaultStr = defaultText || 'Elemento numerado'; textToInsert = `\n1. ${defaultStr}\n`; newCursorPos += 4; break;
-        case 'link': defaultStr = defaultText || 'texto del enlace'; textToInsert = `[${defaultStr}](url)`; newCursorPos += 1; break;
-        case 'image': defaultStr = defaultText || 'descripción de la imagen'; textToInsert = `![${defaultStr}](url)`; newCursorPos += 2; break;
-        case 'table': defaultStr = defaultText || 'Columna 1'; textToInsert = `\n| ${defaultStr} | Columna 2 |\n| ----------- | ----------- |\n| Fila 1      | Fila 1      |\n| Fila 2      | Fila 2      |\n`; newCursorPos += 4; break;
+        case 'bold': textToInsert = `****`; newCursorPos += 2; break;
+        case 'italic': textToInsert = `**`; newCursorPos += 1; break;
+        case 'h1': textToInsert = `\n# `; newCursorPos += 3; break;
+        case 'h2': textToInsert = `\n## `; newCursorPos += 4; break;
+        case 'quote': textToInsert = `\n> `; newCursorPos += 3; break;
+        case 'code': textToInsert = `\`\``; newCursorPos += 1; break;
+        case 'ul': textToInsert = `\n- `; newCursorPos += 3; break;
+        case 'ol': textToInsert = `\n1. `; newCursorPos += 4; break;
+        case 'link': textToInsert = `[](url)`; newCursorPos += 1; break;
+        case 'image': textToInsert = `![](url)`; newCursorPos += 2; break;
+        case 'table': textToInsert = `\n| Columna 1 | Columna 2 |\n| ----------- | ----------- |\n| Fila 1      | Fila 1      |\n| Fila 2      | Fila 2      |\n`; newCursorPos += 4; defaultLength = 9; break;
       }
       
       const newValue = value.substring(0, selectionStart) + textToInsert + value.substring(selectionEnd);
@@ -164,7 +164,7 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
 
       setTimeout(() => {
         textareaRef.current?.focus();
-        textareaRef.current?.setSelectionRange(newCursorPos, newCursorPos + defaultStr.length);
+        textareaRef.current?.setSelectionRange(newCursorPos, newCursorPos + defaultLength);
       }, 0);
     } else {
       const selectedText = value.substring(selectionStart, selectionEnd);
