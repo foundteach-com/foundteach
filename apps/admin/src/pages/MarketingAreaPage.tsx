@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Megaphone, Users, PenTool, BarChart2,
   Image as ImageIcon, Send, Save, Edit3,
@@ -376,10 +376,22 @@ export function MarketingAreaPage() {
     { id: '1', name: 'Laura Gómez', email: 'laura@email.com', source: 'Lanzamiento FoundTeach Pro', status: 'NEW', createdAt: new Date().toISOString() },
     { id: '2', name: 'Carlos Ruíz', email: 'carlos@email.com', source: 'Orgánico (Blog)', status: 'CONTACTED', createdAt: new Date().toISOString() }
   ]);
-  const [posts, setPosts] = useState<BlogPost[]>([
-    { id: '1', title: '5 Consejos para crear clases interactivas', content: 'Lorem ipsum...', author: 'Equipo Académico', status: 'PUBLISHED', publishedAt: '2026-04-20T10:00:00Z', tags: ['Educación', 'Tips'] },
-    { id: '2', title: 'Novedades de la plataforma: Módulo Legal', content: 'Lorem ipsum...', author: 'Área Tecnológica', status: 'DRAFT', tags: ['Actualizaciones'] }
-  ]);
+  const [posts, setPosts] = useState<BlogPost[]>(() => {
+    try {
+      const saved = localStorage.getItem('marketing_blog_posts');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error(e);
+    }
+    return [
+      { id: '1', title: '5 Consejos para crear clases interactivas', content: 'Lorem ipsum...', author: 'Equipo Académico', status: 'PUBLISHED', publishedAt: '2026-04-20T10:00:00Z', tags: ['Educación', 'Tips'] },
+      { id: '2', title: 'Novedades de la plataforma: Módulo Legal', content: 'Lorem ipsum...', author: 'Área Tecnológica', status: 'DRAFT', tags: ['Actualizaciones'] }
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('marketing_blog_posts', JSON.stringify(posts));
+  }, [posts]);
 
   const renderTab = () => {
     switch (activeTab) {
