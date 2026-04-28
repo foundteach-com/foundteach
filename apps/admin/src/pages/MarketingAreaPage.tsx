@@ -136,7 +136,7 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const insertFormat = (format: string, defaultText: string = '') => {
+  const insertFormat = (format: string) => {
     if (!textareaRef.current || !editingPost) return;
     const { selectionStart, selectionEnd, value } = textareaRef.current;
     
