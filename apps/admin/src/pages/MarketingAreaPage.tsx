@@ -4,7 +4,7 @@ import {
   Image as ImageIcon, Send, Save, Edit3,
   TrendingUp, Target, ArrowLeft,
   Bold, Italic, Heading1, Heading2, Quote,
-  Code, List, ListOrdered, Link
+  Code, List, ListOrdered, Link, Trash2, Table
 } from 'lucide-react';
 
 interface Campaign { id: string; name: string; platform: string; budget: number; spent: number; status: string; leads: number; startDate: string; }
@@ -156,6 +156,7 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
         case 'ol': defaultStr = defaultText || 'Elemento numerado'; textToInsert = `\n1. ${defaultStr}\n`; newCursorPos += 4; break;
         case 'link': defaultStr = defaultText || 'texto del enlace'; textToInsert = `[${defaultStr}](url)`; newCursorPos += 1; break;
         case 'image': defaultStr = defaultText || 'descripción de la imagen'; textToInsert = `![${defaultStr}](url)`; newCursorPos += 2; break;
+        case 'table': defaultStr = defaultText || 'Columna 1'; textToInsert = `\n| ${defaultStr} | Columna 2 |\n| ----------- | ----------- |\n| Fila 1      | Fila 1      |\n| Fila 2      | Fila 2      |\n`; newCursorPos += 4; break;
       }
       
       const newValue = value.substring(0, selectionStart) + textToInsert + value.substring(selectionEnd);
@@ -178,6 +179,7 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
         case 'ol': textToInsert = `\n1. ${selectedText}\n`; break;
         case 'link': textToInsert = `[${selectedText}](url)`; break;
         case 'image': textToInsert = `![${selectedText}](url)`; break;
+        case 'table': textToInsert = `\n| ${selectedText || 'Columna 1'} | Columna 2 |\n| ----------- | ----------- |\n| Fila 1      | Fila 1      |\n| Fila 2      | Fila 2      |\n`; break;
       }
       
       const newValue = value.substring(0, selectionStart) + textToInsert + value.substring(selectionEnd);
@@ -221,9 +223,14 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
                   
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '1px solid var(--border-color)' }}>
                     <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{p.author}</span>
-                    <button onClick={() => setEditingPost(p)} style={{ padding: '6px 12px', borderRadius: 6, background: 'var(--background-color)', color: 'var(--text-main)', fontSize: '0.8rem', fontWeight: 600, border: '1px solid var(--border-color)', cursor: 'pointer', display: 'flex', gap: 6, alignItems: 'center' }}>
-                      <Edit3 size={13} /> Editar
-                    </button>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button onClick={() => setPosts(posts.filter(post => post.id !== p.id))} style={{ padding: '6px 12px', borderRadius: 6, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '0.8rem', fontWeight: 600, border: '1px solid transparent', cursor: 'pointer', display: 'flex', gap: 6, alignItems: 'center' }}>
+                        <Trash2 size={13} /> Eliminar
+                      </button>
+                      <button onClick={() => setEditingPost(p)} style={{ padding: '6px 12px', borderRadius: 6, background: 'var(--background-color)', color: 'var(--text-main)', fontSize: '0.8rem', fontWeight: 600, border: '1px solid var(--border-color)', cursor: 'pointer', display: 'flex', gap: 6, alignItems: 'center' }}>
+                        <Edit3 size={13} /> Editar
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -255,6 +262,11 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
           <ArrowLeft size={16} /> Volver
         </button>
         <div style={{ display: 'flex', gap: 12 }}>
+          {posts.some(p => p.id === editingPost.id) && (
+            <button onClick={() => { setPosts(posts.filter(p => p.id !== editingPost.id)); setEditingPost(null); }} style={{ padding: '8px 16px', borderRadius: 8, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid transparent', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Trash2 size={14} /> Eliminar
+            </button>
+          )}
           <button onClick={() => handleSave('DRAFT')} style={{ padding: '8px 16px', borderRadius: 8, background: 'var(--background-color)', color: 'var(--text-main)', border: '1px solid var(--border-color)', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
             <Save size={14} /> Guardar Borrador
           </button>
@@ -303,6 +315,7 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
               <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
               <ToolbarButton icon={Link} onClick={() => insertFormat('link')} title="Enlace" />
               <ToolbarButton icon={ImageIcon} onClick={() => insertFormat('image')} title="Imagen" />
+              <ToolbarButton icon={Table} onClick={() => insertFormat('table')} title="Tabla" />
             </div>
 
             {/* Content Textarea */}
