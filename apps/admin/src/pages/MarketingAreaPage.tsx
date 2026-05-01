@@ -1,18 +1,18 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import LinkExtension from '@tiptap/extension-link';
 import ImageExtension from '@tiptap/extension-image';
-import TableExtension from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
+import { Table } from '@tiptap/extension-table';
+import { TableRow } from '@tiptap/extension-table-row';
+import { TableCell } from '@tiptap/extension-table-cell';
+import { TableHeader } from '@tiptap/extension-table-header';
 import {
   Megaphone, Users, PenTool, BarChart2,
   Image as ImageIcon, Send, Save, Edit3,
   TrendingUp, Target, ArrowLeft,
   Bold, Italic, Heading1, Heading2, Quote,
-  Code, List, ListOrdered, Link, Trash2, Table, Eye
+  Code, List, ListOrdered, Link, Trash2, Table as TableIcon
 } from 'lucide-react';
 
 interface Campaign { id: string; name: string; platform: string; budget: number; spent: number; status: string; leads: number; startDate: string; }
@@ -140,14 +140,13 @@ function OverviewTab({ campaigns, leads, posts }: { campaigns: Campaign[]; leads
 }
 
 // ─── Blog Editor Tab ─────────────────────────────────────────────────────────
-function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispatch<React.SetStateAction<BlogPost[]>> }) {
 function BlogEditorView({ editingPost, setEditingPost, posts, setPosts }: any) {
   const editor = useEditor({
     extensions: [
       StarterKit,
       LinkExtension.configure({ openOnClick: false }),
       ImageExtension,
-      TableExtension.configure({ resizable: true }),
+      Table.configure({ resizable: true }),
       TableRow,
       TableHeader,
       TableCell,
@@ -254,7 +253,7 @@ function BlogEditorView({ editingPost, setEditingPost, posts, setPosts }: any) {
               <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
               <ToolbarButton icon={Link} onClick={insertLink} active={editor.isActive('link')} title="Enlace" />
               <ToolbarButton icon={ImageIcon} onClick={insertImage} title="Imagen" />
-              <ToolbarButton icon={Table} onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} title="Tabla" />
+              <ToolbarButton icon={TableIcon} onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} title="Tabla" />
             </div>
 
             {/* TipTap Content */}
