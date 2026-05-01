@@ -25,6 +25,7 @@ import { AppService } from './app.service';
 import { VideogameModule } from './videogame/videogame.module';
 import { MediaModule } from './media/media.module';
 import { AiModule } from './ai/ai.module';
+import { BlogModule } from './blog/blog.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -54,6 +55,7 @@ import { AiModule } from './ai/ai.module';
     VideogameModule,
     MediaModule,
     AiModule,
+    BlogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

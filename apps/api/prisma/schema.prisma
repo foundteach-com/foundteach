@@ -787,3 +787,22 @@ model GameAsset {
 
   @@map("game_assets")
 }
+
+// ─── MARKETING — MÓDULO DE CONTENIDO Y BLOG ──────────────────────────────────
+
+model BlogPost {
+  id              String   @id @default(uuid())
+  title           String
+  slug            String   @unique
+  content         String   @db.Text
+  author          String   @default("Equipo Académico")
+  status          String   @default("DRAFT") // DRAFT | PUBLISHED
+  coverImage      String?  @map("cover_image")
+  metaDescription String?  @map("meta_description")
+  tags            String[]
+  publishedAt     DateTime? @map("published_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("blog_posts")
+}

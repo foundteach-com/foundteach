@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import LinkExtension from '@tiptap/extension-link';
@@ -12,12 +12,13 @@ import {
   Image as ImageIcon, Send, Save, Edit3,
   TrendingUp, Target, ArrowLeft,
   Bold, Italic, Heading1, Heading2, Quote,
-  Code, List, ListOrdered, Link, Trash2, Table as TableIcon
+  Code, List, ListOrdered, Link, Trash2, Table as TableIcon,
+  Loader
 } from 'lucide-react';
+import { blogService, type BlogPost } from '../services/blog.service';
 
 interface Campaign { id: string; name: string; platform: string; budget: number; spent: number; status: string; leads: number; startDate: string; }
 interface Lead { id: string; name: string; email: string; source: string; status: string; createdAt: string; }
-interface BlogPost { id: string; title: string; content: string; author: string; coverImage?: string; status: string; publishedAt?: string; tags: string[]; slug?: string; metaDescription?: string; }
 
 const fmtDate = (iso?: string) => iso ? new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 const fmtMoney = (num: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(num);
@@ -163,16 +164,40 @@ function BlogEditorView({ editingPost, setEditingPost, posts, setPosts }: any) {
     }
   });
 
-  const handleSave = (status: 'DRAFT' | 'PUBLISHED') => {
-    const isNew = !posts.find((p: any) => p.id === editingPost.id);
-    const updatedPost = { ...editingPost, status, publishedAt: status === 'PUBLISHED' ? new Date().toISOString() : editingPost.publishedAt };
-    
-    if (isNew) {
-      setPosts([updatedPost, ...posts]);
-    } else {
-      setPosts(posts.map((p: any) => p.id === updatedPost.id ? updatedPost : p));
+  const [isSaving, setIsSaving] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSave = async (status: 'DRAFT' | 'PUBLISHED') => {
+    setIsSaving(true);
+    try {
+      const isNew = !posts.find((p: any) => p.id === editingPost.id);
+      const data = { ...editingPost, status };
+      
+      if (isNew) {
+        const { id, ...createData } = data; // Backend generates UUID
+        const savedPost = await blogService.create(createData);
+        setPosts([savedPost, ...posts]);
+      } else {
+        const savedPost = await blogService.update(editingPost.id, data);
+        setPosts(posts.map((p: any) => p.id === savedPost.id ? savedPost : p));
+      }
+      setEditingPost(null);
+    } catch (err) {
+      alert('Error al guardar el artículo');
+    } finally {
+      setIsSaving(false);
     }
-    setEditingPost(null);
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const { url } = await blogService.uploadImage(file);
+      setEditingPost({ ...editingPost, coverImage: url });
+    } catch (err) {
+      alert('Error al subir imagen de portada');
+    }
   };
 
   if (!editor) return null;
@@ -182,9 +207,22 @@ function BlogEditorView({ editingPost, setEditingPost, posts, setPosts }: any) {
     if (url) editor.chain().focus().setLink({ href: url }).run();
   };
 
-  const insertImage = () => {
-    const url = window.prompt('URL de la imagen:');
-    if (url) editor.chain().focus().setImage({ src: url }).run();
+  const insertImage = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        try {
+          const { url } = await blogService.uploadImage(file);
+          editor.chain().focus().setImage({ src: url }).run();
+        } catch (err) {
+          alert('Error al subir imagen');
+        }
+      }
+    };
+    input.click();
   };
 
   return (
@@ -201,11 +239,11 @@ function BlogEditorView({ editingPost, setEditingPost, posts, setPosts }: any) {
               <Trash2 size={14} /> Eliminar
             </button>
           )}
-          <button onClick={() => handleSave('DRAFT')} style={{ padding: '8px 16px', borderRadius: 8, background: 'var(--background-color)', color: 'var(--text-main)', border: '1px solid var(--border-color)', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Save size={14} /> Guardar Borrador
+          <button onClick={() => handleSave('DRAFT')} disabled={isSaving} style={{ padding: '8px 16px', borderRadius: 8, background: 'var(--background-color)', color: 'var(--text-main)', border: '1px solid var(--border-color)', fontWeight: 600, fontSize: '0.875rem', cursor: isSaving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6, opacity: isSaving ? 0.7 : 1 }}>
+            {isSaving ? <Loader size={14} className="animate-spin" /> : <Save size={14} />} Guardar Borrador
           </button>
-          <button onClick={() => handleSave('PUBLISHED')} style={{ padding: '8px 16px', borderRadius: 8, background: 'var(--primary-color)', color: 'white', border: 'none', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Send size={14} /> Publicar
+          <button onClick={() => handleSave('PUBLISHED')} disabled={isSaving} style={{ padding: '8px 16px', borderRadius: 8, background: 'var(--primary-color)', color: 'white', border: 'none', fontWeight: 600, fontSize: '0.875rem', cursor: isSaving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6, opacity: isSaving ? 0.7 : 1 }}>
+            {isSaving ? <Loader size={14} className="animate-spin" /> : <Send size={14} />} Publicar
           </button>
         </div>
       </div>
@@ -215,13 +253,19 @@ function BlogEditorView({ editingPost, setEditingPost, posts, setPosts }: any) {
         <div style={{ flex: 1, padding: '40px', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--border-color)', overflowY: 'auto', background: 'var(--background-color)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto', width: '100%' }}>
             
-            {/* Cover Image Placeholder */}
-            <div style={{ width: '100%', height: 250, background: 'var(--surface-color)', borderRadius: 16, border: '2px dashed var(--border-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: 32, color: 'var(--text-muted)', cursor: 'pointer', transition: 'background 0.2s' }}
-              onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = 'var(--surface-hover)'}
-              onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = 'var(--surface-color)'}>
-              <ImageIcon size={32} style={{ marginBottom: 12 }} />
-              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Añadir imagen de portada</span>
-              <span style={{ fontSize: '0.75rem', marginTop: 4 }}>Recomendado: 1200 x 630px</span>
+            {/* Cover Image */}
+            <div 
+              onClick={() => coverInputRef.current?.click()}
+              style={{ width: '100%', height: 250, background: editingPost.coverImage ? `url(${editingPost.coverImage}) center/cover` : 'var(--surface-color)', borderRadius: 16, border: editingPost.coverImage ? 'none' : '2px dashed var(--border-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: 32, color: editingPost.coverImage ? 'white' : 'var(--text-muted)', cursor: 'pointer', transition: 'background 0.2s', position: 'relative', overflow: 'hidden' }}
+              onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.opacity = '0.9'}
+              onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.opacity = '1'}>
+              <input type="file" ref={coverInputRef} onChange={handleCoverUpload} accept="image/*" style={{ display: 'none' }} />
+              {editingPost.coverImage && <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)' }} />}
+              <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+                <ImageIcon size={32} style={{ marginBottom: 12 }} />
+                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{editingPost.coverImage ? 'Cambiar imagen de portada' : 'Añadir imagen de portada'}</span>
+                {!editingPost.coverImage && <span style={{ fontSize: '0.75rem', marginTop: 4, display: 'block' }}>Recomendado: 1200 x 630px</span>}
+              </div>
             </div>
 
             {/* Title Input */}
@@ -322,8 +366,12 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
                   
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '1px solid var(--border-color)' }}>
                     <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{p.author}</span>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <button onClick={() => setPosts(posts.filter(post => post.id !== p.id))} style={{ padding: '6px 12px', borderRadius: 6, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '0.8rem', fontWeight: 600, border: '1px solid transparent', cursor: 'pointer', display: 'flex', gap: 6, alignItems: 'center' }}>
+                      <button onClick={async () => {
+                        if (confirm('¿Eliminar este artículo?')) {
+                          await blogService.delete(p.id);
+                          setPosts(posts.filter(post => post.id !== p.id));
+                        }
+                      }} style={{ padding: '6px 12px', borderRadius: 6, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '0.8rem', fontWeight: 600, border: '1px solid transparent', cursor: 'pointer', display: 'flex', gap: 6, alignItems: 'center' }}>
                         <Trash2 size={13} /> Eliminar
                       </button>
                       <button onClick={() => setEditingPost(p)} style={{ padding: '6px 12px', borderRadius: 6, background: 'var(--background-color)', color: 'var(--text-main)', fontSize: '0.8rem', fontWeight: 600, border: '1px solid var(--border-color)', cursor: 'pointer', display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -332,7 +380,6 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
                     </div>
                   </div>
                 </div>
-              </div>
             ))}
           </div>
         )}
@@ -365,24 +412,26 @@ export function MarketingAreaPage() {
     { id: '1', name: 'Laura Gómez', email: 'laura@email.com', source: 'Lanzamiento FoundTeach Pro', status: 'NEW', createdAt: new Date().toISOString() },
     { id: '2', name: 'Carlos Ruíz', email: 'carlos@email.com', source: 'Orgánico (Blog)', status: 'CONTACTED', createdAt: new Date().toISOString() }
   ]);
-  const [posts, setPosts] = useState<BlogPost[]>(() => {
-    try {
-      const saved = localStorage.getItem('marketing_blog_posts');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.error(e);
-    }
-    return [
-      { id: '1', title: '5 Consejos para crear clases interactivas', content: 'Lorem ipsum...', author: 'Equipo Académico', status: 'PUBLISHED', publishedAt: '2026-04-20T10:00:00Z', tags: ['Educación', 'Tips'] },
-      { id: '2', title: 'Novedades de la plataforma: Módulo Legal', content: 'Lorem ipsum...', author: 'Área Tecnológica', status: 'DRAFT', tags: ['Actualizaciones'] }
-    ];
-  });
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem('marketing_blog_posts', JSON.stringify(posts));
-  }, [posts]);
+    const fetchPosts = async () => {
+      try {
+        const data = await blogService.getAll();
+        setPosts(data);
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
 
   const renderTab = () => {
+    if (loading && activeTab === 'blog') return <div style={{ padding: 40, textAlign: 'center' }}><Loader className="animate-spin" style={{ margin: '0 auto' }} /></div>;
+    
     switch (activeTab) {
       case 'overview':  return <OverviewTab campaigns={campaigns} leads={leads} posts={posts} />;
       case 'blog':      return <BlogTab posts={posts} setPosts={setPosts} />;
