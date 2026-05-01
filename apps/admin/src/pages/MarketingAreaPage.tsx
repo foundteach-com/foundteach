@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import {
   Megaphone, Users, PenTool, BarChart2,
   Image as ImageIcon, Send, Save, Edit3,
   TrendingUp, Target, ArrowLeft,
   Bold, Italic, Heading1, Heading2, Quote,
-  Code, List, ListOrdered, Link, Trash2, Table
+  Code, List, ListOrdered, Link, Trash2, Table, Eye
 } from 'lucide-react';
 
 interface Campaign { id: string; name: string; platform: string; budget: number; spent: number; status: string; leads: number; startDate: string; }
@@ -134,6 +136,7 @@ function OverviewTab({ campaigns, leads, posts }: { campaigns: Campaign[]; leads
 // ─── Blog Editor Tab ─────────────────────────────────────────────────────────
 function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispatch<React.SetStateAction<BlogPost[]>> }) {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
+  const [isPreview, setIsPreview] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const insertFormat = (format: string) => {
@@ -258,9 +261,20 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
     <div style={{ background: 'var(--surface-color)', borderRadius: 16, border: '1px solid var(--border-color)', overflow: 'hidden', minHeight: '70vh', display: 'flex', flexDirection: 'column' }}>
       {/* Editor Toolbar */}
       <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, background: 'var(--surface-color)', zIndex: 10 }}>
-        <button onClick={() => setEditingPost(null)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600 }}>
+        <button onClick={() => { setEditingPost(null); setIsPreview(false); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600 }}>
           <ArrowLeft size={16} /> Volver
         </button>
+        
+        {/* Toggle View */}
+        <div style={{ display: 'flex', background: 'var(--background-color)', borderRadius: 8, padding: 4 }}>
+          <button onClick={() => setIsPreview(false)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 6, fontSize: '0.8rem', fontWeight: 600, background: !isPreview ? 'white' : 'transparent', color: !isPreview ? 'var(--text-main)' : 'var(--text-muted)', boxShadow: !isPreview ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', cursor: 'pointer', transition: 'all 0.2s' }}>
+            <Edit3 size={14} /> Editar
+          </button>
+          <button onClick={() => setIsPreview(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 6, fontSize: '0.8rem', fontWeight: 600, background: isPreview ? 'white' : 'transparent', color: isPreview ? 'var(--text-main)' : 'var(--text-muted)', boxShadow: isPreview ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', cursor: 'pointer', transition: 'all 0.2s' }}>
+            <Eye size={14} /> Vista Previa
+          </button>
+        </div>
+
         <div style={{ display: 'flex', gap: 12 }}>
           {posts.some(p => p.id === editingPost.id) && (
             <button onClick={() => { setPosts(posts.filter(p => p.id !== editingPost.id)); setEditingPost(null); }} style={{ padding: '8px 16px', borderRadius: 8, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid transparent', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -304,32 +318,42 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
             />
 
             {/* Toolbar */}
-            <div style={{ display: 'flex', gap: 4, marginBottom: 16, padding: '8px 0', borderBottom: '1px solid var(--border-color)', borderTop: '1px solid var(--border-color)', flexWrap: 'wrap' }}>
-              <ToolbarButton icon={Bold} onClick={() => insertFormat('bold')} title="Negrita" />
-              <ToolbarButton icon={Italic} onClick={() => insertFormat('italic')} title="Cursiva" />
-              <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
-              <ToolbarButton icon={Heading1} onClick={() => insertFormat('h1')} title="Título 1" />
-              <ToolbarButton icon={Heading2} onClick={() => insertFormat('h2')} title="Título 2" />
-              <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
-              <ToolbarButton icon={Quote} onClick={() => insertFormat('quote')} title="Cita" />
-              <ToolbarButton icon={Code} onClick={() => insertFormat('code')} title="Código" />
-              <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
-              <ToolbarButton icon={List} onClick={() => insertFormat('ul')} title="Lista" />
-              <ToolbarButton icon={ListOrdered} onClick={() => insertFormat('ol')} title="Lista numerada" />
-              <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
-              <ToolbarButton icon={Link} onClick={() => insertFormat('link')} title="Enlace" />
-              <ToolbarButton icon={ImageIcon} onClick={() => insertFormat('image')} title="Imagen" />
-              <ToolbarButton icon={Table} onClick={() => insertFormat('table')} title="Tabla" />
-            </div>
+            {!isPreview && (
+              <div style={{ display: 'flex', gap: 4, marginBottom: 16, padding: '8px 0', borderBottom: '1px solid var(--border-color)', borderTop: '1px solid var(--border-color)', flexWrap: 'wrap' }}>
+                <ToolbarButton icon={Bold} onClick={() => insertFormat('bold')} title="Negrita" />
+                <ToolbarButton icon={Italic} onClick={() => insertFormat('italic')} title="Cursiva" />
+                <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
+                <ToolbarButton icon={Heading1} onClick={() => insertFormat('h1')} title="Título 1" />
+                <ToolbarButton icon={Heading2} onClick={() => insertFormat('h2')} title="Título 2" />
+                <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
+                <ToolbarButton icon={Quote} onClick={() => insertFormat('quote')} title="Cita" />
+                <ToolbarButton icon={Code} onClick={() => insertFormat('code')} title="Código" />
+                <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
+                <ToolbarButton icon={List} onClick={() => insertFormat('ul')} title="Lista" />
+                <ToolbarButton icon={ListOrdered} onClick={() => insertFormat('ol')} title="Lista numerada" />
+                <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
+                <ToolbarButton icon={Link} onClick={() => insertFormat('link')} title="Enlace" />
+                <ToolbarButton icon={ImageIcon} onClick={() => insertFormat('image')} title="Imagen" />
+                <ToolbarButton icon={Table} onClick={() => insertFormat('table')} title="Tabla" />
+              </div>
+            )}
 
-            {/* Content Textarea */}
-            <textarea 
-              ref={textareaRef}
-              placeholder="Escribe el contenido aquí. Puedes utilizar formato Markdown..."
-              value={editingPost.content}
-              onChange={e => setEditingPost({ ...editingPost, content: e.target.value })}
-              style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '1.1rem', lineHeight: 1.8, color: 'var(--text-main)', outline: 'none', minHeight: '50vh', resize: 'none', padding: 0, fontFamily: 'inherit' }}
-            />
+            {/* Content Textarea or Preview */}
+            {isPreview ? (
+              <div className="markdown-preview" style={{ minHeight: '50vh', padding: '10px 0' }}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {editingPost.content || '*No hay contenido escrito aún...*'}
+                </ReactMarkdown>
+              </div>
+            ) : (
+              <textarea 
+                ref={textareaRef}
+                placeholder="Escribe el contenido aquí. Puedes utilizar formato Markdown..."
+                value={editingPost.content}
+                onChange={e => setEditingPost({ ...editingPost, content: e.target.value })}
+                style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '1.1rem', lineHeight: 1.8, color: 'var(--text-main)', outline: 'none', minHeight: '50vh', resize: 'none', padding: 0, fontFamily: 'inherit' }}
+              />
+            )}
           </div>
         </div>
 
