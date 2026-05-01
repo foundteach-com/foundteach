@@ -1,6 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import LinkExtension from '@tiptap/extension-link';
+import ImageExtension from '@tiptap/extension-image';
+import TableExtension from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
+import TableCell from '@tiptap/extension-table-cell';
+import TableHeader from '@tiptap/extension-table-header';
 import {
   Megaphone, Users, PenTool, BarChart2,
   Image as ImageIcon, Send, Save, Edit3,
@@ -56,14 +62,14 @@ function TF({ label, children }: { label: string; children: React.ReactNode }) {
   return <div className="form-group"><label className="form-label">{label}</label>{children}</div>;
 }
 
-function ToolbarButton({ icon: Icon, onClick, title }: { icon: any, onClick: () => void, title: string }) {
+function ToolbarButton({ icon: Icon, onClick, title, active }: { icon: any, onClick: () => void, title: string, active?: boolean }) {
   return (
     <button 
       onClick={(e) => { e.preventDefault(); onClick(); }} 
       title={title} 
-      style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 8, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }}
-      onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = 'var(--background-color)'}
-      onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'transparent'}
+      style={{ background: active ? 'var(--surface-hover)' : 'transparent', border: 'none', cursor: 'pointer', color: active ? 'var(--primary-color)' : 'var(--text-muted)', padding: 8, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }}
+      onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface-hover)'}
+      onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = active ? 'var(--surface-hover)' : 'transparent'}
     >
       <Icon size={16} />
     </button>
@@ -135,65 +141,156 @@ function OverviewTab({ campaigns, leads, posts }: { campaigns: Campaign[]; leads
 
 // ─── Blog Editor Tab ─────────────────────────────────────────────────────────
 function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispatch<React.SetStateAction<BlogPost[]>> }) {
-  const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
-  const [isPreview, setIsPreview] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const insertFormat = (format: string) => {
-    if (!textareaRef.current || !editingPost) return;
-    const { selectionStart, selectionEnd, value } = textareaRef.current;
-    
-    let textToInsert = '';
-    let newCursorPos = selectionStart;
-
-    if (selectionStart === selectionEnd) {
-      let defaultLength = 0;
-      switch(format) {
-        case 'bold': textToInsert = `****`; newCursorPos += 2; break;
-        case 'italic': textToInsert = `**`; newCursorPos += 1; break;
-        case 'h1': textToInsert = `\n# `; newCursorPos += 3; break;
-        case 'h2': textToInsert = `\n## `; newCursorPos += 4; break;
-        case 'quote': textToInsert = `\n> `; newCursorPos += 3; break;
-        case 'code': textToInsert = `\`\``; newCursorPos += 1; break;
-        case 'ul': textToInsert = `\n- `; newCursorPos += 3; break;
-        case 'ol': textToInsert = `\n1. `; newCursorPos += 4; break;
-        case 'link': textToInsert = `[](url)`; newCursorPos += 1; break;
-        case 'image': textToInsert = `![](url)`; newCursorPos += 2; break;
-        case 'table': textToInsert = `\n| Columna 1 | Columna 2 |\n| ----------- | ----------- |\n| Fila 1      | Fila 1      |\n| Fila 2      | Fila 2      |\n`; newCursorPos += 4; defaultLength = 9; break;
+function BlogEditorView({ editingPost, setEditingPost, posts, setPosts }: any) {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      LinkExtension.configure({ openOnClick: false }),
+      ImageExtension,
+      TableExtension.configure({ resizable: true }),
+      TableRow,
+      TableHeader,
+      TableCell,
+    ],
+    content: editingPost.content || '',
+    onUpdate: ({ editor }) => {
+      setEditingPost((prev: any) => prev ? { ...prev, content: editor.getHTML() } : null);
+    },
+    editorProps: {
+      attributes: {
+        class: 'markdown-preview tiptap-editor',
+        style: 'min-height: 50vh; outline: none; padding: 10px 0;'
       }
-      
-      const newValue = value.substring(0, selectionStart) + textToInsert + value.substring(selectionEnd);
-      setEditingPost({ ...editingPost, content: newValue });
-
-      setTimeout(() => {
-        textareaRef.current?.focus();
-        textareaRef.current?.setSelectionRange(newCursorPos, newCursorPos + defaultLength);
-      }, 0);
-    } else {
-      const selectedText = value.substring(selectionStart, selectionEnd);
-      switch(format) {
-        case 'bold': textToInsert = `**${selectedText}**`; break;
-        case 'italic': textToInsert = `*${selectedText}*`; break;
-        case 'h1': textToInsert = `\n# ${selectedText}\n`; break;
-        case 'h2': textToInsert = `\n## ${selectedText}\n`; break;
-        case 'quote': textToInsert = `\n> ${selectedText}\n`; break;
-        case 'code': textToInsert = `\`${selectedText}\``; break;
-        case 'ul': textToInsert = `\n- ${selectedText}\n`; break;
-        case 'ol': textToInsert = `\n1. ${selectedText}\n`; break;
-        case 'link': textToInsert = `[${selectedText}](url)`; break;
-        case 'image': textToInsert = `![${selectedText}](url)`; break;
-        case 'table': textToInsert = `\n| ${selectedText || 'Columna 1'} | Columna 2 |\n| ----------- | ----------- |\n| Fila 1      | Fila 1      |\n| Fila 2      | Fila 2      |\n`; break;
-      }
-      
-      const newValue = value.substring(0, selectionStart) + textToInsert + value.substring(selectionEnd);
-      setEditingPost({ ...editingPost, content: newValue });
-
-      setTimeout(() => {
-        textareaRef.current?.focus();
-        textareaRef.current?.setSelectionRange(selectionStart, selectionStart + textToInsert.length);
-      }, 0);
     }
+  });
+
+  const handleSave = (status: 'DRAFT' | 'PUBLISHED') => {
+    const isNew = !posts.find((p: any) => p.id === editingPost.id);
+    const updatedPost = { ...editingPost, status, publishedAt: status === 'PUBLISHED' ? new Date().toISOString() : editingPost.publishedAt };
+    
+    if (isNew) {
+      setPosts([updatedPost, ...posts]);
+    } else {
+      setPosts(posts.map((p: any) => p.id === updatedPost.id ? updatedPost : p));
+    }
+    setEditingPost(null);
   };
+
+  if (!editor) return null;
+
+  const insertLink = () => {
+    const url = window.prompt('URL del enlace:');
+    if (url) editor.chain().focus().setLink({ href: url }).run();
+  };
+
+  const insertImage = () => {
+    const url = window.prompt('URL de la imagen:');
+    if (url) editor.chain().focus().setImage({ src: url }).run();
+  };
+
+  return (
+    <div style={{ background: 'var(--surface-color)', borderRadius: 16, border: '1px solid var(--border-color)', overflow: 'hidden', minHeight: '70vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Editor Toolbar */}
+      <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, background: 'var(--surface-color)', zIndex: 10 }}>
+        <button onClick={() => setEditingPost(null)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600 }}>
+          <ArrowLeft size={16} /> Volver
+        </button>
+        
+        <div style={{ display: 'flex', gap: 12 }}>
+          {posts.some((p: any) => p.id === editingPost.id) && (
+            <button onClick={() => { setPosts(posts.filter((p: any) => p.id !== editingPost.id)); setEditingPost(null); }} style={{ padding: '8px 16px', borderRadius: 8, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid transparent', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Trash2 size={14} /> Eliminar
+            </button>
+          )}
+          <button onClick={() => handleSave('DRAFT')} style={{ padding: '8px 16px', borderRadius: 8, background: 'var(--background-color)', color: 'var(--text-main)', border: '1px solid var(--border-color)', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Save size={14} /> Guardar Borrador
+          </button>
+          <button onClick={() => handleSave('PUBLISHED')} style={{ padding: '8px 16px', borderRadius: 8, background: 'var(--primary-color)', color: 'white', border: 'none', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Send size={14} /> Publicar
+          </button>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flex: 1 }}>
+        {/* Main Editor Area */}
+        <div style={{ flex: 1, padding: '40px', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--border-color)', overflowY: 'auto', background: 'var(--background-color)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto', width: '100%' }}>
+            
+            {/* Cover Image Placeholder */}
+            <div style={{ width: '100%', height: 250, background: 'var(--surface-color)', borderRadius: 16, border: '2px dashed var(--border-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: 32, color: 'var(--text-muted)', cursor: 'pointer', transition: 'background 0.2s' }}
+              onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = 'var(--surface-hover)'}
+              onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = 'var(--surface-color)'}>
+              <ImageIcon size={32} style={{ marginBottom: 12 }} />
+              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Añadir imagen de portada</span>
+              <span style={{ fontSize: '0.75rem', marginTop: 4 }}>Recomendado: 1200 x 630px</span>
+            </div>
+
+            {/* Title Input */}
+            <input 
+              type="text" 
+              placeholder="Escribe un título atrapante..." 
+              value={editingPost.title}
+              onChange={e => {
+                const newTitle = e.target.value;
+                const newSlug = newTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                setEditingPost({ ...editingPost, title: newTitle, slug: editingPost.slug || newSlug });
+              }}
+              style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-main)', outline: 'none', marginBottom: 16, padding: 0 }}
+            />
+
+            {/* TipTap Toolbar */}
+            <div style={{ display: 'flex', gap: 4, marginBottom: 16, padding: '8px 0', borderBottom: '1px solid var(--border-color)', borderTop: '1px solid var(--border-color)', flexWrap: 'wrap' }}>
+              <ToolbarButton icon={Bold} onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive('bold')} title="Negrita" />
+              <ToolbarButton icon={Italic} onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive('italic')} title="Cursiva" />
+              <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
+              <ToolbarButton icon={Heading1} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} active={editor.isActive('heading', { level: 1 })} title="Título 1" />
+              <ToolbarButton icon={Heading2} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive('heading', { level: 2 })} title="Título 2" />
+              <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
+              <ToolbarButton icon={Quote} onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive('blockquote')} title="Cita" />
+              <ToolbarButton icon={Code} onClick={() => editor.chain().focus().toggleCodeBlock().run()} active={editor.isActive('codeBlock')} title="Código" />
+              <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
+              <ToolbarButton icon={List} onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive('bulletList')} title="Lista" />
+              <ToolbarButton icon={ListOrdered} onClick={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive('orderedList')} title="Lista numerada" />
+              <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
+              <ToolbarButton icon={Link} onClick={insertLink} active={editor.isActive('link')} title="Enlace" />
+              <ToolbarButton icon={ImageIcon} onClick={insertImage} title="Imagen" />
+              <ToolbarButton icon={Table} onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} title="Tabla" />
+            </div>
+
+            {/* TipTap Content */}
+            <EditorContent editor={editor} />
+          </div>
+        </div>
+
+        {/* Sidebar Settings */}
+        <div style={{ width: 320, padding: 24, background: 'var(--surface-color)', display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div>
+            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: 12 }}>Configuración del Post</h4>
+            <TF label="Autor">
+              <input type="text" className="form-input" value={editingPost.author} onChange={e => setEditingPost({ ...editingPost, author: e.target.value })} />
+            </TF>
+            <TF label="URL Slug (opcional)">
+              <input type="text" className="form-input" placeholder="ejemplo-de-articulo" value={editingPost.slug || ''} onChange={e => setEditingPost({ ...editingPost, slug: e.target.value })} />
+            </TF>
+          </div>
+
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: 24 }}>
+            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: 12 }}>SEO & Descubrimiento</h4>
+            <TF label="Descripción Meta">
+              <textarea className="form-input" rows={3} placeholder="Breve resumen para Google y redes sociales..." style={{ resize: 'vertical' }} value={editingPost.metaDescription || ''} onChange={e => setEditingPost({ ...editingPost, metaDescription: e.target.value })}></textarea>
+            </TF>
+            <TF label="Etiquetas (separadas por coma)">
+              <input type="text" className="form-input" placeholder="Educación, Tecnología, Novedades" value={editingPost.tags?.join(', ')} onChange={e => setEditingPost({ ...editingPost, tags: e.target.value.split(',').map((t: string) => t.trim()) })} />
+            </TF>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispatch<React.SetStateAction<BlogPost[]>> }) {
+  const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   
   // Lista de Posts
   if (!editingPost) {
@@ -244,144 +341,9 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
     );
   }
 
-  // Vista de Editor (Estilo LinkedIn/Medium)
-  const handleSave = (status: 'DRAFT' | 'PUBLISHED') => {
-    const isNew = !posts.find(p => p.id === editingPost.id);
-    const updatedPost = { ...editingPost, status, publishedAt: status === 'PUBLISHED' ? new Date().toISOString() : editingPost.publishedAt };
-    
-    if (isNew) {
-      setPosts([updatedPost, ...posts]);
-    } else {
-      setPosts(posts.map(p => p.id === updatedPost.id ? updatedPost : p));
-    }
-    setEditingPost(null);
-  };
-
-  return (
-    <div style={{ background: 'var(--surface-color)', borderRadius: 16, border: '1px solid var(--border-color)', overflow: 'hidden', minHeight: '70vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Editor Toolbar */}
-      <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, background: 'var(--surface-color)', zIndex: 10 }}>
-        <button onClick={() => { setEditingPost(null); setIsPreview(false); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600 }}>
-          <ArrowLeft size={16} /> Volver
-        </button>
-        
-        {/* Toggle View */}
-        <div style={{ display: 'flex', background: 'var(--background-color)', borderRadius: 8, padding: 4 }}>
-          <button onClick={() => setIsPreview(false)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 6, fontSize: '0.8rem', fontWeight: 600, background: !isPreview ? 'white' : 'transparent', color: !isPreview ? 'var(--text-main)' : 'var(--text-muted)', boxShadow: !isPreview ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', cursor: 'pointer', transition: 'all 0.2s' }}>
-            <Edit3 size={14} /> Editar
-          </button>
-          <button onClick={() => setIsPreview(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 6, fontSize: '0.8rem', fontWeight: 600, background: isPreview ? 'white' : 'transparent', color: isPreview ? 'var(--text-main)' : 'var(--text-muted)', boxShadow: isPreview ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', cursor: 'pointer', transition: 'all 0.2s' }}>
-            <Eye size={14} /> Vista Previa
-          </button>
-        </div>
-
-        <div style={{ display: 'flex', gap: 12 }}>
-          {posts.some(p => p.id === editingPost.id) && (
-            <button onClick={() => { setPosts(posts.filter(p => p.id !== editingPost.id)); setEditingPost(null); }} style={{ padding: '8px 16px', borderRadius: 8, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid transparent', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Trash2 size={14} /> Eliminar
-            </button>
-          )}
-          <button onClick={() => handleSave('DRAFT')} style={{ padding: '8px 16px', borderRadius: 8, background: 'var(--background-color)', color: 'var(--text-main)', border: '1px solid var(--border-color)', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Save size={14} /> Guardar Borrador
-          </button>
-          <button onClick={() => handleSave('PUBLISHED')} style={{ padding: '8px 16px', borderRadius: 8, background: 'var(--primary-color)', color: 'white', border: 'none', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Send size={14} /> Publicar
-          </button>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', flex: 1 }}>
-        {/* Main Editor Area */}
-        <div style={{ flex: 1, padding: '40px', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--border-color)', overflowY: 'auto', background: 'var(--background-color)' }}>
-          <div style={{ maxWidth: 800, margin: '0 auto', width: '100%' }}>
-            
-            {/* Cover Image Placeholder */}
-            <div style={{ width: '100%', height: 250, background: 'var(--surface-color)', borderRadius: 16, border: '2px dashed var(--border-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: 32, color: 'var(--text-muted)', cursor: 'pointer', transition: 'background 0.2s' }}
-              onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = 'var(--surface-hover)'}
-              onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = 'var(--surface-color)'}>
-              <ImageIcon size={32} style={{ marginBottom: 12 }} />
-              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Añadir imagen de portada</span>
-              <span style={{ fontSize: '0.75rem', marginTop: 4 }}>Recomendado: 1200 x 630px</span>
-            </div>
-
-            {/* Title Input */}
-            <input 
-              type="text" 
-              placeholder="Escribe un título atrapante..." 
-              value={editingPost.title}
-              onChange={e => {
-                const newTitle = e.target.value;
-                const newSlug = newTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                setEditingPost({ ...editingPost, title: newTitle, slug: editingPost.slug || newSlug });
-              }}
-              style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-main)', outline: 'none', marginBottom: 16, padding: 0 }}
-            />
-
-            {/* Toolbar */}
-            {!isPreview && (
-              <div style={{ display: 'flex', gap: 4, marginBottom: 16, padding: '8px 0', borderBottom: '1px solid var(--border-color)', borderTop: '1px solid var(--border-color)', flexWrap: 'wrap' }}>
-                <ToolbarButton icon={Bold} onClick={() => insertFormat('bold')} title="Negrita" />
-                <ToolbarButton icon={Italic} onClick={() => insertFormat('italic')} title="Cursiva" />
-                <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
-                <ToolbarButton icon={Heading1} onClick={() => insertFormat('h1')} title="Título 1" />
-                <ToolbarButton icon={Heading2} onClick={() => insertFormat('h2')} title="Título 2" />
-                <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
-                <ToolbarButton icon={Quote} onClick={() => insertFormat('quote')} title="Cita" />
-                <ToolbarButton icon={Code} onClick={() => insertFormat('code')} title="Código" />
-                <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
-                <ToolbarButton icon={List} onClick={() => insertFormat('ul')} title="Lista" />
-                <ToolbarButton icon={ListOrdered} onClick={() => insertFormat('ol')} title="Lista numerada" />
-                <div style={{ width: 1, background: 'var(--border-color)', margin: '4px 4px' }} />
-                <ToolbarButton icon={Link} onClick={() => insertFormat('link')} title="Enlace" />
-                <ToolbarButton icon={ImageIcon} onClick={() => insertFormat('image')} title="Imagen" />
-                <ToolbarButton icon={Table} onClick={() => insertFormat('table')} title="Tabla" />
-              </div>
-            )}
-
-            {/* Content Textarea or Preview */}
-            {isPreview ? (
-              <div className="markdown-preview" style={{ minHeight: '50vh', padding: '10px 0' }}>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {editingPost.content || '*No hay contenido escrito aún...*'}
-                </ReactMarkdown>
-              </div>
-            ) : (
-              <textarea 
-                ref={textareaRef}
-                placeholder="Escribe el contenido aquí. Puedes utilizar formato Markdown..."
-                value={editingPost.content}
-                onChange={e => setEditingPost({ ...editingPost, content: e.target.value })}
-                style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '1.1rem', lineHeight: 1.8, color: 'var(--text-main)', outline: 'none', minHeight: '50vh', resize: 'none', padding: 0, fontFamily: 'inherit' }}
-              />
-            )}
-          </div>
-        </div>
-
-        {/* Sidebar Settings */}
-        <div style={{ width: 320, padding: 24, background: 'var(--surface-color)', display: 'flex', flexDirection: 'column', gap: 24 }}>
-          <div>
-            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: 12 }}>Configuración del Post</h4>
-            <TF label="Autor">
-              <input type="text" className="form-input" value={editingPost.author} onChange={e => setEditingPost({ ...editingPost, author: e.target.value })} />
-            </TF>
-            <TF label="URL Slug (opcional)">
-              <input type="text" className="form-input" placeholder="ejemplo-de-articulo" value={editingPost.slug || ''} onChange={e => setEditingPost({ ...editingPost, slug: e.target.value })} />
-            </TF>
-          </div>
-
-          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: 24 }}>
-            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: 12 }}>SEO & Descubrimiento</h4>
-            <TF label="Descripción Meta">
-              <textarea className="form-input" rows={3} placeholder="Breve resumen para Google y redes sociales..." style={{ resize: 'vertical' }} value={editingPost.metaDescription || ''} onChange={e => setEditingPost({ ...editingPost, metaDescription: e.target.value })}></textarea>
-            </TF>
-            <TF label="Etiquetas (separadas por coma)">
-              <input type="text" className="form-input" placeholder="Educación, Tecnología, Novedades" value={editingPost.tags?.join(', ')} onChange={e => setEditingPost({ ...editingPost, tags: e.target.value.split(',').map(t => t.trim()) })} />
-            </TF>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  if (editingPost) {
+    return <BlogEditorView editingPost={editingPost} setEditingPost={setEditingPost} posts={posts} setPosts={setPosts} />;
+  }
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
