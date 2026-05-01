@@ -51,8 +51,17 @@ export class BlogService {
   }
 
   async uploadImage(file: Express.Multer.File) {
-    // Usamos el MediaService existente para subir a DO Spaces
-    const asset = await this.mediaService.uploadFile(file, 'blog');
-    return { url: asset.url };
+    if (!file) {
+      throw new Error('No se recibió ningún archivo');
+    }
+    
+    try {
+      // Usamos el MediaService existente para subir a DO Spaces
+      const asset = await this.mediaService.uploadFile(file, 'blog');
+      return { url: asset.url };
+    } catch (error: any) {
+      console.error('Error detallado en uploadImage:', error);
+      throw new Error(`Error en DigitalOcean Spaces: ${error.message || 'Error de conexión'}`);
+    }
   }
 }

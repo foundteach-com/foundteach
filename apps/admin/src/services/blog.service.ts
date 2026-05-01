@@ -65,7 +65,11 @@ export const blogService = {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` },
       body: formData
     });
-    if (!res.ok) throw new Error('Error al subir imagen');
+    
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({ message: 'Error desconocido en el servidor' }));
+      throw new Error(errorData.message || 'Error al subir imagen');
+    }
     return res.json();
   }
 };

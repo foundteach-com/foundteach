@@ -195,8 +195,8 @@ function BlogEditorView({ editingPost, setEditingPost, posts, setPosts }: any) {
     try {
       const { url } = await blogService.uploadImage(file);
       setEditingPost({ ...editingPost, coverImage: url });
-    } catch (err) {
-      alert('Error al subir imagen de portada');
+    } catch (err: any) {
+      alert(`Error al subir imagen de portada: ${err.message}`);
     }
   };
 
