@@ -9,7 +9,7 @@ import {
 
 interface Campaign { id: string; name: string; platform: string; budget: number; spent: number; status: string; leads: number; startDate: string; }
 interface Lead { id: string; name: string; email: string; source: string; status: string; createdAt: string; }
-interface BlogPost { id: string; title: string; content: string; author: string; coverImage?: string; status: string; publishedAt?: string; tags: string[]; }
+interface BlogPost { id: string; title: string; content: string; author: string; coverImage?: string; status: string; publishedAt?: string; tags: string[]; slug?: string; metaDescription?: string; }
 
 const fmtDate = (iso?: string) => iso ? new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 const fmtMoney = (num: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(num);
@@ -199,7 +199,7 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>{posts.length} artículo{posts.length !== 1 ? 's' : ''}</span>
           <button 
-            onClick={() => setEditingPost({ id: Math.random().toString(36).substring(7), title: '', content: '', author: 'Equipo Académico', status: 'DRAFT', tags: [] })}
+            onClick={() => setEditingPost({ id: Math.random().toString(36).substring(7), title: '', content: '', author: 'Equipo Académico', status: 'DRAFT', tags: [], slug: '', metaDescription: '' })}
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 18px', background: 'var(--primary-color)', color: 'white', borderRadius: 8, fontWeight: 700, fontSize: '0.875rem', border: 'none', cursor: 'pointer' }}
           >
             <PenTool size={14} /> Escribir Artículo
@@ -295,7 +295,11 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
               type="text" 
               placeholder="Escribe un título atrapante..." 
               value={editingPost.title}
-              onChange={e => setEditingPost({ ...editingPost, title: e.target.value })}
+              onChange={e => {
+                const newTitle = e.target.value;
+                const newSlug = newTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                setEditingPost({ ...editingPost, title: newTitle, slug: editingPost.slug || newSlug });
+              }}
               style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-main)', outline: 'none', marginBottom: 16, padding: 0 }}
             />
 
@@ -337,14 +341,14 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
               <input type="text" className="form-input" value={editingPost.author} onChange={e => setEditingPost({ ...editingPost, author: e.target.value })} />
             </TF>
             <TF label="URL Slug (opcional)">
-              <input type="text" className="form-input" placeholder="ejemplo-de-articulo" />
+              <input type="text" className="form-input" placeholder="ejemplo-de-articulo" value={editingPost.slug || ''} onChange={e => setEditingPost({ ...editingPost, slug: e.target.value })} />
             </TF>
           </div>
 
           <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: 24 }}>
             <h4 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: 12 }}>SEO & Descubrimiento</h4>
             <TF label="Descripción Meta">
-              <textarea className="form-input" rows={3} placeholder="Breve resumen para Google y redes sociales..." style={{ resize: 'vertical' }}></textarea>
+              <textarea className="form-input" rows={3} placeholder="Breve resumen para Google y redes sociales..." style={{ resize: 'vertical' }} value={editingPost.metaDescription || ''} onChange={e => setEditingPost({ ...editingPost, metaDescription: e.target.value })}></textarea>
             </TF>
             <TF label="Etiquetas (separadas por coma)">
               <input type="text" className="form-input" placeholder="Educación, Tecnología, Novedades" value={editingPost.tags?.join(', ')} onChange={e => setEditingPost({ ...editingPost, tags: e.target.value.split(',').map(t => t.trim()) })} />
