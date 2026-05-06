@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MediaService } from '../media/media.service';
 
@@ -52,16 +52,27 @@ export class BlogService {
 
   async uploadImage(file: Express.Multer.File) {
     if (!file) {
-      throw new Error('No se recibió ningún archivo');
+      throw new InternalServerErrorException('No se recibió ningún archivo');
     }
-    
+
     try {
-      // Usamos el MediaService existente para subir a DO Spaces
-      const asset = await this.mediaService.uploadFile(file, 'blog');
-      return { url: asset.url };
+      const { v4: uuidv4 } = await import('uuid');
+      const fileExtension = file.originalname.split('.').pop();
+      const fileName = `blog/${uuidv4()}.${fileExtension}`;
+
+      // Subimos directamente con uploadBuffer: no crea registros en GameAsset
+      const url = await this.mediaService.uploadBuffer(
+        file.buffer,
+        fileName,
+        file.mimetype,
+      );
+
+      return { url };
     } catch (error: any) {
       console.error('Error detallado en uploadImage:', error);
-      throw new Error(`Error en DigitalOcean Spaces: ${error.message || 'Error de conexión'}`);
+      throw new InternalServerErrorException(
+        `Error en DigitalOcean Spaces: ${error.message || 'Error de conexión'}`,
+      );
     }
   }
 }
