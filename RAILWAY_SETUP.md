@@ -51,10 +51,11 @@ Pasos para configurar los servicios en Railway y conectar **foundteach.com** al 
 | `JWT_SECRET`     | Clave secreta para firmar los tokens JWT                     |
 | `JWT_EXPIRATION` | Duración del token (ej: `24h`)                               |
 | `PORT`           | Puerto (Railway lo inyecta automáticamente)                  |
-| `DO_SPACES_KEY`    | Access Key de DigitalOcean Spaces                            |
-| `DO_SPACES_SECRET` | Secret Key de DigitalOcean Spaces                            |
-| `DO_SPACES_BUCKET` | Nombre del Bucket (Space)                                    |
-| `DO_SPACES_REGION` | Región (ej: `nyc3`)                                          |
+| `DO_SPACES_KEY`         | Access Key de DigitalOcean Spaces                     |
+| `DO_SPACES_SECRET`      | Secret Key de DigitalOcean Spaces                     |
+| `DO_SPACES_BUCKET`      | Nombre del Bucket (Space) — ej: `foundteach-assets`   |
+| `DO_SPACES_REGION`      | Región — ej: `sfo3`                                   |
+| `DO_SPACES_ROOT_FOLDER` | Carpeta raíz del proyecto — ej: `foundteach-com`      |
 
 ### Base de datos
 
