@@ -17,6 +17,13 @@ export class MediaService implements OnModuleInit {
   private readonly s3Client: S3Client;
   private readonly bucketName: string;
   private readonly region: string;
+  /**
+   * Carpeta raíz dentro del bucket que agrupa todos los archivos del proyecto.
+   * Configurable con DO_SPACES_ROOT_FOLDER (por defecto: "foundteach-com").
+   * Estructura: {bucket}/{rootFolder}/{servicio}/{archivo}
+   * Ej: foundteach / foundteach-com / blog / uuid.jpg
+   */
+  private readonly rootFolder: string;
 
   constructor(
     private configService: ConfigService,
@@ -25,6 +32,9 @@ export class MediaService implements OnModuleInit {
     this.region = this.configService.get<string>('DO_SPACES_REGION') || 'nyc3';
     this.bucketName =
       this.configService.get<string>('DO_SPACES_BUCKET') || 'foundteach';
+    this.rootFolder =
+      this.configService.get<string>('DO_SPACES_ROOT_FOLDER') || 'foundteach-com';
+
     const endpoint = `https://${this.region}.digitaloceanspaces.com`;
 
     this.s3Client = new S3Client({
@@ -40,14 +50,14 @@ export class MediaService implements OnModuleInit {
 
   /**
    * Al iniciar el módulo, aplica una Bucket Policy que garantiza acceso
-   * público de lectura para todos los objetos del prefijo blog/.
-   * Esto es necesario cuando el bucket tiene ACL por objeto desactivado.
+   * público de lectura para todos los objetos bajo foundteach-com/blog/*.
    */
   async onModuleInit() {
     await this.ensurePublicBlogPolicy();
   }
 
   private async ensurePublicBlogPolicy() {
+    const blogPrefix = `${this.rootFolder}/blog/*`;
     const policy = JSON.stringify({
       Version: '2012-10-17',
       Statement: [
@@ -56,7 +66,7 @@ export class MediaService implements OnModuleInit {
           Effect: 'Allow',
           Principal: '*',
           Action: 's3:GetObject',
-          Resource: `arn:aws:s3:::${this.bucketName}/blog/*`,
+          Resource: `arn:aws:s3:::${this.bucketName}/${blogPrefix}`,
         },
       ],
     });
@@ -68,9 +78,10 @@ export class MediaService implements OnModuleInit {
           Policy: policy,
         }),
       );
-      this.logger.log('✅ Política pública para blog/ aplicada en DO Spaces');
+      this.logger.log(
+        `✅ Política pública para ${blogPrefix} aplicada en DO Spaces`,
+      );
     } catch (err: any) {
-      // Si la política falla, intentar via ACL por objeto en cada upload
       this.logger.warn(
         `⚠️ No se pudo aplicar Bucket Policy (${err.message}). Se usará ACL por objeto como alternativa.`,
       );
@@ -78,8 +89,25 @@ export class MediaService implements OnModuleInit {
   }
 
   /**
-   * Intenta hacer un objeto públicamente legible.
-   * Primero intenta ACL por objeto; si falla, lo registra sin bloquear.
+   * Construye la clave completa del objeto: {rootFolder}/{folder}/{uuid}.{ext}
+   * Ej: foundteach-com/blog/3f8a...jpg
+   */
+  private buildKey(folder: string, originalName: string): string {
+    const ext = originalName.split('.').pop();
+    return `${this.rootFolder}/${folder}/${uuidv4()}.${ext}`;
+  }
+
+  /**
+   * Construye la URL pública de un objeto en DO Spaces.
+   */
+  private publicUrl(key: string): string {
+    return `https://${this.bucketName}.${this.region}.digitaloceanspaces.com/${key}`;
+  }
+
+  /**
+   * Intenta hacer un objeto públicamente legible vía ACL.
+   * Si el bucket tiene ACL desactivado, falla silenciosamente
+   * (la Bucket Policy del onModuleInit lo cubre).
    */
   private async tryMakePublic(key: string) {
     try {
@@ -96,29 +124,25 @@ export class MediaService implements OnModuleInit {
   }
 
   /**
-   * Construye la URL pública de un objeto en DO Spaces.
+   * Sube un archivo Express.Multer.File a DO Spaces y crea un registro en GameAsset.
+   * Carpeta destino: {rootFolder}/{folder}/
    */
-  private publicUrl(key: string): string {
-    return `https://${this.bucketName}.${this.region}.digitaloceanspaces.com/${key}`;
-  }
-
-  async uploadFile(file: Express.Multer.File, folder = 'videogame') {
-    const fileExtension = file.originalname.split('.').pop();
-    const fileName = `${folder}/${uuidv4()}.${fileExtension}`;
+  async uploadFile(file: Express.Multer.File, folder = 'app') {
+    const key = this.buildKey(folder, file.originalname);
 
     try {
       await this.s3Client.send(
         new PutObjectCommand({
           Bucket: this.bucketName,
-          Key: fileName,
+          Key: key,
           Body: file.buffer,
           ContentType: file.mimetype,
         }),
       );
 
-      await this.tryMakePublic(fileName);
+      await this.tryMakePublic(key);
 
-      const url = this.publicUrl(fileName);
+      const url = this.publicUrl(key);
 
       const asset = await this.prisma.gameAsset.create({
         data: {
@@ -139,24 +163,30 @@ export class MediaService implements OnModuleInit {
   }
 
   /**
-   * Sube un buffer directamente a DO Spaces y garantiza acceso público.
-   * No crea registros en la base de datos.
+   * Sube un buffer directamente a DO Spaces sin crear registro en la DB.
+   * El parámetro fileName debe incluir la subcarpeta de servicio (ej: "blog/uuid.jpg")
+   * — el rootFolder se antepone automáticamente.
    */
   async uploadBuffer(buffer: Buffer, fileName: string, mimetype: string) {
+    // Si el fileName ya incluye el rootFolder, lo usamos tal cual.
+    // Si no, lo prefijamos para mantener la estructura.
+    const key = fileName.startsWith(this.rootFolder)
+      ? fileName
+      : `${this.rootFolder}/${fileName}`;
+
     try {
       await this.s3Client.send(
         new PutObjectCommand({
           Bucket: this.bucketName,
-          Key: fileName,
+          Key: key,
           Body: buffer,
           ContentType: mimetype,
         }),
       );
 
-      // Intentar hacer el objeto público (vía ACL o Bucket Policy lo cubre)
-      await this.tryMakePublic(fileName);
+      await this.tryMakePublic(key);
 
-      return this.publicUrl(fileName);
+      return this.publicUrl(key);
     } catch (error) {
       this.logger.error(
         `Error uploading buffer to Spaces: ${error instanceof Error ? error.message : String(error)}`,
@@ -187,9 +217,9 @@ export class MediaService implements OnModuleInit {
   async getPresignedUploadUrl(
     fileName: string,
     contentType: string,
-    folder = 'videogame',
+    folder = 'app',
   ) {
-    const key = `${folder}/${uuidv4()}-${fileName}`;
+    const key = this.buildKey(folder, fileName);
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
       Key: key,
