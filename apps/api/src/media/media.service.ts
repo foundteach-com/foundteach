@@ -41,7 +41,9 @@ export class MediaService {
           Key: fileName,
           Body: file.buffer,
           ContentType: file.mimetype,
-          ACL: 'public-read',
+          // ACL eliminado: DO Spaces rechaza con Access Denied cuando el bucket
+          // tiene restringido el control de ACLs por objeto. Los permisos públicos
+          // se gestionan a nivel de bucket en el panel de DigitalOcean.
         }),
       );
 
@@ -75,7 +77,7 @@ export class MediaService {
           Key: fileName,
           Body: buffer,
           ContentType: mimetype,
-          ACL: 'public-read',
+          // ACL eliminado: DO Spaces gestiona permisos a nivel de bucket.
         }),
       );
 
@@ -115,7 +117,7 @@ export class MediaService {
       Bucket: this.bucketName,
       Key: key,
       ContentType: contentType,
-      ACL: 'public-read',
+      // ACL eliminado: DO Spaces gestiona permisos a nivel de bucket.
     });
 
     try {
