@@ -19,11 +19,10 @@ export class MediaService implements OnModuleInit {
   private readonly region: string;
   /**
    * Carpeta raíz dentro del bucket que agrupa todos los archivos del proyecto.
-   * Configurable con DO_SPACES_ROOT_FOLDER (por defecto: "foundteach-com").
-   * Estructura: {bucket}/{rootFolder}/{servicio}/{archivo}
-   * Ej: foundteach / foundteach-com / blog / uuid.jpg
+   * Estructura: {bucket}/{ROOT_FOLDER}/{servicio}/{archivo}
+   * Ej: foundteach-assets / foundteach-com / blog / uuid.jpg
    */
-  private readonly rootFolder: string;
+  private readonly ROOT_FOLDER = 'foundteach-com';
 
   constructor(
     private configService: ConfigService,
@@ -32,8 +31,6 @@ export class MediaService implements OnModuleInit {
     this.region = this.configService.get<string>('DO_SPACES_REGION') || 'nyc3';
     this.bucketName =
       this.configService.get<string>('DO_SPACES_BUCKET') || 'foundteach';
-    this.rootFolder =
-      this.configService.get<string>('DO_SPACES_ROOT_FOLDER') || 'foundteach-com';
 
     const endpoint = `https://${this.region}.digitaloceanspaces.com`;
 
@@ -57,7 +54,7 @@ export class MediaService implements OnModuleInit {
   }
 
   private async ensurePublicBlogPolicy() {
-    const blogPrefix = `${this.rootFolder}/blog/*`;
+    const blogPrefix = `${this.ROOT_FOLDER}/blog/*`;
     const policy = JSON.stringify({
       Version: '2012-10-17',
       Statement: [
@@ -94,7 +91,7 @@ export class MediaService implements OnModuleInit {
    */
   private buildKey(folder: string, originalName: string): string {
     const ext = originalName.split('.').pop();
-    return `${this.rootFolder}/${folder}/${uuidv4()}.${ext}`;
+    return `${this.ROOT_FOLDER}/${folder}/${uuidv4()}.${ext}`;
   }
 
   /**
@@ -168,11 +165,11 @@ export class MediaService implements OnModuleInit {
    * — el rootFolder se antepone automáticamente.
    */
   async uploadBuffer(buffer: Buffer, fileName: string, mimetype: string) {
-    // Si el fileName ya incluye el rootFolder, lo usamos tal cual.
+    // Si el fileName ya incluye el ROOT_FOLDER, lo usamos tal cual.
     // Si no, lo prefijamos para mantener la estructura.
-    const key = fileName.startsWith(this.rootFolder)
+    const key = fileName.startsWith(this.ROOT_FOLDER)
       ? fileName
-      : `${this.rootFolder}/${fileName}`;
+      : `${this.ROOT_FOLDER}/${fileName}`;
 
     try {
       await this.s3Client.send(
