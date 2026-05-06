@@ -22,6 +22,8 @@ interface Lead { id: string; name: string; email: string; source: string; status
 
 const fmtDate = (iso?: string) => iso ? new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 const fmtMoney = (num: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(num);
+// Elimina etiquetas HTML del contenido Tiptap para mostrar un resumen de texto plano
+const stripHtml = (html: string) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
 const CAMPAIGN_STATUS = { ACTIVE: { label: 'Activa', color: '#059669', bg: 'rgba(5,150,105,0.1)' }, PAUSED: { label: 'Pausada', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' }, ENDED: { label: 'Finalizada', color: '#64748b', bg: 'rgba(100,116,139,0.1)' } } as const;
 const LEAD_STATUS = { NEW: { label: 'Nuevo', color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' }, CONTACTED: { label: 'Contactado', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' }, QUALIFIED: { label: 'Calificado', color: '#059669', bg: 'rgba(5,150,105,0.1)' }, LOST: { label: 'Perdido', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' } } as const;
@@ -362,7 +364,7 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: React.Dispa
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{fmtDate(p.publishedAt || new Date().toISOString())}</span>
                   </div>
                   <h4 style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: 8, lineHeight: 1.3 }}>{p.title || 'Sin Título'}</h4>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 16, flex: 1 }}>{p.content ? p.content.substring(0, 100) + '...' : 'Sin contenido...'}</p>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 16, flex: 1 }}>{p.content ? stripHtml(p.content).substring(0, 120) + '...' : 'Sin contenido...'}</p>
                   
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '1px solid var(--border-color)' }}>
                     <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{p.author}</span>
