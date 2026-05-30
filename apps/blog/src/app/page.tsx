@@ -22,14 +22,17 @@ async function getPosts(): Promise<BlogPost[]> {
       next: { revalidate: 60 }, // revalidar cada 60 segundos (ISR)
     });
     if (!res.ok) return [];
-    const posts: BlogPost[] = await res.json();
-    return posts.filter((p) => p.status === 'PUBLISHED');
-  } catch {
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.filter((p: BlogPost) => p.status === 'PUBLISHED');
+  } catch (error) {
+    console.error('Error fetching posts:', error);
     return [];
   }
 }
 
-function stripHtml(html: string) {
+function stripHtml(html?: string) {
+  if (!html) return '';
   return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 

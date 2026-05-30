@@ -22,8 +22,11 @@ async function getAllPosts(): Promise<BlogPost[]> {
   try {
     const res = await fetch(`${API_URL}/api/blog`, { next: { revalidate: 60 } });
     if (!res.ok) return [];
-    return res.json();
-  } catch {
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data;
+  } catch (error) {
+    console.error('Error fetching posts:', error);
     return [];
   }
 }
@@ -111,7 +114,7 @@ export default async function ArticlePage(
       {/* Contenido HTML generado por Tiptap */}
       <div
         className="article-content"
-        dangerouslySetInnerHTML={{ __html: post.content }}
+        dangerouslySetInnerHTML={{ __html: post.content || '' }}
       />
     </article>
   );
