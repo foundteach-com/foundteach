@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, Brain, Users, Heart, Shield, MessageCircle, Home, BookOpen, Globe, User, ArrowRight, Sparkles } from 'lucide-react';
+import { Activity, Brain, Users, Heart, Shield, MessageCircle, Home, BookOpen, Globe, User, ArrowRight, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -56,9 +56,14 @@ export default function SimulacionPage() {
   const [summary, setSummary] = useState<CharacterSummary | null>(null);
   const [decisions, setDecisions] = useState<Decision[]>([]);
   const [currentDecision, setCurrentDecision] = useState<Decision | null>(null);
+  const [totalDecisionsInStage, setTotalDecisionsInStage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Duolingo-style UI States
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isTakingDecision, setIsTakingDecision] = useState(false);
-  const [showResult, setShowResult] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [drawerVariant, setDrawerVariant] = useState<'success' | 'warning'>('success');
   const [lastChoiceText, setLastChoiceText] = useState('');
 
   const fetchState = async () => {
@@ -76,17 +81,17 @@ export default function SimulacionPage() {
 
   const fetchDecisions = async (stage: string) => {
     try {
-      // Fetch all decisions for this stage
       const res = await fetch(`${API_URL}/api/rdv/decisions?stage=${stage}`);
       if (!res.ok) throw new Error('Error al cargar decisiones');
       const allDecisions: Decision[] = await res.json();
+      
+      // The total decisions in this stage
+      setTotalDecisionsInStage(Math.max(1, allDecisions.length));
 
-      // Fetch progress to know which decisions have already been taken
       const progressRes = await fetch(`${API_URL}/api/rdv/progress/${characterId}`);
       const progress: ProgressEntry[] = progressRes.ok ? await progressRes.json() : [];
       const takenIds = new Set(progress.map((p) => p.decisionId));
 
-      // Filter out already-taken decisions and present next one in order
       const pending = allDecisions.filter((d) => !takenIds.has(d.id));
       setDecisions(pending);
 
@@ -115,12 +120,16 @@ export default function SimulacionPage() {
     }
   }, [characterId]);
 
-  const handleDecision = async (optionId: string) => {
-    if (!currentDecision) return;
+  const handleSelectOption = (optionId: string) => {
+    if (isTakingDecision || showDrawer) return;
+    setSelectedOptionId(optionId);
+  };
+
+  const handleConfirmDecision = async () => {
+    if (!selectedOptionId || !currentDecision) return;
     setIsTakingDecision(true);
 
-    // Store chosen option text for feedback
-    const chosenOption = currentDecision.options.find((o) => o.id === optionId);
+    const chosenOption = currentDecision.options.find((o) => o.id === selectedOptionId);
     setLastChoiceText(chosenOption?.texto || '');
 
     try {
@@ -130,7 +139,7 @@ export default function SimulacionPage() {
         body: JSON.stringify({
           characterId,
           decisionId: currentDecision.id,
-          optionId
+          optionId: selectedOptionId
         }),
       });
 
@@ -138,12 +147,11 @@ export default function SimulacionPage() {
         throw new Error('Error al enviar la decisión');
       }
 
-      // Show a brief feedback screen
-      setShowResult(true);
-      setTimeout(async () => {
-        setShowResult(false);
-        await initialize();
-      }, 2000);
+      // Para el MVP, mostramos 'success' siempre, pero en el futuro
+      // podríamos determinar si la decisión fue buena o mala y mostrar 'warning'.
+      setDrawerVariant('success');
+      setShowDrawer(true);
+      
     } catch (err) {
       console.error(err);
       alert('Hubo un error al registrar tu decisión.');
@@ -152,7 +160,13 @@ export default function SimulacionPage() {
     }
   };
 
-  if (isLoading) {
+  const handleContinue = async () => {
+    setShowDrawer(false);
+    setSelectedOptionId(null);
+    await initialize();
+  };
+
+  if (isLoading && !summary) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[var(--color-brand-accent)]"></div>
@@ -169,8 +183,12 @@ export default function SimulacionPage() {
     );
   }
 
+  // Calculate Progress
+  const completedInStage = summary.decisionsCount; // assuming all progress maps to current stage for now
+  const progressPercentage = Math.min(100, Math.round((completedInStage / totalDecisionsInStage) * 100));
+
   return (
-    <main className="min-h-screen p-4 sm:p-8 relative">
+    <main className="min-h-screen pb-32 sm:pb-8 p-4 sm:p-8 relative overflow-hidden">
       {/* Background ambient effects */}
       <div className="fixed top-0 right-0 w-[800px] h-[800px] bg-[var(--color-brand-purple)] rounded-full mix-blend-multiply filter blur-[200px] opacity-10 pointer-events-none" />
       <div className="fixed bottom-0 left-0 w-[800px] h-[800px] bg-[var(--color-brand-indigo)] rounded-full mix-blend-multiply filter blur-[200px] opacity-10 pointer-events-none" />
@@ -223,106 +241,165 @@ export default function SimulacionPage() {
         </div>
 
         {/* Center Panel: Main Gameplay / Decision */}
-        <div className="lg:col-span-9">
-          <AnimatePresence mode="wait">
-            {showResult ? (
-              <motion.div
-                key="result-feedback"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.05 }}
-                className="glass-panel p-12 rounded-3xl h-full flex flex-col items-center justify-center text-center min-h-[400px] relative overflow-hidden"
+        <div className="lg:col-span-9 flex flex-col">
+          
+          {/* Top Progress Bar (Duolingo Style) */}
+          <div className="w-full mb-6 glass-panel rounded-full p-4 flex items-center gap-4 shadow-lg border border-white/5">
+            <Sparkles className="w-6 h-6 text-[var(--color-brand-accent)] shrink-0" />
+            <div className="flex-1 h-4 bg-white/5 rounded-full overflow-hidden relative">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `\${progressPercentage}%` }}
+                transition={{ duration: 1, ease: 'easeOut' }}
+                className="absolute top-0 left-0 h-full bg-gradient-to-r from-[var(--color-brand-purple)] to-[var(--color-brand-accent)] rounded-full"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-brand-purple)]/10 to-[var(--color-brand-accent)]/10 pointer-events-none" />
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                  className="w-20 h-20 rounded-full bg-gradient-to-r from-[var(--color-brand-purple)] to-[var(--color-brand-accent)] flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(245,158,11,0.3)]"
-                >
-                  <Sparkles className="w-10 h-10 text-white" />
-                </motion.div>
-                <h2 className="font-display text-3xl font-bold text-white mb-4">Decisión Tomada</h2>
-                <p className="text-gray-300 text-lg max-w-md leading-relaxed mb-2">
-                  &ldquo;{lastChoiceText}&rdquo;
-                </p>
-                <p className="text-gray-500 text-sm">Calculando consecuencias...</p>
-                <div className="mt-6 w-48 h-1 bg-white/10 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: '100%' }}
-                    transition={{ duration: 1.8, ease: 'easeInOut' }}
-                    className="h-full bg-gradient-to-r from-[var(--color-brand-purple)] to-[var(--color-brand-accent)] rounded-full"
-                  />
-                </div>
+                {/* Shine effect */}
+                <div className="absolute top-0 left-0 w-full h-1/3 bg-white/30 rounded-full" />
               </motion.div>
-            ) : currentDecision ? (
-              <motion.div
-                key={currentDecision.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="glass-panel p-8 sm:p-12 rounded-3xl h-full flex flex-col justify-center relative overflow-hidden"
-              >
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--color-brand-purple)] to-[var(--color-brand-accent)]" />
-                
-                <div className="flex items-center justify-between mb-6">
-                  <span className="inline-block py-1 px-3 rounded-full bg-white/5 border border-white/10 text-[var(--color-brand-accent)] text-xs font-medium tracking-wider uppercase">
-                    Evento Crítico
-                  </span>
-                  <span className="text-xs text-gray-500 font-medium">
-                    Decisiones tomadas: {summary.decisionsCount}
-                  </span>
-                </div>
-                
-                <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-6">
-                  {currentDecision.titulo}
-                </h2>
-                
-                <p className="text-lg text-gray-300 leading-relaxed mb-12 max-w-3xl">
-                  {currentDecision.descripcion}
-                </p>
+            </div>
+            <span className="font-bold text-gray-300 w-12 text-right">{progressPercentage}%</span>
+          </div>
 
-                <div className="space-y-4 max-w-2xl">
-                  {currentDecision.options.map((option, index) => (
-                    <motion.button
-                      key={option.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      onClick={() => handleDecision(option.id)}
-                      disabled={isTakingDecision}
-                      className="w-full text-left p-6 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all group flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <span className="text-gray-200 text-lg pr-4">{option.texto}</span>
-                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-[var(--color-brand-accent)] group-hover:text-white transition-colors">
-                        <ArrowRight size={20} />
-                      </div>
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="no-decisions"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="glass-panel p-12 rounded-3xl h-full flex flex-col items-center justify-center text-center"
-              >
-                <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
-                  <Globe className="w-12 h-12 text-gray-500" />
-                </div>
-                <h2 className="font-display text-2xl font-bold text-white mb-4">Un Momento de Paz</h2>
-                <p className="text-gray-400 max-w-md">
-                  Actualmente no hay decisiones críticas disponibles para esta etapa de desarrollo. Pronto surgirán nuevos retos en el camino de {summary.character.nombre}.
-                </p>
-                <p className="mt-4 text-xs text-gray-600">(Asegúrate de haber corrido las migraciones y seeders en el backend para tener decisiones cargadas en la BD).</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Game Area */}
+          <div className="flex-1 h-full">
+            <AnimatePresence mode="wait">
+              {currentDecision ? (
+                <motion.div
+                  key={currentDecision.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="h-full flex flex-col justify-center max-w-4xl mx-auto"
+                >
+                  <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-6 text-center leading-tight">
+                    {currentDecision.titulo}
+                  </h2>
+                  
+                  <p className="text-xl text-gray-300 leading-relaxed mb-12 text-center">
+                    {currentDecision.descripcion}
+                  </p>
+
+                  <div className="space-y-4 mb-8">
+                    {currentDecision.options.map((option, index) => {
+                      const isSelected = selectedOptionId === option.id;
+                      return (
+                        <motion.button
+                          key={option.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          onClick={() => handleSelectOption(option.id)}
+                          disabled={isTakingDecision || showDrawer}
+                          className={`w-full text-left p-6 rounded-2xl border-2 transition-all flex items-center justify-between
+                            \${isSelected 
+                              ? 'border-[var(--color-brand-accent)] bg-[var(--color-brand-accent)]/10 text-white shadow-[0_0_20px_rgba(245,158,11,0.2)]' 
+                              : 'border-white/5 bg-white/5 hover:bg-white/10 text-gray-300 hover:border-white/20'
+                            } \${(isTakingDecision || showDrawer) ? 'opacity-50 cursor-not-allowed hover:bg-transparent' : ''}`}
+                        >
+                          <span className="text-lg font-medium pr-4">{option.texto}</span>
+                          <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors
+                            \${isSelected ? 'border-[var(--color-brand-accent)] bg-[var(--color-brand-accent)]' : 'border-gray-600'}
+                          `}>
+                            {isSelected && <div className="w-3 h-3 bg-white rounded-full" />}
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="no-decisions"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="glass-panel p-12 rounded-3xl h-full flex flex-col items-center justify-center text-center"
+                >
+                  <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                    <Globe className="w-12 h-12 text-gray-500" />
+                  </div>
+                  <h2 className="font-display text-2xl font-bold text-white mb-4">¡Etapa Completada!</h2>
+                  <p className="text-gray-400 max-w-md">
+                    Has tomado todas las decisiones críticas de esta etapa. Pronto surgirán nuevos retos en el camino de {summary.character.nombre}.
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-        
       </div>
+
+      {/* Main Action Button (Only visible if not showing drawer and there is a decision) */}
+      {!showDrawer && currentDecision && (
+        <div className="fixed bottom-0 left-0 w-full p-6 sm:p-8 flex justify-center border-t border-white/5 bg-[#09090b]/80 backdrop-blur-md z-40">
+          <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="hidden lg:block lg:col-span-3"></div>
+            <div className="lg:col-span-9 flex justify-end">
+              <button
+                disabled={!selectedOptionId || isTakingDecision}
+                onClick={handleConfirmDecision}
+                className={`px-12 py-4 rounded-2xl font-bold text-xl transition-all w-full sm:w-auto
+                  \${selectedOptionId 
+                    ? 'bg-[var(--color-brand-accent)] text-white hover:bg-orange-500 hover:scale-105 shadow-[0_8px_0_rgba(217,119,6,1)] active:translate-y-2 active:shadow-none' 
+                    : 'bg-white/10 text-gray-500 cursor-not-allowed'
+                  }
+                `}
+              >
+                {isTakingDecision ? 'Procesando...' : 'Comprobar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bottom Feedback Drawer (Duolingo Style) */}
+      <AnimatePresence>
+        {showDrawer && (
+          <motion.div 
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className={`fixed bottom-0 left-0 w-full p-6 sm:p-8 z-50 border-t-2 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]
+              \${drawerVariant === 'success' ? 'bg-[#1cb0f6] border-[#1899d6]' : 'bg-[#ff4b4b] border-[#ea2b2b]'}
+            `}
+          >
+            <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="hidden lg:block lg:col-span-3"></div>
+              <div className="lg:col-span-9 flex flex-col sm:flex-row items-center justify-between gap-6">
+                
+                <div className="flex items-center gap-6 text-white w-full sm:w-auto">
+                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                    {drawerVariant === 'success' ? <CheckCircle2 className="w-10 h-10" /> : <AlertCircle className="w-10 h-10" />}
+                  </div>
+                  <div>
+                    <h3 className="font-display text-2xl font-bold mb-1">
+                      {drawerVariant === 'success' ? '¡Decisión Registrada!' : 'Atención...'}
+                    </h3>
+                    <p className="text-white/90 text-lg">
+                      Tus estadísticas han sido actualizadas.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleContinue}
+                  className={`w-full sm:w-auto px-12 py-4 rounded-2xl font-bold text-xl uppercase tracking-wider transition-all
+                    \${drawerVariant === 'success' 
+                      ? 'bg-white text-[#1cb0f6] hover:bg-gray-100 shadow-[0_6px_0_rgba(24,153,214,0.5)] active:translate-y-1 active:shadow-none' 
+                      : 'bg-white text-[#ff4b4b] hover:bg-gray-100 shadow-[0_6px_0_rgba(234,43,43,0.5)] active:translate-y-1 active:shadow-none'
+                    }
+                  `}
+                >
+                  Continuar
+                </button>
+                
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </main>
   );
 }
@@ -340,8 +417,8 @@ function StatBar({ icon, label, value, color }: { icon: React.ReactNode; label: 
         </div>
         <div className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
           <div 
-            className={`h-full rounded-full ${color} transition-all duration-1000 ease-out`}
-            style={{ width: `${value}%` }}
+            className={`h-full rounded-full \${color} transition-all duration-1000 ease-out`}
+            style={{ width: `\${value}%` }}
           />
         </div>
       </div>
