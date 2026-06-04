@@ -20,17 +20,19 @@ export class RdvCharactersService {
    * - 7 RdvRelationships (todas en 50)
    */
   async create(dto: CreateCharacterDto) {
-    // Verificar que el usuario existe
-    const user = await this.prisma.user.findUnique({
-      where: { id: dto.userId },
-    });
-    if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
+    // Verificar que el usuario existe si se proporcionó un userId
+    if (dto.userId) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: dto.userId },
+      });
+      if (!user) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
     }
 
     const character = await this.prisma.rdvCharacter.create({
       data: {
-        userId: dto.userId,
+        userId: dto.userId || null,
         nombre: dto.nombre,
         genero: dto.genero,
         etapaActual: 'EARLY_CHILDHOOD',

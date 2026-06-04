@@ -1,4 +1,4 @@
-import { IsString, IsEnum, MinLength } from 'class-validator';
+import { IsString, IsEnum, MinLength, IsOptional } from 'class-validator';
 import { RdvGender } from '@prisma/client';
 
 export class CreateCharacterDto {
@@ -9,6 +9,7 @@ export class CreateCharacterDto {
   @IsEnum(RdvGender, { message: 'El género debe ser MALE o FEMALE' })
   genero: RdvGender;
 
+  @IsOptional()
   @IsString()
-  userId: string;
+  userId?: string;
 }

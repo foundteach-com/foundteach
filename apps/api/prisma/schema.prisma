@@ -826,7 +826,7 @@ enum RdvLifeStage {
 
 model RdvCharacter {
   id           String       @id @default(uuid())
-  userId       String       @map("user_id")
+  userId       String?      @map("user_id")
   nombre       String
   genero       RdvGender
   etapaActual  RdvLifeStage @default(EARLY_CHILDHOOD) @map("etapa_actual")
@@ -834,7 +834,7 @@ model RdvCharacter {
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")
 
-  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
   stats         RdvStats?
   context       RdvContext?
   relationships RdvRelationship[]
