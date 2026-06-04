@@ -327,6 +327,7 @@ export default function SimulacionPage() {
     if (!currentDecision) return null;
     
     // Calculate Progress for the top bar
+    const totalDecisionsInStage = Math.max(decisions.length, 1);
     const progressPercentage = Math.min(100, Math.round((completedDecisionsCount / totalDecisionsInStage) * 100));
 
     return (
