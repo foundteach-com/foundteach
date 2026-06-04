@@ -1,65 +1,89 @@
-import Image from "next/image";
+'use client';
+
+import { motion } from 'framer-motion';
+import { ArrowRight, Brain, Globe, Users } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 sm:p-24 relative overflow-hidden">
+      {/* Background ambient effects */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[var(--color-brand-purple)] rounded-full mix-blend-multiply filter blur-[128px] opacity-30 animate-float" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[var(--color-brand-indigo)] rounded-full mix-blend-multiply filter blur-[128px] opacity-30 animate-float" style={{ animationDelay: '2s' }} />
+
+      <div className="z-10 text-center max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <span className="inline-block py-1 px-3 rounded-full glass-panel text-[var(--color-brand-accent)] text-sm font-medium tracking-wider uppercase mb-6">
+            Simulación Educativa Interactiva
+          </span>
+          <h1 className="font-display text-5xl sm:text-7xl font-bold tracking-tight mb-8">
+            Tu Vida. <br className="sm:hidden" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-amber-500">
+              Tus Decisiones.
+            </span>
+            <br /> Tu Desarrollo.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-lg sm:text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+            Explora las etapas del desarrollo humano desde la primera infancia hasta la vejez. Cada decisión moldea tu camino cognitivo, social y emocional.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="flex justify-center"
+        >
+          <Link
+            href="/crear-personaje"
+            className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-[var(--color-brand-purple)] to-[var(--color-brand-indigo)] text-white font-display font-semibold text-lg rounded-full overflow-hidden transition-all animate-glow hover:scale-105"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            <span className="relative z-10">Iniciar Simulación</span>
+            <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
+          </Link>
+        </motion.div>
+
+        {/* Features grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24"
+        >
+          <FeatureCard 
+            icon={<Globe className="w-6 h-6 text-blue-400" />}
+            title="Enfoque Ecológico"
+            description="Interactúa con tu familia, escuela y sociedad. Tu entorno importa."
+          />
+          <FeatureCard 
+            icon={<Users className="w-6 h-6 text-purple-400" />}
+            title="Sistemas Relacionales"
+            description="Forja lazos con tus padres, amigos y parejas a lo largo de tu vida."
+          />
+          <FeatureCard 
+            icon={<Brain className="w-6 h-6 text-amber-400" />}
+            title="Ciclo Vital Completo"
+            description="Crece, aprende y enfrenta los retos de cada etapa de la existencia."
+          />
+        </motion.div>
+      </div>
+    </main>
+  );
+}
+
+function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
+  return (
+    <div className="glass-panel p-6 rounded-2xl flex flex-col items-center text-center hover:-translate-y-2 transition-transform duration-300">
+      <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-4 border border-white/10">
+        {icon}
+      </div>
+      <h3 className="font-display font-semibold text-xl text-white mb-2">{title}</h3>
+      <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
     </div>
   );
 }
