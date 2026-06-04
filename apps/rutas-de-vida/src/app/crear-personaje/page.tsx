@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, User as UserIcon, Sparkles } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 type Gender = 'MALE' | 'FEMALE' | null;
 
@@ -12,6 +13,7 @@ export default function CrearPersonaje() {
   const [nombre, setNombre] = useState('');
   const [genero, setGenero] = useState<Gender>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const handleNextStep = () => {
     if (nombre.trim().length >= 2) {
@@ -23,14 +25,34 @@ export default function CrearPersonaje() {
     if (!genero) return;
     
     setIsSubmitting(true);
-    // TODO: Connect to backend
-    // fetch('/api/rdv/characters', { ... })
-    
-    // Simulate loading
-    setTimeout(() => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+      const response = await fetch(`${apiUrl}/rdv/characters`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre,
+          genero,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al crear el personaje');
+      }
+
+      const character = await response.json();
+      
+      // Redirigimos a la vista de la simulación
+      router.push(`/simulacion/${character.id}`);
+      
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Ocurrió un error al intentar crear el personaje. Por favor, intenta de nuevo.');
+    } finally {
       setIsSubmitting(false);
-      alert('¡Personaje creado con éxito! Aquí iniciará la simulación.');
-    }, 1500);
+    }
   };
 
   return (
