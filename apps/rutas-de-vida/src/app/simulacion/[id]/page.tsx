@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, Brain, Users, Heart, Shield, MessageCircle, Home, BookOpen, Globe, User, ArrowRight } from 'lucide-react';
+import { Activity, Brain, Users, Heart, Shield, MessageCircle, Home, BookOpen, Globe, User, ArrowRight, Sparkles } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -44,6 +44,10 @@ interface Decision {
   }>;
 }
 
+interface ProgressEntry {
+  decisionId: string;
+}
+
 export default function SimulacionPage() {
   const params = useParams();
   const router = useRouter();
@@ -54,10 +58,12 @@ export default function SimulacionPage() {
   const [currentDecision, setCurrentDecision] = useState<Decision | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isTakingDecision, setIsTakingDecision] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const [lastChoiceText, setLastChoiceText] = useState('');
 
   const fetchState = async () => {
     try {
-      const res = await fetch(`${API_URL}/rdv/progress/${characterId}/summary`);
+      const res = await fetch(`${API_URL}/api/rdv/progress/${characterId}/summary`);
       if (!res.ok) throw new Error('Error al cargar estado del personaje');
       const data: CharacterSummary = await res.json();
       setSummary(data);
@@ -70,17 +76,22 @@ export default function SimulacionPage() {
 
   const fetchDecisions = async (stage: string) => {
     try {
-      const res = await fetch(`${API_URL}/rdv/decisions?stage=${stage}`);
+      // Fetch all decisions for this stage
+      const res = await fetch(`${API_URL}/api/rdv/decisions?stage=${stage}`);
       if (!res.ok) throw new Error('Error al cargar decisiones');
-      const data: Decision[] = await res.json();
-      setDecisions(data);
-      
-      // Select the first decision for now if available
-      if (data.length > 0) {
-        // En un juego real, habría lógica para elegir la decisión basada en progreso,
-        // Aquí tomamos una aleatoria o la primera
-        const randomIndex = Math.floor(Math.random() * data.length);
-        setCurrentDecision(data[randomIndex]);
+      const allDecisions: Decision[] = await res.json();
+
+      // Fetch progress to know which decisions have already been taken
+      const progressRes = await fetch(`${API_URL}/api/rdv/progress/${characterId}`);
+      const progress: ProgressEntry[] = progressRes.ok ? await progressRes.json() : [];
+      const takenIds = new Set(progress.map((p) => p.decisionId));
+
+      // Filter out already-taken decisions and present next one in order
+      const pending = allDecisions.filter((d) => !takenIds.has(d.id));
+      setDecisions(pending);
+
+      if (pending.length > 0) {
+        setCurrentDecision(pending[0]);
       } else {
         setCurrentDecision(null);
       }
@@ -108,8 +119,12 @@ export default function SimulacionPage() {
     if (!currentDecision) return;
     setIsTakingDecision(true);
 
+    // Store chosen option text for feedback
+    const chosenOption = currentDecision.options.find((o) => o.id === optionId);
+    setLastChoiceText(chosenOption?.texto || '');
+
     try {
-      const res = await fetch(`${API_URL}/rdv/progress/decide`, {
+      const res = await fetch(`${API_URL}/api/rdv/progress/decide`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -123,8 +138,12 @@ export default function SimulacionPage() {
         throw new Error('Error al enviar la decisión');
       }
 
-      // Refresh state
-      await initialize();
+      // Show a brief feedback screen
+      setShowResult(true);
+      setTimeout(async () => {
+        setShowResult(false);
+        await initialize();
+      }, 2000);
     } catch (err) {
       console.error(err);
       alert('Hubo un error al registrar tu decisión.');
@@ -206,7 +225,38 @@ export default function SimulacionPage() {
         {/* Center Panel: Main Gameplay / Decision */}
         <div className="lg:col-span-9">
           <AnimatePresence mode="wait">
-            {currentDecision ? (
+            {showResult ? (
+              <motion.div
+                key="result-feedback"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.05 }}
+                className="glass-panel p-12 rounded-3xl h-full flex flex-col items-center justify-center text-center min-h-[400px] relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-brand-purple)]/10 to-[var(--color-brand-accent)]/10 pointer-events-none" />
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                  className="w-20 h-20 rounded-full bg-gradient-to-r from-[var(--color-brand-purple)] to-[var(--color-brand-accent)] flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(245,158,11,0.3)]"
+                >
+                  <Sparkles className="w-10 h-10 text-white" />
+                </motion.div>
+                <h2 className="font-display text-3xl font-bold text-white mb-4">Decisión Tomada</h2>
+                <p className="text-gray-300 text-lg max-w-md leading-relaxed mb-2">
+                  &ldquo;{lastChoiceText}&rdquo;
+                </p>
+                <p className="text-gray-500 text-sm">Calculando consecuencias...</p>
+                <div className="mt-6 w-48 h-1 bg-white/10 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: '100%' }}
+                    transition={{ duration: 1.8, ease: 'easeInOut' }}
+                    className="h-full bg-gradient-to-r from-[var(--color-brand-purple)] to-[var(--color-brand-accent)] rounded-full"
+                  />
+                </div>
+              </motion.div>
+            ) : currentDecision ? (
               <motion.div
                 key={currentDecision.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -216,9 +266,14 @@ export default function SimulacionPage() {
               >
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--color-brand-purple)] to-[var(--color-brand-accent)]" />
                 
-                <span className="inline-block py-1 px-3 rounded-full bg-white/5 border border-white/10 text-[var(--color-brand-accent)] text-xs font-medium tracking-wider uppercase mb-6 self-start">
-                  Evento Crítico
-                </span>
+                <div className="flex items-center justify-between mb-6">
+                  <span className="inline-block py-1 px-3 rounded-full bg-white/5 border border-white/10 text-[var(--color-brand-accent)] text-xs font-medium tracking-wider uppercase">
+                    Evento Crítico
+                  </span>
+                  <span className="text-xs text-gray-500 font-medium">
+                    Decisiones tomadas: {summary.decisionsCount}
+                  </span>
+                </div>
                 
                 <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-6">
                   {currentDecision.titulo}
@@ -230,8 +285,11 @@ export default function SimulacionPage() {
 
                 <div className="space-y-4 max-w-2xl">
                   {currentDecision.options.map((option, index) => (
-                    <button
+                    <motion.button
                       key={option.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
                       onClick={() => handleDecision(option.id)}
                       disabled={isTakingDecision}
                       className="w-full text-left p-6 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all group flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed"
@@ -240,7 +298,7 @@ export default function SimulacionPage() {
                       <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-[var(--color-brand-accent)] group-hover:text-white transition-colors">
                         <ArrowRight size={20} />
                       </div>
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </motion.div>

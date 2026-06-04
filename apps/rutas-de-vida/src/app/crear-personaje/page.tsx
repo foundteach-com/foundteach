@@ -27,7 +27,7 @@ export default function CrearPersonaje() {
     setIsSubmitting(true);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-      const response = await fetch(`${apiUrl}/rdv/characters`, {
+      const response = await fetch(`${apiUrl}/api/rdv/characters`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
