@@ -26,6 +26,8 @@ import { VideogameModule } from './videogame/videogame.module';
 import { MediaModule } from './media/media.module';
 import { AiModule } from './ai/ai.module';
 import { BlogModule } from './blog/blog.module';
+import { RdvModule } from './rdv/rdv.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -56,6 +58,7 @@ import { BlogModule } from './blog/blog.module';
     MediaModule,
     AiModule,
     BlogModule,
+    RdvModule,
   ],
   controllers: [AppController],
   providers: [AppService],

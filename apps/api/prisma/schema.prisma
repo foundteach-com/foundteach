@@ -146,6 +146,7 @@ model User {
 
   gameSessions GameSession[]
   enrollments  Enrollment[]   // Nueva relación directa con Plataforma Educativa
+  rdvCharacters RdvCharacter[] // Personajes de Rutas de Vida
 
   @@map("users")
 }
@@ -805,4 +806,124 @@ model BlogPost {
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   @@map("blog_posts")
+}
+
+// ─── RUTAS DE VIDA — SIMULACIÓN DE DESARROLLO HUMANO ─────────────────────────
+
+enum RdvGender {
+  MALE
+  FEMALE
+}
+
+enum RdvLifeStage {
+  EARLY_CHILDHOOD   // Primera infancia
+  CHILDHOOD          // Niñez
+  ADOLESCENCE        // Adolescencia
+  YOUTH              // Juventud
+  ADULTHOOD          // Adultez
+  OLD_AGE            // Vejez
+}
+
+model RdvCharacter {
+  id           String       @id @default(uuid())
+  userId       String       @map("user_id")
+  nombre       String
+  genero       RdvGender
+  etapaActual  RdvLifeStage @default(EARLY_CHILDHOOD) @map("etapa_actual")
+  isActive     Boolean      @default(true) @map("is_active")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stats         RdvStats?
+  context       RdvContext?
+  relationships RdvRelationship[]
+  progress      RdvProgress[]
+
+  @@map("rdv_characters")
+}
+
+model RdvStats {
+  id            String @id @default(uuid())
+  characterId   String @unique @map("character_id")
+  fisico        Int    @default(50)
+  cognitivo     Int    @default(50)
+  social        Int    @default(50)
+  afectivo      Int    @default(50)
+  etico         Int    @default(50)
+  comunicativo  Int    @default(50)
+
+  character RdvCharacter @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@map("rdv_stats")
+}
+
+model RdvContext {
+  id          String @id @default(uuid())
+  characterId String @unique @map("character_id")
+  familia     Int    @default(50)
+  escuela     Int    @default(50)
+  amigos      Int    @default(50)
+  comunidad   Int    @default(50)
+  sociedad    Int    @default(50)
+
+  character RdvCharacter @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@map("rdv_contexts")
+}
+
+model RdvRelationship {
+  id            String @id @default(uuid())
+  characterId   String @map("character_id")
+  tipoRelacion  String @map("tipo_relacion") // MADRE, PADRE, HERMANOS, AMIGOS, PROFESORES, PAREJA, COMUNIDAD
+  valor         Int    @default(50)
+
+  character RdvCharacter @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@map("rdv_relationships")
+}
+
+model RdvDecision {
+  id          String       @id @default(uuid())
+  etapa       RdvLifeStage
+  titulo      String
+  descripcion String       @db.Text
+  sortOrder   Int          @default(0) @map("sort_order")
+  isActive    Boolean      @default(true) @map("is_active")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  options  RdvOption[]
+  progress RdvProgress[]
+
+  @@map("rdv_decisions")
+}
+
+model RdvOption {
+  id                    String @id @default(uuid())
+  decisionId            String @map("decision_id")
+  texto                 String @db.Text
+  cambiosEnAtributos    Json   @default("{}") @map("cambios_atributos")    // { fisico: 5, cognitivo: -3 }
+  cambiosEnContexto     Json   @default("{}") @map("cambios_contexto")     // { familia: 10, escuela: -5 }
+  cambiosEnRelaciones   Json   @default("{}") @map("cambios_relaciones")   // { MADRE: 5, PADRE: -3 }
+  sortOrder             Int    @default(0) @map("sort_order")
+
+  decision RdvDecision @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+  progress RdvProgress[]
+
+  @@map("rdv_options")
+}
+
+model RdvProgress {
+  id          String   @id @default(uuid())
+  characterId String   @map("character_id")
+  decisionId  String   @map("decision_id")
+  optionId    String   @map("option_id")
+  fecha       DateTime @default(now())
+
+  character RdvCharacter @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  decision  RdvDecision  @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+  option    RdvOption    @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@map("rdv_progress")
 }
