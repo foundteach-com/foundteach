@@ -10,7 +10,7 @@
     "build:admin": "turbo build --filter=@foundteach/admin",
     "build:videogame": "turbo build --filter=@foundteach/videogame",
     "build:blog": "turbo build --filter=@foundteach/blog",
-    "build:desarrollohumano": "turbo build --filter=@foundteach/videogame",
+    "build:desarrollohumano": "turbo build --filter=@foundteach/rutas-de-vida",
     "lint": "turbo lint",
     "start": "turbo start",
     "start:web": "npm run start --workspace=@foundteach/web",
@@ -18,7 +18,7 @@
     "start:admin": "npm run start --workspace=@foundteach/admin",
     "start:videogame": "npm run start --workspace=@foundteach/videogame",
     "start:blog": "npm run start --workspace=@foundteach/blog",
-    "start:desarrollohumano": "npm run start --workspace=@foundteach/videogame"
+    "start:desarrollohumano": "npm run start --workspace=@foundteach/rutas-de-vida"
   },
   "workspaces": [
     "apps/*"
