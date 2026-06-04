@@ -1,19 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  /* Youthful, vibrant palette */
-  --color-brand-purple: #8b5cf6;
-  --color-brand-indigo: #6366f1;
-  --color-brand-accent: #f59e0b;
-  --color-brand-teal: #14b8a6;
-  --color-brand-pink: #ec4899;
-  --color-brand-sky: #38bdf8;
+  /* Youthful, vibrant palette with Fuchsia Primary */
+  --color-brand-primary: #FF005A;
+  --color-brand-primary-hover: #E0004F;
+  --color-brand-primary-light: #FF337B;
+  
+  /* Accent Colors (Duolingo inspired) */
+  --color-brand-green: #58CC02;
+  --color-brand-green-hover: #46A302;
+  --color-brand-cyan: #00E1FF;
+  --color-brand-yellow: #FFC800;
+  --color-brand-purple: #CE82FF;
+  --color-brand-pink: #FF96CB;
 
   /* Light theme surfaces */
-  --color-light-bg: #f8fafc;
-  --color-light-surface: #ffffff;
-  --color-light-glass: rgba(255, 255, 255, 0.75);
-  --color-light-border: rgba(0, 0, 0, 0.08);
+  --color-light-bg: #FFFFFF; /* Pure white for dashboard */
+  --color-light-surface: #F7F7F7; /* Light gray for cards */
+  --color-light-border: #E5E5E5;
 
   --font-sans: var(--font-inter);
   --font-display: var(--font-outfit);

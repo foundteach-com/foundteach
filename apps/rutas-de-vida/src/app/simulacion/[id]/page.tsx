@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, Brain, Users, Heart, Shield, MessageCircle, Home, BookOpen, Globe, User, ArrowRight, Sparkles, CheckCircle2, AlertCircle, Trophy } from 'lucide-react';
+import { Activity, Brain, Users, Heart, Shield, MessageCircle, Home, BookOpen, Globe, User, ArrowRight, Sparkles, CheckCircle2, AlertCircle, Trophy, Navigation, Target, Star, MoreHorizontal, X } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -56,15 +56,17 @@ export default function SimulacionPage() {
   const [summary, setSummary] = useState<CharacterSummary | null>(null);
   const [decisions, setDecisions] = useState<Decision[]>([]);
   const [currentDecision, setCurrentDecision] = useState<Decision | null>(null);
-  const [totalDecisionsInStage, setTotalDecisionsInStage] = useState(1);
+  const [completedDecisionsCount, setCompletedDecisionsCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Duolingo-style UI States
+  // View states
+  const [viewMode, setViewMode] = useState<'dashboard' | 'playing'>('dashboard');
+  
+  // Playing States
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isTakingDecision, setIsTakingDecision] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [drawerVariant, setDrawerVariant] = useState<'success' | 'warning'>('success');
-  const [lastChoiceText, setLastChoiceText] = useState('');
 
   const fetchState = async () => {
     try {
@@ -85,15 +87,15 @@ export default function SimulacionPage() {
       if (!res.ok) throw new Error('Error al cargar decisiones');
       const allDecisions: Decision[] = await res.json();
       
-      // The total decisions in this stage
-      setTotalDecisionsInStage(Math.max(1, allDecisions.length));
-
       const progressRes = await fetch(`${API_URL}/api/rdv/progress/${characterId}`);
       const progress: ProgressEntry[] = progressRes.ok ? await progressRes.json() : [];
       const takenIds = new Set(progress.map((p) => p.decisionId));
 
+      setCompletedDecisionsCount(takenIds.size);
+
       const pending = allDecisions.filter((d) => !takenIds.has(d.id));
-      setDecisions(pending);
+      // We keep the full list to render the "Path"
+      setDecisions(allDecisions);
 
       if (pending.length > 0) {
         setCurrentDecision(pending[0]);
@@ -120,6 +122,12 @@ export default function SimulacionPage() {
     }
   }, [characterId]);
 
+  const handleStartNode = () => {
+    if (currentDecision) {
+      setViewMode('playing');
+    }
+  };
+
   const handleSelectOption = (optionId: string) => {
     if (isTakingDecision || showDrawer) return;
     setSelectedOptionId(optionId);
@@ -128,9 +136,6 @@ export default function SimulacionPage() {
   const handleConfirmDecision = async () => {
     if (!selectedOptionId || !currentDecision) return;
     setIsTakingDecision(true);
-
-    const chosenOption = currentDecision.options.find((o) => o.id === selectedOptionId);
-    setLastChoiceText(chosenOption?.texto || '');
 
     try {
       const res = await fetch(`${API_URL}/api/rdv/progress/decide`, {
@@ -143,9 +148,7 @@ export default function SimulacionPage() {
         }),
       });
 
-      if (!res.ok) {
-        throw new Error('Error al enviar la decisión');
-      }
+      if (!res.ok) throw new Error('Error al enviar la decisión');
 
       setDrawerVariant('success');
       setShowDrawer(true);
@@ -161,247 +164,293 @@ export default function SimulacionPage() {
   const handleContinue = async () => {
     setShowDrawer(false);
     setSelectedOptionId(null);
+    setViewMode('dashboard');
     await initialize();
   };
 
   if (isLoading && !summary) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--color-light-bg)]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200 border-t-purple-500"></div>
-          <p className="text-slate-400 font-medium">Cargando tu aventura...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-[#FF005A]"></div>
       </div>
     );
   }
 
   if (!summary) {
     return (
-      <div className="min-h-screen flex items-center justify-center flex-col gap-4">
-        <h1 className="text-2xl text-red-500 font-bold">Error al cargar la simulación</h1>
-        <button onClick={() => router.push('/')} className="px-6 py-2 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 font-medium transition-colors">Volver al Inicio</button>
+      <div className="min-h-screen flex items-center justify-center flex-col gap-4 bg-white">
+        <h1 className="text-2xl text-red-500 font-bold">Error al cargar</h1>
+        <button onClick={() => router.push('/')} className="px-6 py-2 bg-[#FF005A] text-white rounded-full font-bold">Volver</button>
       </div>
     );
   }
 
-  // Calculate Progress
-  const completedInStage = summary.decisionsCount;
-  const progressPercentage = Math.min(100, Math.round((completedInStage / totalDecisionsInStage) * 100));
-
-  // Stat colors for light theme
   const statColors = {
-    fisico: { bar: 'bg-emerald-400', bg: 'bg-emerald-50', text: 'text-emerald-600', icon: 'text-emerald-500' },
-    cognitivo: { bar: 'bg-blue-400', bg: 'bg-blue-50', text: 'text-blue-600', icon: 'text-blue-500' },
-    social: { bar: 'bg-purple-400', bg: 'bg-purple-50', text: 'text-purple-600', icon: 'text-purple-500' },
-    afectivo: { bar: 'bg-pink-400', bg: 'bg-pink-50', text: 'text-pink-600', icon: 'text-pink-500' },
-    etico: { bar: 'bg-amber-400', bg: 'bg-amber-50', text: 'text-amber-600', icon: 'text-amber-500' },
-    comunicativo: { bar: 'bg-cyan-400', bg: 'bg-cyan-50', text: 'text-cyan-600', icon: 'text-cyan-500' },
+    fisico: { bar: 'bg-[#58CC02]', bg: 'bg-[#58CC02]/10', text: 'text-[#58CC02]', icon: 'text-[#58CC02]' },
+    cognitivo: { bar: 'bg-[#00E1FF]', bg: 'bg-[#00E1FF]/10', text: 'text-[#00B4CC]', icon: 'text-[#00B4CC]' },
+    social: { bar: 'bg-[#CE82FF]', bg: 'bg-[#CE82FF]/10', text: 'text-[#A64BDB]', icon: 'text-[#A64BDB]' },
+    afectivo: { bar: 'bg-[#FF96CB]', bg: 'bg-[#FF96CB]/10', text: 'text-[#E05E9C]', icon: 'text-[#E05E9C]' },
+    etico: { bar: 'bg-[#FFC800]', bg: 'bg-[#FFC800]/10', text: 'text-[#CC9F00]', icon: 'text-[#CC9F00]' },
+    comunicativo: { bar: 'bg-[#FF005A]', bg: 'bg-[#FF005A]/10', text: 'text-[#FF005A]', icon: 'text-[#FF005A]' },
   };
 
-  return (
-    <main className="min-h-screen pb-32 sm:pb-8 p-4 sm:p-8 relative overflow-hidden">
-      {/* Background decorative blobs */}
-      <div className="fixed top-0 right-0 w-[800px] h-[800px] bg-purple-200 rounded-full mix-blend-multiply filter blur-[200px] opacity-30 pointer-events-none" />
-      <div className="fixed bottom-0 left-0 w-[800px] h-[800px] bg-pink-200 rounded-full mix-blend-multiply filter blur-[200px] opacity-20 pointer-events-none" />
-      <div className="fixed top-[40%] left-[30%] w-[400px] h-[400px] bg-sky-200 rounded-full mix-blend-multiply filter blur-[150px] opacity-20 pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+  // --- DASHBOARD RENDER ---
+  const renderDashboard = () => {
+    return (
+      <div className="flex min-h-screen bg-white text-slate-800 font-sans">
         
-        {/* Left Panel: Character Stats */}
-        <div className="lg:col-span-3 space-y-6">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="glass-panel p-6 rounded-3xl"
-          >
-            <div className="text-center mb-6">
-              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-400 to-pink-400 p-1 mb-4 shadow-lg">
-                <div className="bg-white w-full h-full rounded-full flex items-center justify-center overflow-hidden relative">
-                  <User className="w-8 h-8 text-purple-300" />
-                </div>
-              </div>
-              <h2 className="font-display text-2xl font-bold text-slate-800">{summary.character.nombre}</h2>
-              <p className="text-sm text-slate-400 uppercase tracking-widest mt-1 font-medium">
-                {summary.character.etapaActual.replace('_', ' ')}
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Desarrollo</h3>
-              <StatBar icon={<Activity size={16} />} label="Físico" value={summary.stats.fisico} colors={statColors.fisico} />
-              <StatBar icon={<Brain size={16} />} label="Cognitivo" value={summary.stats.cognitivo} colors={statColors.cognitivo} />
-              <StatBar icon={<Users size={16} />} label="Social" value={summary.stats.social} colors={statColors.social} />
-              <StatBar icon={<Heart size={16} />} label="Afectivo" value={summary.stats.afectivo} colors={statColors.afectivo} />
-              <StatBar icon={<Shield size={16} />} label="Ético" value={summary.stats.etico} colors={statColors.etico} />
-              <StatBar icon={<MessageCircle size={16} />} label="Comunic." value={summary.stats.comunicativo} colors={statColors.comunicativo} />
-            </div>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-            className="glass-panel p-6 rounded-3xl"
-          >
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Contextos</h3>
-            <div className="space-y-4">
-              <StatBar icon={<Home size={16} />} label="Familia" value={summary.context.familia} colors={{ bar: 'bg-orange-400', bg: 'bg-orange-50', text: 'text-orange-600', icon: 'text-orange-500' }} />
-              <StatBar icon={<BookOpen size={16} />} label="Escuela" value={summary.context.escuela} colors={{ bar: 'bg-indigo-400', bg: 'bg-indigo-50', text: 'text-indigo-600', icon: 'text-indigo-500' }} />
-              <StatBar icon={<Globe size={16} />} label="Sociedad" value={summary.context.sociedad} colors={{ bar: 'bg-teal-400', bg: 'bg-teal-50', text: 'text-teal-600', icon: 'text-teal-500' }} />
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Center Panel: Main Gameplay / Decision */}
-        <div className="lg:col-span-9 flex flex-col">
+        {/* Left Sidebar (Nav) */}
+        <aside className="hidden lg:flex w-64 border-r border-gray-200 flex-col p-4 fixed h-full bg-white z-10">
+          <div className="mb-10 pl-4 mt-4">
+            <h1 className="font-display text-3xl font-bold text-[#FF005A] tracking-tight">foundteach</h1>
+          </div>
           
-          {/* Top Progress Bar (Duolingo Style) */}
-          <div className="w-full mb-6 glass-panel rounded-full p-4 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center shrink-0">
-              <Sparkles className="w-5 h-5 text-purple-500" />
+          <nav className="flex flex-col gap-2">
+            <NavItem icon={<Navigation />} label="Aprender" active />
+            <NavItem icon={<Target />} label="Práctica" />
+            <NavItem icon={<Star />} label="Logros" />
+            <NavItem icon={<User />} label="Perfil" />
+            <NavItem icon={<MoreHorizontal />} label="Más" />
+          </nav>
+        </aside>
+
+        {/* Main Content (The Path) */}
+        <main className="flex-1 lg:ml-64 lg:mr-80 flex justify-center p-6 sm:p-10">
+          <div className="max-w-[600px] w-full flex flex-col items-center">
+            
+            {/* Stage Header */}
+            <div className="w-full bg-[#FF005A] rounded-2xl p-6 text-white mb-10 shadow-[0_8px_0_#D9004C] relative overflow-hidden flex justify-between items-center">
+              <div className="relative z-10">
+                <h2 className="font-bold text-xl mb-1 flex items-center gap-2">
+                  <ArrowRight className="w-5 h-5" />
+                  ETAPA ACTUAL
+                </h2>
+                <p className="text-2xl font-display font-bold capitalize">
+                  {summary.character.etapaActual.replace('_', ' ')}
+                </p>
+              </div>
+              <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center relative z-10 border-2 border-white/40">
+                 <BookOpen className="w-8 h-8 text-white" />
+              </div>
+              {/* decorative blob */}
+              <div className="absolute right-[-20%] top-[-50%] w-64 h-64 bg-white/10 rounded-full blur-2xl" />
             </div>
-            <div className="flex-1 h-4 bg-slate-100 rounded-full overflow-hidden relative border border-slate-200/50">
-              <motion.div 
-                initial={{ width: 0 }}
-                animate={{ width: `${progressPercentage}%` }}
-                transition={{ duration: 1, ease: 'easeOut' }}
-                className="absolute top-0 left-0 h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"
-              >
-                {/* Shine effect */}
-                <div className="absolute top-0 left-0 w-full h-1/3 bg-white/40 rounded-full" />
-              </motion.div>
-            </div>
-            <span className="font-bold text-slate-600 w-12 text-right text-sm">{progressPercentage}%</span>
-          </div>
 
-          {/* Game Area */}
-          <div className="flex-1 h-full">
-            <AnimatePresence mode="wait">
-              {currentDecision ? (
-                <motion.div
-                  key={currentDecision.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="h-full flex flex-col justify-center max-w-4xl mx-auto"
-                >
-                  <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800 mb-4 text-center leading-tight">
-                    {currentDecision.titulo}
-                  </h2>
-                  
-                  <p className="text-xl text-slate-500 leading-relaxed mb-10 text-center">
-                    {currentDecision.descripcion}
-                  </p>
-
-                  <div className="space-y-4 mb-8">
-                    {currentDecision.options.map((option, index) => {
-                      const isSelected = selectedOptionId === option.id;
-                      return (
-                        <motion.button
-                          key={option.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          onClick={() => handleSelectOption(option.id)}
-                          disabled={isTakingDecision || showDrawer}
-                          className={`w-full text-left p-6 rounded-2xl border-2 transition-all flex items-center justify-between
-                            ${isSelected 
-                              ? 'border-purple-400 bg-purple-50 text-purple-800 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' 
-                              : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:border-slate-300'
-                            } ${(isTakingDecision || showDrawer) ? 'opacity-50 cursor-not-allowed hover:bg-white' : ''}`}
-                        >
-                          <span className="text-lg font-medium pr-4">{option.texto}</span>
-                          <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all
-                            ${isSelected ? 'border-purple-500 bg-purple-500' : 'border-slate-300'}`}
-                          >
-                            {isSelected && <div className="w-3 h-3 bg-white rounded-full" />}
-                          </div>
-                        </motion.button>
-                      );
-                    })}
-                  </div>
-
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="no-decisions"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="glass-panel p-12 rounded-3xl h-full flex flex-col items-center justify-center text-center"
-                >
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center mb-6 shadow-inner">
-                    <Trophy className="w-12 h-12 text-amber-500" />
-                  </div>
-                  <h2 className="font-display text-2xl font-bold text-slate-800 mb-4">¡Etapa Completada!</h2>
-                  <p className="text-slate-500 max-w-md">
-                    Has tomado todas las decisiones críticas de esta etapa. Pronto surgirán nuevos retos en el camino de {summary.character.nombre}.
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Action Button (Only visible if not showing drawer and there is a decision) */}
-      {!showDrawer && currentDecision && (
-        <div className="fixed bottom-0 left-0 w-full p-6 sm:p-8 flex justify-center border-t border-slate-200/50 bg-white/80 backdrop-blur-md z-40">
-          <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div className="hidden lg:block lg:col-span-3"></div>
-            <div className="lg:col-span-9 flex justify-end">
-              <button
-                disabled={!selectedOptionId || isTakingDecision}
-                onClick={handleConfirmDecision}
-                className={`px-12 py-4 rounded-2xl font-bold text-xl transition-all w-full sm:w-auto
-                  ${selectedOptionId 
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:scale-105 shadow-[0_6px_0_rgba(126,58,207,0.5)] active:translate-y-1 active:shadow-[0_2px_0_rgba(126,58,207,0.5)]' 
-                    : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
-                  }
-                `}
-              >
-                {isTakingDecision ? 'Procesando...' : 'Comprobar'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Bottom Feedback Drawer (Duolingo Style) */}
-      <AnimatePresence>
-        {showDrawer && (
-          <motion.div 
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className={`fixed bottom-0 left-0 w-full p-6 sm:p-8 z-50 border-t-2 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]
-              ${drawerVariant === 'success' ? 'bg-emerald-400 border-emerald-500' : 'bg-orange-400 border-orange-500'}
-            `}
-          >
-            <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
-              <div className="hidden lg:block lg:col-span-3"></div>
-              <div className="lg:col-span-9 flex flex-col sm:flex-row items-center justify-between gap-6">
+            {/* The Path Nodes */}
+            <div className="relative py-8 flex flex-col items-center w-full gap-8">
+              {decisions.map((decision, index) => {
+                const isCompleted = index < completedDecisionsCount;
+                const isCurrent = index === completedDecisionsCount;
+                const isLocked = index > completedDecisionsCount;
                 
-                <div className="flex items-center gap-6 text-white w-full sm:w-auto">
-                  <div className="w-16 h-16 rounded-full bg-white/25 flex items-center justify-center shrink-0">
-                    {drawerVariant === 'success' ? <CheckCircle2 className="w-10 h-10" /> : <AlertCircle className="w-10 h-10" />}
+                // Zig zag offset
+                const offset = index % 2 === 0 ? 0 : index % 4 === 1 ? 40 : -40;
+
+                return (
+                  <div key={decision.id} className="relative w-full flex justify-center" style={{ left: `${offset}px` }}>
+                    {isCurrent ? (
+                      <div className="relative flex flex-col items-center cursor-pointer group" onClick={handleStartNode}>
+                        <div className="absolute -top-12 bg-white border-2 border-gray-200 rounded-xl px-4 py-2 font-bold text-[#FF005A] shadow-md z-10 whitespace-nowrap animate-bounce">
+                          EMPEZAR
+                          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-gray-200 rotate-45" />
+                        </div>
+                        <div className="w-20 h-20 rounded-full bg-[#FF005A] shadow-[0_8px_0_#D9004C] active:translate-y-2 active:shadow-none transition-all flex items-center justify-center border-4 border-white z-0 hover:brightness-110 relative">
+                           <Star className="w-10 h-10 text-white fill-white" />
+                           {/* Pulse ring */}
+                           <div className="absolute inset-0 rounded-full border-4 border-[#FF005A] animate-ping opacity-30" />
+                        </div>
+                      </div>
+                    ) : isCompleted ? (
+                      <div className="w-16 h-16 rounded-full bg-[#FF005A] shadow-[0_6px_0_#D9004C] flex items-center justify-center border-4 border-white opacity-80 z-0">
+                         <CheckCircle2 className="w-8 h-8 text-white" />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-[#E5E5E5] shadow-[0_6px_0_#CCCCCC] flex items-center justify-center border-4 border-white opacity-60 z-0">
+                         <Star className="w-8 h-8 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              
+              {!currentDecision && decisions.length > 0 && (
+                <div className="mt-8 p-6 bg-gradient-to-br from-amber-100 to-yellow-100 rounded-2xl border-2 border-amber-200 text-center">
+                  <Trophy className="w-12 h-12 text-amber-500 mx-auto mb-3" />
+                  <h3 className="font-bold text-xl text-amber-700">¡Etapa Completada!</h3>
+                  <p className="text-amber-600 mt-1">Has superado todas las pruebas de esta etapa.</p>
+                </div>
+              )}
+            </div>
+
+          </div>
+        </main>
+
+        {/* Right Sidebar (Stats) */}
+        <aside className="hidden lg:flex w-80 border-l border-gray-200 flex-col p-6 fixed right-0 h-full bg-white overflow-y-auto">
+          {/* Header character info */}
+          <div className="flex items-center gap-4 mb-8 p-4 bg-gray-50 rounded-2xl border border-gray-200">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FF005A] to-[#FF96CB] p-[2px]">
+              <div className="bg-white w-full h-full rounded-full flex items-center justify-center">
+                <User className="w-6 h-6 text-[#FF005A]" />
+              </div>
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 text-lg leading-tight">{summary.character.nombre}</h3>
+              <p className="text-sm font-semibold text-gray-400">Nivel de Vida</p>
+            </div>
+          </div>
+
+          <h3 className="font-bold text-slate-700 mb-4 text-lg">Estadísticas</h3>
+          <div className="space-y-4 mb-8">
+            <StatBar icon={<Activity size={18} />} label="Físico" value={summary.stats.fisico} colors={statColors.fisico} />
+            <StatBar icon={<Brain size={18} />} label="Cognitivo" value={summary.stats.cognitivo} colors={statColors.cognitivo} />
+            <StatBar icon={<Users size={18} />} label="Social" value={summary.stats.social} colors={statColors.social} />
+            <StatBar icon={<Heart size={18} />} label="Afectivo" value={summary.stats.afectivo} colors={statColors.afectivo} />
+            <StatBar icon={<Shield size={18} />} label="Ético" value={summary.stats.etico} colors={statColors.etico} />
+            <StatBar icon={<MessageCircle size={18} />} label="Comunic." value={summary.stats.comunicativo} colors={statColors.comunicativo} />
+          </div>
+          
+          <h3 className="font-bold text-slate-700 mb-4 text-lg mt-4">Contexto</h3>
+          <div className="space-y-4">
+             <StatBar icon={<Home size={18} />} label="Familia" value={summary.context.familia} colors={{ bar: 'bg-[#FF96CB]', bg: 'bg-[#FF96CB]/10', text: 'text-[#E05E9C]', icon: 'text-[#E05E9C]' }} />
+             <StatBar icon={<BookOpen size={18} />} label="Escuela" value={summary.context.escuela} colors={{ bar: 'bg-[#00E1FF]', bg: 'bg-[#00E1FF]/10', text: 'text-[#00B4CC]', icon: 'text-[#00B4CC]' }} />
+          </div>
+
+        </aside>
+
+      </div>
+    );
+  };
+
+  // --- PLAYING RENDER (The Question View) ---
+  const renderPlaying = () => {
+    if (!currentDecision) return null;
+    
+    // Calculate Progress for the top bar
+    const progressPercentage = Math.min(100, Math.round((completedDecisionsCount / totalDecisionsInStage) * 100));
+
+    return (
+      <div className="min-h-screen bg-white flex flex-col font-sans">
+        
+        {/* Top Header */}
+        <header className="w-full max-w-4xl mx-auto p-4 flex items-center gap-4">
+          <button 
+            onClick={() => setViewMode('dashboard')}
+            className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-colors"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          
+          {/* Progress Bar */}
+          <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden relative">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPercentage}%` }}
+              transition={{ duration: 0.5 }}
+              className="absolute top-0 left-0 h-full bg-[#58CC02] rounded-full"
+            >
+              <div className="absolute top-1 left-2 right-2 h-1 bg-white/30 rounded-full" />
+            </motion.div>
+          </div>
+        </header>
+
+        {/* Game Area */}
+        <main className="flex-1 flex flex-col justify-center max-w-3xl mx-auto w-full p-6">
+          <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">
+            {currentDecision.titulo}
+          </h2>
+          
+          <div className="flex items-start gap-4 mb-8 bg-gray-50 p-6 rounded-2xl border-2 border-gray-100">
+            <div className="w-12 h-12 rounded-full bg-[#FF005A] shrink-0 flex items-center justify-center border-2 border-[#D9004C] mt-1 shadow-sm">
+               <User className="w-6 h-6 text-white" />
+            </div>
+            <div className="bg-white p-4 rounded-2xl rounded-tl-none border-2 border-gray-200 shadow-sm relative">
+               {/* Speech bubble tail */}
+               <div className="absolute -left-[10px] top-4 w-4 h-4 bg-white border-l-2 border-t-2 border-gray-200 -rotate-45" />
+               <p className="text-lg text-slate-700 leading-relaxed font-medium">
+                 {currentDecision.descripcion}
+               </p>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {currentDecision.options.map((option) => {
+              const isSelected = selectedOptionId === option.id;
+              return (
+                <button
+                  key={option.id}
+                  onClick={() => handleSelectOption(option.id)}
+                  disabled={isTakingDecision || showDrawer}
+                  className={`w-full text-left p-4 rounded-2xl border-2 transition-all flex items-center justify-between
+                    ${isSelected 
+                      ? 'border-[#00E1FF] bg-[#00E1FF]/10 text-[#009EBA]' 
+                      : 'border-gray-200 bg-white hover:bg-gray-50 text-slate-600 hover:border-gray-300'
+                    } ${(isTakingDecision || showDrawer) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <span className="text-lg font-medium">{option.texto}</span>
+                  {isSelected && (
+                     <div className="w-6 h-6 rounded-full bg-[#00E1FF] text-white flex items-center justify-center shrink-0">
+                       <CheckCircle2 className="w-4 h-4" />
+                     </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </main>
+
+        {/* Action Button Area */}
+        <div className="w-full border-t-2 border-gray-200 bg-white p-6 pb-8 z-40">
+          <div className="max-w-3xl mx-auto flex justify-between items-center">
+            <div className="hidden sm:block"></div>
+            <button
+              disabled={!selectedOptionId || isTakingDecision || showDrawer}
+              onClick={handleConfirmDecision}
+              className={`px-12 py-3 rounded-2xl font-bold text-lg uppercase tracking-wider transition-all w-full sm:w-auto
+                ${selectedOptionId 
+                  ? 'bg-[#58CC02] text-white hover:bg-[#46A302] hover:shadow-[0_4px_0_#3B8A02] active:translate-y-1 active:shadow-none shadow-[0_6px_0_#46A302]' 
+                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                }
+              `}
+            >
+              Comprobar
+            </button>
+          </div>
+        </div>
+
+        {/* Feedback Drawer Overlay */}
+        <AnimatePresence>
+          {showDrawer && (
+            <motion.div 
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className={`fixed bottom-0 left-0 w-full p-6 sm:p-8 z-50 border-t-2
+                ${drawerVariant === 'success' ? 'bg-[#D7FFB8] border-[#58CC02]' : 'bg-[#FFDFE0] border-[#FF4B4B]'}
+              `}
+            >
+              <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+                
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                  <div className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 bg-white
+                    ${drawerVariant === 'success' ? 'text-[#58CC02]' : 'text-[#FF4B4B]'}`}>
+                    <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <div>
-                    <h3 className="font-display text-2xl font-bold mb-1">
-                      {drawerVariant === 'success' ? '¡Excelente decisión!' : '¡Interesante elección!'}
+                    <h3 className={`font-display text-2xl font-bold mb-1
+                      ${drawerVariant === 'success' ? 'text-[#58CC02]' : 'text-[#FF4B4B]'}`}>
+                      ¡Excelente!
                     </h3>
-                    <p className="text-white/90 text-lg">
-                      Tus estadísticas han sido actualizadas.
-                    </p>
                   </div>
                 </div>
 
                 <button
                   onClick={handleContinue}
-                  className={`w-full sm:w-auto px-12 py-4 rounded-2xl font-bold text-xl uppercase tracking-wider transition-all
+                  className={`w-full sm:w-auto px-12 py-3 rounded-2xl font-bold text-lg uppercase tracking-wider transition-all
                     ${drawerVariant === 'success' 
-                      ? 'bg-white text-emerald-600 hover:bg-emerald-50 shadow-[0_6px_0_rgba(5,150,105,0.4)] active:translate-y-1 active:shadow-none' 
-                      : 'bg-white text-orange-600 hover:bg-orange-50 shadow-[0_6px_0_rgba(234,88,12,0.4)] active:translate-y-1 active:shadow-none'
+                      ? 'bg-[#58CC02] text-white hover:bg-[#46A302] shadow-[0_4px_0_#46A302] active:translate-y-1 active:shadow-none' 
+                      : 'bg-[#FF4B4B] text-white hover:bg-[#EA2B2B] shadow-[0_4px_0_#EA2B2B] active:translate-y-1 active:shadow-none'
                     }
                   `}
                 >
@@ -409,33 +458,50 @@ export default function SimulacionPage() {
                 </button>
                 
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-    </main>
+      </div>
+    );
+  };
+
+  return viewMode === 'dashboard' ? renderDashboard() : renderPlaying();
+}
+
+// --- SUBCOMPONENTS ---
+
+function NavItem({ icon, label, active = false }: { icon: React.ReactNode; label: string; active?: boolean }) {
+  return (
+    <button className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-colors
+      ${active ? 'bg-[#FF005A]/10 text-[#FF005A] border-2 border-[#FF005A]/20' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700 border-2 border-transparent'}
+    `}>
+      {icon}
+      <span className="font-bold uppercase tracking-wider text-sm">{label}</span>
+    </button>
   );
 }
 
 function StatBar({ icon, label, value, colors }: { icon: React.ReactNode; label: string; value: number; colors: { bar: string; bg: string; text: string; icon: string } }) {
   return (
     <div className="flex items-center gap-3">
-      <div className={`w-8 h-8 rounded-xl ${colors.bg} flex items-center justify-center shrink-0 ${colors.icon}`}>
+      <div className={`w-10 h-10 rounded-xl ${colors.bg} flex items-center justify-center shrink-0 ${colors.icon}`}>
         {icon}
       </div>
       <div className="flex-1">
         <div className="flex justify-between mb-1">
-          <span className="text-xs font-semibold text-slate-500">{label}</span>
-          <span className={`text-xs font-bold ${colors.text}`}>{value}</span>
+          <span className="text-sm font-bold text-slate-700">{label}</span>
+          <span className={`text-sm font-bold ${colors.text}`}>{value}</span>
         </div>
-        <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200/50">
+        <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden">
           <motion.div 
             initial={{ width: 0 }}
             animate={{ width: `${value}%` }}
             transition={{ duration: 1, ease: 'easeOut' }}
             className={`h-full rounded-full ${colors.bar}`}
-          />
+          >
+             <div className="w-full h-1/3 bg-white/30" />
+          </motion.div>
         </div>
       </div>
     </div>
