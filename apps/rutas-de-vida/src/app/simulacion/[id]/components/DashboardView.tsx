@@ -1,16 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import {
-  Activity, Brain, Users, Heart, Shield, MessageCircle,
-  Home, BookOpen, Globe, User, ArrowRight, Trophy,
-  Navigation, Target, Star, Flame, Coins, ShoppingBag, Medal, CheckCircle2
-} from 'lucide-react';
-import { ETAPA_LABELS, STAT_COLORS, CONTEXT_COLORS } from '../../../../utils/constants';
+import { ArrowRight, Trophy, Star, Flame, Coins, BookOpen, CheckCircle2 } from 'lucide-react';
+import { ETAPA_LABELS } from '../../../../utils/constants';
 import { ActivePowers } from '../../../../components/ActivePowers';
-import { DailyQuests } from '../../../../components/DailyQuests';
-import { NavItem } from '../../../../components/NavItem';
-import { StatBar } from '../../../../components/StatBar';
 import type { useSimulation } from '../hooks/useSimulation';
+import { SidebarNav } from './SidebarNav';
+import { SidebarStats } from './SidebarStats';
+import { MobileBottomNav } from './MobileBottomNav';
 
 export function DashboardView({ 
   characterId, 
@@ -19,7 +14,6 @@ export function DashboardView({
   characterId: string; 
   state: ReturnType<typeof useSimulation>;
 }) {
-  const router = useRouter();
   const {
     summary, decisions, currentDecision, completedDecisionsCount, isLoading,
     showStageUpModal, setShowStageUpModal, nextStageName, handleAdvanceStage, handleStartNode
@@ -28,7 +22,7 @@ export function DashboardView({
   if (!summary) return null;
 
   return (
-    <div className="flex min-h-screen bg-white text-slate-800 font-sans">
+    <div className="flex min-h-screen bg-white text-slate-800 font-sans pb-20 lg:pb-0">
       {/* Modal de subida de etapa */}
       <AnimatePresence>
         {showStageUpModal && (
@@ -82,20 +76,7 @@ export function DashboardView({
         )}
       </AnimatePresence>
 
-      {/* Sidebar izquierdo */}
-      <aside className="hidden lg:flex w-64 border-r border-gray-200 flex-col p-4 fixed h-full bg-white z-10">
-        <div className="mb-10 pl-4 mt-4">
-          <h1 className="font-display text-3xl font-bold text-[#FF005A] tracking-tight">foundteach</h1>
-        </div>
-        <nav className="flex flex-col gap-2">
-          <NavItem icon={<Navigation />} label="Aprender" active onClick={() => {}} />
-          <NavItem icon={<Target />} label="Práctica" onClick={() => {}} />
-          <NavItem icon={<Medal />} label="Ligas" onClick={() => router.push(`/simulacion/${characterId}/ligas`)} />
-          <NavItem icon={<ShoppingBag />} label="Tienda" onClick={() => router.push(`/simulacion/${characterId}/tienda`)} />
-          <NavItem icon={<Star />} label="Logros" onClick={() => router.push(`/simulacion/${characterId}/logros`)} />
-          <NavItem icon={<User />} label="Perfil" onClick={() => router.push(`/simulacion/${characterId}/perfil`)} />
-        </nav>
-      </aside>
+      <SidebarNav characterId={characterId} />
 
       {/* Contenido principal */}
       <main className="flex-1 lg:ml-64 lg:mr-80 flex flex-col items-center p-6 sm:p-10">
@@ -223,65 +204,9 @@ export function DashboardView({
         </div>
       </main>
 
-      {/* Sidebar derecho */}
-      <aside className="hidden lg:flex w-80 border-l border-gray-200 flex-col p-6 fixed right-0 h-full bg-white overflow-y-auto">
-        <div className="flex items-center gap-4 mb-8 p-4 bg-gray-50 rounded-2xl border border-gray-200">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FF005A] to-[#FF96CB] p-[2px]">
-            <div className="bg-white w-full h-full rounded-full flex items-center justify-center">
-              <User className="w-6 h-6 text-[#FF005A]" />
-            </div>
-          </div>
-          <div>
-            <h3 className="font-bold text-slate-800 text-lg leading-tight">{summary.character.nombre}</h3>
-            <p className="text-sm font-semibold text-gray-400">
-              {ETAPA_LABELS[summary.character.etapaActual] || summary.character.etapaActual}
-            </p>
-          </div>
-        </div>
-
-        <h3 className="font-bold text-slate-700 mb-4 text-lg">Estadísticas</h3>
-        <div className="space-y-4 mb-8">
-          <StatBar icon={<Activity size={18} />} label="Físico" value={summary.stats.fisico} colors={STAT_COLORS.fisico} />
-          <StatBar icon={<Brain size={18} />} label="Cognitivo" value={summary.stats.cognitivo} colors={STAT_COLORS.cognitivo} />
-          <StatBar icon={<Users size={18} />} label="Social" value={summary.stats.social} colors={STAT_COLORS.social} />
-          <StatBar icon={<Heart size={18} />} label="Afectivo" value={summary.stats.afectivo} colors={STAT_COLORS.afectivo} />
-          <StatBar icon={<Shield size={18} />} label="Ético" value={summary.stats.etico} colors={STAT_COLORS.etico} />
-          <StatBar icon={<MessageCircle size={18} />} label="Comunicativo" value={summary.stats.comunicativo} colors={STAT_COLORS.comunicativo} />
-        </div>
-
-        <h3 className="font-bold text-slate-700 mb-4 text-lg mt-4">Contexto</h3>
-        <div className="space-y-4">
-          <StatBar icon={<Home size={18} />} label="Familia" value={summary.context.familia} colors={CONTEXT_COLORS.familia} />
-          <StatBar icon={<BookOpen size={18} />} label="Escuela" value={summary.context.escuela} colors={CONTEXT_COLORS.escuela} />
-          <StatBar icon={<Users size={18} />} label="Amigos" value={summary.context.amigos} colors={CONTEXT_COLORS.amigos} />
-          <StatBar icon={<Target size={18} />} label="Comunidad" value={summary.context.comunidad} colors={CONTEXT_COLORS.comunidad} />
-          <StatBar icon={<Globe size={18} />} label="Sociedad" value={summary.context.sociedad} colors={CONTEXT_COLORS.sociedad} />
-        </div>
-
-        <DailyQuests summary={{
-          decisionsCount: summary.decisionsCount,
-          xp: summary.character.xp,
-          escudoRacha: summary.character.escudoRacha,
-        }} />
-
-        {/* Acceso rápido móvil */}
-        <div className="mt-8 pt-6 border-t border-gray-100 space-y-2">
-          <button
-            onClick={() => router.push(`/simulacion/${characterId}/tienda`)}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-500 hover:bg-gray-100 hover:text-gray-700 border-2 border-transparent transition-colors"
-          >
-            <ShoppingBag className="w-5 h-5" />
-            <span className="font-bold text-sm">Ir a la Tienda</span>
-          </button>
-          <button
-            onClick={() => router.push(`/simulacion/${characterId}/ligas`)}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-500 hover:bg-gray-100 hover:text-gray-700 border-2 border-transparent transition-colors"
-          >
-            <Medal className="w-5 h-5" />
-            <span className="font-bold text-sm">Ver Ligas</span>
-          </button>
-        </div>
-      </aside>
+      <SidebarStats characterId={characterId} summary={summary} />
+      
+      <MobileBottomNav characterId={characterId} />
     </div>
   );
 }

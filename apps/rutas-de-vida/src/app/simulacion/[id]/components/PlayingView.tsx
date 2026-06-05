@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, CheckCircle2, AlertCircle } from 'lucide-react';
 import { RewardParticles } from '../../../../components/RewardParticles';
+import { playSuccessSound, playWarningSound } from '../../../../utils/audio';
 import type { useSimulation } from '../hooks/useSimulation';
 
 export function PlayingView({ state }: { state: ReturnType<typeof useSimulation> }) {
@@ -10,6 +12,16 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
     showXpParticles, showMonedaParticles, showVidaParticles,
     handleSelectOption, handleConfirmDecision, handleContinue
   } = state;
+
+  useEffect(() => {
+    if (showDrawer) {
+      if (drawerVariant === 'success') {
+        playSuccessSound();
+      } else {
+        playWarningSound();
+      }
+    }
+  }, [showDrawer, drawerVariant]);
 
   if (!currentDecision || !summary) return null;
 

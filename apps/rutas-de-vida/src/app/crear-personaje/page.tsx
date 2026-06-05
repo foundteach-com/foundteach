@@ -14,6 +14,7 @@ export default function CrearPersonaje() {
   const [genero, setGenero] = useState<Gender>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isWobbling, setIsWobbling] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const router = useRouter();
 
   const handleNextStep = () => {
@@ -53,7 +54,8 @@ export default function CrearPersonaje() {
       
     } catch (error) {
       console.error('Error:', error);
-      alert('Ocurrió un error al intentar crear el personaje. Por favor, intenta de nuevo.');
+      setErrorMsg('Error de conexión. Asegúrate de que el servidor está encendido.');
+      setTimeout(() => setErrorMsg(null), 5000);
     } finally {
       setIsSubmitting(false);
     }
@@ -87,6 +89,21 @@ export default function CrearPersonaje() {
           </motion.div>
         </div>
       </header>
+
+      {/* Error Toast */}
+      <AnimatePresence>
+        {errorMsg && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -20, x: '-50%' }}
+            className="fixed top-24 left-1/2 z-50 bg-rose-500 text-white px-6 py-3 rounded-2xl shadow-lg font-bold flex items-center gap-2 max-w-[90%] w-max"
+          >
+            <X className="w-5 h-5" />
+            <span>{errorMsg}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto w-full p-6 relative">
