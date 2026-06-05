@@ -11,6 +11,12 @@ import {
 } from 'lucide-react';
 import { playSuccessSound } from '../../../utils/audio';
 
+import { RewardParticles } from '../../../components/RewardParticles';
+import { StatBar } from '../../../components/StatBar';
+import { NavItem } from '../../../components/NavItem';
+import { ActivePowers } from '../../../components/ActivePowers';
+import { DailyQuests } from '../../../components/DailyQuests';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 // Mapa de etapas a nombres en español
@@ -32,6 +38,8 @@ interface CharacterSummary {
     xp: number;
     monedas: number;
     vidas: number;
+    escudoRacha: boolean;
+    xpBoostCharges: number;
   };
   stats: {
     fisico: number;
@@ -67,40 +75,7 @@ interface ProgressEntry {
   decisionId: string;
 }
 
-// Componente de partículas de recompensa
-function RewardParticles({ show, type }: { show: boolean; type: 'xp' | 'monedas' | 'vida' }) {
-  if (!show) return null;
-  const emojis = type === 'xp' ? ['🔥', '+10 XP'] : type === 'monedas' ? ['🪙', '+5'] : ['💔'];
-  return (
-    <AnimatePresence>
-      {show && (
-        <div className="fixed inset-0 pointer-events-none z-[100]">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 1, y: 0, x: 0, scale: 0.5 }}
-              animate={{
-                opacity: 0,
-                y: type === 'vida' ? 50 : -150,
-                x: (i % 3 - 1) * 60 + (Math.random() * 40 - 20),
-                scale: 1.5,
-              }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.2, delay: i * 0.08 }}
-              className="absolute font-bold text-2xl"
-              style={{
-                top: '60%',
-                left: `${30 + i * 8}%`,
-              }}
-            >
-              {emojis[i % emojis.length]}
-            </motion.div>
-          ))}
-        </div>
-      )}
-    </AnimatePresence>
-  );
-}
+
 
 export default function SimulacionPage() {
   const params = useParams();
@@ -383,6 +358,12 @@ export default function SimulacionPage() {
               </motion.span>
             ))}
           </div>
+          
+          <ActivePowers 
+            hasShield={summary.character.escudoRacha} 
+            xpBoostCharges={summary.character.xpBoostCharges} 
+          />
+
           <div className="flex items-center gap-2 font-bold text-orange-500">
             <Flame className="w-6 h-6 fill-orange-500" />
             <span className="text-lg">{summary.character.xp} XP</span>
@@ -516,6 +497,8 @@ export default function SimulacionPage() {
           <StatBar icon={<Home size={18} />} label="Familia" value={summary.context.familia} colors={{ bar: 'bg-[#FF96CB]', bg: 'bg-[#FF96CB]/10', text: 'text-[#E05E9C]', icon: 'text-[#E05E9C]' }} />
           <StatBar icon={<BookOpen size={18} />} label="Escuela" value={summary.context.escuela} colors={{ bar: 'bg-[#00E1FF]', bg: 'bg-[#00E1FF]/10', text: 'text-[#00B4CC]', icon: 'text-[#00B4CC]' }} />
         </div>
+
+        <DailyQuests />
 
         {/* Acceso rápido móvil */}
         <div className="mt-8 pt-6 border-t border-gray-100 space-y-2">
@@ -704,44 +687,3 @@ export default function SimulacionPage() {
   return viewMode === 'dashboard' ? renderDashboard() : renderPlaying();
 }
 
-// --- SUBCOMPONENTES ---
-
-function NavItem({ icon, label, active = false, onClick }: { icon: React.ReactNode; label: string; active?: boolean; onClick?: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-colors
-        ${active ? 'bg-[#FF005A]/10 text-[#FF005A] border-2 border-[#FF005A]/20' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700 border-2 border-transparent'}
-      `}
-    >
-      {icon}
-      <span className="font-bold uppercase tracking-wider text-sm">{label}</span>
-    </button>
-  );
-}
-
-function StatBar({ icon, label, value, colors }: { icon: React.ReactNode; label: string; value: number; colors: { bar: string; bg: string; text: string; icon: string } }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className={`w-10 h-10 rounded-xl ${colors.bg} flex items-center justify-center shrink-0 ${colors.icon}`}>
-        {icon}
-      </div>
-      <div className="flex-1">
-        <div className="flex justify-between mb-1">
-          <span className="text-sm font-bold text-slate-700">{label}</span>
-          <span className={`text-sm font-bold ${colors.text}`}>{value}</span>
-        </div>
-        <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${value}%` }}
-            transition={{ type: 'spring', stiffness: 50, damping: 10, mass: 1 }}
-            className={`h-full rounded-full ${colors.bar}`}
-          >
-            <div className="w-full h-1/3 bg-white/30" />
-          </motion.div>
-        </div>
-      </div>
-    </div>
-  );
-}
