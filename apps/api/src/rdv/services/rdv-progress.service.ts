@@ -5,6 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { RdvSimulationEngineService } from './rdv-simulation-engine.service';
 import { MakeDecisionDto } from '../dto';
 import {
   RDV_STAT_FIELDS,
@@ -17,7 +18,10 @@ import {
 export class RdvProgressService {
   private readonly logger = new Logger(RdvProgressService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private simulationEngine: RdvSimulationEngineService,
+  ) {}
 
   /**
    * Fija un valor entre 0 y 100.
@@ -217,6 +221,9 @@ export class RdvProgressService {
    * Resumen completo del estado actual del personaje (incluye vidas).
    */
   async getSummary(characterId: string) {
+    // 1. Evaluar progreso pasivo (Idle Tycoon) antes de devolver el resumen
+    await this.simulationEngine.evaluatePassiveProgress(characterId);
+
     const character = await this.prisma.rdvCharacter.findUnique({
       where: { id: characterId },
       include: {

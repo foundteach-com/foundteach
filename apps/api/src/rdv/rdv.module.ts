@@ -7,6 +7,9 @@ import { RdvPlayersService } from './services/rdv-players.service';
 import { RdvCharactersService } from './services/rdv-characters.service';
 import { RdvDecisionsService } from './services/rdv-decisions.service';
 import { RdvProgressService } from './services/rdv-progress.service';
+import { RdvSimulationEngineService } from './services/rdv-simulation-engine.service';
+import { RdvDecisionEngineService } from './services/rdv-decision-engine.service';
+import { RdvReportService } from './services/rdv-report.service';
 
 @Module({
   controllers: [
@@ -20,6 +23,9 @@ import { RdvProgressService } from './services/rdv-progress.service';
     RdvCharactersService,
     RdvDecisionsService,
     RdvProgressService,
+    RdvSimulationEngineService,
+    RdvDecisionEngineService,
+    RdvReportService,
   ],
 })
 export class RdvModule {}

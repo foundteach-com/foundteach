@@ -6,6 +6,9 @@ import type { useSimulation } from '../hooks/useSimulation';
 import { SidebarNav } from './SidebarNav';
 import { SidebarStats } from './SidebarStats';
 import { MobileBottomNav } from './MobileBottomNav';
+import { IsometricRoom } from './IsometricRoom';
+import { LifeReportModal } from './LifeReportModal';
+import { useState } from 'react';
 
 const getDecisionEmoji = (title: string) => {
   const lowerTitle = title.toLowerCase();
@@ -38,6 +41,8 @@ export function DashboardView({
     summary, decisions, currentDecision, completedDecisionsCount, isLoading,
     showStageUpModal, setShowStageUpModal, nextStageName, handleAdvanceStage, handleStartNode
   } = state;
+
+  const [showReportModal, setShowReportModal] = useState(false);
 
   if (!summary) return null;
 
@@ -151,7 +156,10 @@ export function DashboardView({
             <div className="absolute right-[-20%] top-[-50%] w-64 h-64 bg-white/10 rounded-full blur-2xl" />
           </div>
 
-          {/* Nodos del camino */}
+          {/* Habitación Isométrica (Idle Tycoon) */}
+          <IsometricRoom summary={summary} />
+
+          {/* Nodos del camino (Eventos Disponibles) */}
           <motion.div 
             initial="hidden"
             animate="visible"
@@ -244,6 +252,24 @@ export function DashboardView({
                 </button>
               </motion.div>
             )}
+
+            {/* Informe final de vida (Vejez) */}
+            {summary.character.etapaActual === 'OLD_AGE' && (
+              <motion.div 
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0 }
+                }}
+                className="mt-8 flex flex-col items-center w-full max-w-xs"
+              >
+                <button
+                  onClick={() => setShowReportModal(true)}
+                  className="w-full py-4 rounded-2xl font-bold text-lg uppercase tracking-wider transition-all bg-slate-800 text-white hover:bg-slate-700 shadow-[0_6px_0_#0f172a] active:translate-y-2 active:shadow-none"
+                >
+                  Ver Informe de Vida
+                </button>
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </main>
@@ -255,6 +281,16 @@ export function DashboardView({
       />
       
       <MobileBottomNav characterId={characterId} />
+
+      {/* Modal del Informe Final */}
+      <AnimatePresence>
+        {showReportModal && (
+          <LifeReportModal 
+            characterId={characterId} 
+            onClose={() => setShowReportModal(false)} 
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

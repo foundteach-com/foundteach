@@ -4,6 +4,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { RdvDecisionEngineService } from './rdv-decision-engine.service';
 import { RdvLifeStage } from '@prisma/client';
 import { CreateDecisionDto } from '../dto';
 
@@ -11,7 +12,10 @@ import { CreateDecisionDto } from '../dto';
 export class RdvDecisionsService {
   private readonly logger = new Logger(RdvDecisionsService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private decisionEngine: RdvDecisionEngineService,
+  ) {}
 
   /**
    * Crea una decisión con sus opciones en una sola operación.
@@ -51,6 +55,11 @@ export class RdvDecisionsService {
    * Si se proporciona characterId, selecciona 10 decisiones aleatorias de forma determinista y agrega la consecuencia si existe.
    */
   async findAll(stage?: RdvLifeStage, characterId?: string) {
+    if (characterId && stage) {
+      // Inyectar dilemas dinámicos basados en el contexto antes de consultar
+      await this.decisionEngine.injectDynamicDecisions(characterId, stage);
+    }
+
     // 1. Obtener todas las decisiones activas de la etapa
     let decisions = await this.prisma.rdvDecision.findMany({
       where: {

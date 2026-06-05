@@ -1,10 +1,14 @@
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { RdvProgressService } from '../services/rdv-progress.service';
+import { RdvReportService } from '../services/rdv-report.service';
 import { MakeDecisionDto } from '../dto/make-decision.dto';
 
 @Controller('rdv/progress')
 export class RdvProgressController {
-  constructor(private readonly progressService: RdvProgressService) {}
+  constructor(
+    private readonly progressService: RdvProgressService,
+    private readonly reportService: RdvReportService,
+  ) {}
 
   @Post('decide')
   async makeDecision(@Body() dto: MakeDecisionDto) {
@@ -42,5 +46,10 @@ export class RdvProgressController {
   @Get(':characterId/logros')
   async getLogros(@Param('characterId') characterId: string) {
     return this.progressService.getLogros(characterId);
+  }
+
+  @Get(':characterId/report')
+  async getReport(@Param('characterId') characterId: string) {
+    return this.reportService.generateLifeReport(characterId);
   }
 }
