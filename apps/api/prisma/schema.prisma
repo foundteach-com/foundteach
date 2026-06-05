@@ -825,17 +825,19 @@ enum RdvLifeStage {
 }
 
 model RdvCharacter {
-  id           String       @id @default(uuid())
-  userId       String?      @map("user_id")
-  nombre       String
-  genero       RdvGender
-  etapaActual  RdvLifeStage @default(EARLY_CHILDHOOD) @map("etapa_actual")
-  isActive     Boolean      @default(true) @map("is_active")
-  xp           Int          @default(0)
-  monedas      Int          @default(0)
-  vidas        Int          @default(5)
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
+  id             String       @id @default(uuid())
+  userId         String?      @map("user_id")
+  nombre         String
+  genero         RdvGender
+  etapaActual    RdvLifeStage @default(EARLY_CHILDHOOD) @map("etapa_actual")
+  isActive       Boolean      @default(true) @map("is_active")
+  xp             Int          @default(0)
+  monedas        Int          @default(0)
+  vidas          Int          @default(5)
+  escudoRacha    Boolean      @default(false) @map("escudo_racha")
+  xpBoostCharges Int          @default(0) @map("xp_boost_charges")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
 
   user          User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
   stats         RdvStats?

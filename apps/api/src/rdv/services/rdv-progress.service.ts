@@ -142,12 +142,23 @@ export class RdvProgressService {
       }
 
       const characterUpdate: Record<string, any> = {
-        xp: { increment: 10 },
+        xp: { increment: character.xpBoostCharges > 0 ? 20 : 10 },
         monedas: { increment: 5 },
       };
 
+      if (character.xpBoostCharges > 0) {
+        characterUpdate.xpBoostCharges = { decrement: 1 };
+      }
+
+      let vidaRestada = false;
       if (perdioVida && character.vidas > 0) {
-        characterUpdate.vidas = { decrement: 1 };
+        if (character.escudoRacha) {
+          characterUpdate.escudoRacha = false;
+          perdioVida = false; // Evitamos la penalización visual en la UI
+        } else {
+          characterUpdate.vidas = { decrement: 1 };
+          vidaRestada = true;
+        }
       }
 
       await tx.rdvCharacter.update({
@@ -233,6 +244,8 @@ export class RdvProgressService {
         xp: character.xp,
         monedas: character.monedas,
         vidas: character.vidas,
+        escudoRacha: character.escudoRacha,
+        xpBoostCharges: character.xpBoostCharges,
       },
       stats: character.stats,
       context: character.context,
@@ -286,37 +299,54 @@ export class RdvProgressService {
   }
 
   /**
-   * Compra vidas con monedas (10 monedas por vida).
+   * Compra items en la tienda.
    */
-  async buyLives(characterId: string, cantidad: number = 1) {
+  async buyItem(characterId: string, itemId: string) {
     const character = await this.prisma.rdvCharacter.findUnique({
       where: { id: characterId },
     });
 
     if (!character) throw new NotFoundException('Personaje no encontrado');
 
-    const costoPorVida = 10;
-    const costoTotal = costoPorVida * cantidad;
+    const ITEMS = {
+      vida_1: { precio: 10, tipo: 'vida', cantidad: 1 },
+      vida_3: { precio: 25, tipo: 'vida', cantidad: 3 },
+      vidas_max: { precio: 40, tipo: 'vida', cantidad: 5 },
+      escudo_racha: { precio: 30, tipo: 'escudo' },
+      xp_x2: { precio: 50, tipo: 'xpx2', cantidad: 10 },
+    };
 
-    if (character.monedas < costoTotal) {
+    const item = ITEMS[itemId as keyof typeof ITEMS];
+    if (!item) throw new BadRequestException('Item inválido');
+
+    if (character.monedas < item.precio) {
       throw new BadRequestException(
-        `No tienes suficientes monedas. Necesitas ${costoTotal} y tienes ${character.monedas}.`
+        `No tienes suficientes monedas. Necesitas ${item.precio} y tienes ${character.monedas}.`
       );
     }
 
-    const maxVidas = 5;
-    const vidasARecuperar = Math.min(cantidad, maxVidas - character.vidas);
+    const updateData: Record<string, any> = {
+      monedas: { decrement: item.precio },
+    };
 
-    if (vidasARecuperar <= 0) {
-      throw new BadRequestException('Ya tienes el máximo de vidas (5).');
+    if (item.tipo === 'vida') {
+      const vidasARecuperar = Math.min(item.cantidad!, 5 - character.vidas);
+      if (vidasARecuperar <= 0) {
+        throw new BadRequestException('Ya tienes el máximo de vidas (5).');
+      }
+      updateData.vidas = { increment: vidasARecuperar };
+    } else if (item.tipo === 'escudo') {
+      if (character.escudoRacha) {
+        throw new BadRequestException('Ya tienes el escudo de racha activo.');
+      }
+      updateData.escudoRacha = true;
+    } else if (item.tipo === 'xpx2') {
+      updateData.xpBoostCharges = { increment: item.cantidad };
     }
 
     return this.prisma.rdvCharacter.update({
       where: { id: characterId },
-      data: {
-        vidas: { increment: vidasARecuperar },
-        monedas: { decrement: vidasARecuperar * costoPorVida },
-      },
+      data: updateData,
     });
   }
 

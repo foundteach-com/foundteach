@@ -16,12 +16,12 @@ export class RdvProgressController {
     return this.progressService.advanceStage(characterId);
   }
 
-  @Post('comprar-vidas')
-  async buyLives(
+  @Post('comprar-item')
+  async buyItem(
     @Body('characterId') characterId: string,
-    @Body('cantidad') cantidad: number,
+    @Body('itemId') itemId: string,
   ) {
-    return this.progressService.buyLives(characterId, cantidad ?? 1);
+    return this.progressService.buyItem(characterId, itemId);
   }
 
   @Get('ligas')

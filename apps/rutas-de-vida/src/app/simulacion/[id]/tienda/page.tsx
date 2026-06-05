@@ -14,6 +14,8 @@ interface CharacterSummary {
     monedas: number;
     vidas: number;
     xp: number;
+    escudoRacha: boolean;
+    xpBoostCharges: number;
   };
 }
 
@@ -59,6 +61,28 @@ const PRODUCTOS = [
     bgColor: 'bg-purple-50',
     badge: 'Más popular',
   },
+  {
+    id: 'escudo_racha',
+    nombre: 'Escudo de Racha',
+    descripcion: 'Evita perder una vida si te equivocas (1 uso).',
+    emoji: '🛡️',
+    precio: 30,
+    color: 'from-teal-400 to-emerald-500',
+    borderColor: 'border-teal-200',
+    bgColor: 'bg-teal-50',
+    badge: 'Nuevo',
+  },
+  {
+    id: 'xp_x2',
+    nombre: 'XP x2',
+    descripcion: 'Duplica los puntos de experiencia en 10 decisiones.',
+    emoji: '⚡',
+    precio: 50,
+    color: 'from-yellow-400 to-amber-500',
+    borderColor: 'border-yellow-200',
+    bgColor: 'bg-yellow-50',
+    badge: 'Nuevo',
+  },
 ];
 
 export default function TiendaPage() {
@@ -99,17 +123,21 @@ export default function TiendaPage() {
       showToast(`No tienes suficientes monedas. Necesitas ${producto.precio} 🪙`, 'error');
       return;
     }
-    if (summary.character.vidas >= 5) {
+    if (producto.id.startsWith('vida') && summary.character.vidas >= 5) {
       showToast('¡Ya tienes todas las vidas al máximo! ❤️', 'error');
+      return;
+    }
+    if (producto.id === 'escudo_racha' && summary.character.escudoRacha) {
+      showToast('¡Ya tienes un escudo activo! 🛡️', 'error');
       return;
     }
 
     setBuying(producto.id);
     try {
-      const res = await fetch(`${API_URL}/api/rdv/progress/comprar-vidas`, {
+      const res = await fetch(`${API_URL}/api/rdv/progress/comprar-item`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ characterId, cantidad: producto.cantidad }),
+        body: JSON.stringify({ characterId, itemId: producto.id }),
       });
 
       if (!res.ok) {
@@ -167,6 +195,19 @@ export default function TiendaPage() {
             <h1 className="text-2xl font-bold text-slate-800">Tienda</h1>
           </div>
           <div className="ml-auto flex items-center gap-4">
+            {/* Poderes activos */}
+            <div className="flex gap-2">
+              {summary?.character.escudoRacha && (
+                <div className="bg-teal-50 border-2 border-teal-200 text-teal-600 rounded-full px-3 py-1 text-sm font-bold flex items-center gap-1 shadow-sm" title="Escudo Activo">
+                  🛡️ Escudo
+                </div>
+              )}
+              {(summary?.character.xpBoostCharges ?? 0) > 0 && (
+                <div className="bg-yellow-50 border-2 border-yellow-200 text-yellow-600 rounded-full px-3 py-1 text-sm font-bold flex items-center gap-1 shadow-sm" title="Doble XP Activo">
+                  ⚡ {summary?.character.xpBoostCharges}
+                </div>
+              )}
+            </div>
             {/* Monedas */}
             <div className="flex items-center gap-2 bg-sky-50 border-2 border-sky-200 rounded-2xl px-4 py-2">
               <span className="text-xl">🪙</span>
@@ -193,17 +234,20 @@ export default function TiendaPage() {
           </div>
         </div>
 
-        {/* Categoría: Vidas */}
-        <h2 className="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">
+        {/* Categoría: Catálogo Principal */}
+        <h2 className="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2 mt-8">
           <Heart className="w-5 h-5 text-red-500" />
-          Recuperar Vidas
+          Catálogo
         </h2>
 
         <div className="space-y-4 mb-10">
           {PRODUCTOS.map((producto) => {
             const sinMonedas = (summary?.character.monedas ?? 0) < producto.precio;
-            const vidasLlenas = (summary?.character.vidas ?? 0) >= 5;
-            const noDisponible = sinMonedas || vidasLlenas;
+            let maxed = false;
+            if (producto.id.startsWith('vida') && (summary?.character.vidas ?? 0) >= 5) maxed = true;
+            if (producto.id === 'escudo_racha' && summary?.character.escudoRacha) maxed = true;
+
+            const noDisponible = sinMonedas || maxed;
 
             return (
               <motion.div
@@ -249,29 +293,6 @@ export default function TiendaPage() {
               </motion.div>
             );
           })}
-        </div>
-
-        {/* Próximamente */}
-        <h2 className="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">
-          <Zap className="w-5 h-5 text-yellow-500" />
-          Próximamente
-        </h2>
-        <div className="grid grid-cols-2 gap-4">
-          {[
-            { emoji: '🛡️', nombre: 'Escudo de Racha', desc: 'Protege tu racha por 1 día.', precio: 30 },
-            { emoji: '⚡', nombre: 'XP x2', desc: 'Duplica tu XP por 10 decisiones.', precio: 50 },
-          ].map((item) => (
-            <div key={item.nombre} className="bg-white border-2 border-gray-100 rounded-2xl p-4 opacity-60">
-              <div className="text-4xl mb-2">{item.emoji}</div>
-              <h3 className="font-bold text-slate-700">{item.nombre}</h3>
-              <p className="text-xs text-slate-400 mb-3">{item.desc}</p>
-              <div className="flex items-center gap-1 text-gray-400 font-bold">
-                <span>🪙</span>
-                <span>{item.precio}</span>
-                <span className="ml-2 text-xs">(Próximamente)</span>
-              </div>
-            </div>
-          ))}
         </div>
       </main>
     </div>
