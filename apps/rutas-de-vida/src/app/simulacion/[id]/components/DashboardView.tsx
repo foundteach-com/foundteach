@@ -6,7 +6,6 @@ import type { useSimulation } from '../hooks/useSimulation';
 import { SidebarNav } from './SidebarNav';
 import { SidebarStats } from './SidebarStats';
 import { MobileBottomNav } from './MobileBottomNav';
-import { IsometricRoom } from './IsometricRoom';
 import { LifeReportModal } from './LifeReportModal';
 import { useState } from 'react';
 
@@ -155,9 +154,6 @@ export function DashboardView({
             </div>
             <div className="absolute right-[-20%] top-[-50%] w-64 h-64 bg-white/10 rounded-full blur-2xl" />
           </div>
-
-          {/* Habitación Isométrica (Idle Tycoon) */}
-          <IsometricRoom summary={summary} />
 
           {/* Nodos del camino (Eventos Disponibles) */}
           <motion.div 
