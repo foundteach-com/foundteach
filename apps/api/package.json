@@ -22,7 +22,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:init": "prisma init --datasource-provider postgresql",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev"
+    "db:migrate": "prisma migrate dev",
+    "seed:rdv": "ts-node prisma/seed-rdv.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1014.0",
