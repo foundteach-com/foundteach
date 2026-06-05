@@ -13,8 +13,11 @@ export class RdvDecisionsController {
   }
 
   @Get()
-  async findAll(@Query('stage') stage?: RdvLifeStage) {
-    return this.decisionsService.findAll(stage);
+  async findAll(
+    @Query('stage') stage?: RdvLifeStage,
+    @Query('characterId') characterId?: string,
+  ) {
+    return this.decisionsService.findAll(stage, characterId);
   }
 
   @Get(':id')

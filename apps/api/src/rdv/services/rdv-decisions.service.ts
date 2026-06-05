@@ -47,9 +47,11 @@ export class RdvDecisionsService {
 
   /**
    * Lista decisiones, opcionalmente filtradas por etapa del ciclo vital.
+   * Si se proporciona characterId, selecciona 10 decisiones aleatorias de forma determinista y agrega la consecuencia si existe.
    */
-  async findAll(stage?: RdvLifeStage) {
-    return this.prisma.rdvDecision.findMany({
+  async findAll(stage?: RdvLifeStage, characterId?: string) {
+    // 1. Obtener todas las decisiones activas de la etapa
+    let decisions = await this.prisma.rdvDecision.findMany({
       where: {
         isActive: true,
         ...(stage ? { etapa: stage } : {}),
@@ -57,6 +59,38 @@ export class RdvDecisionsService {
       include: { options: { orderBy: { sortOrder: 'asc' } } },
       orderBy: { sortOrder: 'asc' },
     });
+
+    if (characterId) {
+      // 2. Orden determinista
+      const hash = (str: string) => {
+        let h = 0;
+        for (let i = 0; i < str.length; i++) {
+          h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+        }
+        return h;
+      };
+
+      decisions.sort((a, b) => hash(a.id + characterId) - hash(b.id + characterId));
+      decisions = decisions.slice(0, 10); // Aseguramos que haya máximo 10 aleatorias
+
+      // 3. Buscar si hay una decisión de consecuencia para este personaje en esta etapa
+      const consequence = await this.prisma.rdvDecision.findFirst({
+        where: {
+          isActive: false,
+          titulo: `[CONSECUENCIA:${characterId}] El paso del tiempo...`,
+          etapa: stage,
+        },
+        include: { options: { orderBy: { sortOrder: 'asc' } } },
+      });
+
+      if (consequence) {
+        // Reemplazar la primera decisión aleatoria por la consecuencia, manteniendo el total en 10
+        decisions.pop(); 
+        decisions.unshift(consequence);
+      }
+    }
+
+    return decisions;
   }
 
   /**

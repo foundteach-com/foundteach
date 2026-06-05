@@ -259,11 +259,12 @@ export class RdvProgressService {
 
   /**
    * Avanza a la siguiente etapa de la vida.
-   * Restaura todas las vidas y otorga bonus de XP y monedas.
+   * Genera una decisión de consecuencia y otorga bonus.
    */
   async advanceStage(characterId: string) {
     const character = await this.prisma.rdvCharacter.findUnique({
       where: { id: characterId },
+      include: { stats: true, context: true },
     });
 
     if (!character) throw new NotFoundException('Personaje no encontrado');
@@ -284,6 +285,45 @@ export class RdvProgressService {
 
     const nextStage = stages[currentIndex + 1] as any;
 
+    // Generar consecuencia basada en stats
+    let consecuenciaTexto = 'Has crecido y una nueva etapa comienza.';
+    if (character.stats) {
+      const stats = character.stats as unknown as Record<string, number>;
+      const statKeys = RDV_STAT_FIELDS;
+      let maxStat: RdvStatField = statKeys[0];
+      let minStat: RdvStatField = statKeys[0];
+
+      for (const key of statKeys) {
+        if (stats[key] > stats[maxStat]) maxStat = key;
+        if (stats[key] < stats[minStat]) minStat = key;
+      }
+
+      consecuenciaTexto = `Al iniciar esta nueva etapa, tu gran desarrollo en el área ${maxStat.toUpperCase()} te abre nuevas puertas, pero tu descuido en el área ${minStat.toUpperCase()} te presenta un reto inmediato. ¿Cómo decides afrontarlo?`;
+    }
+
+    // Crear la decisión de consecuencia personalizada
+    await this.prisma.rdvDecision.create({
+      data: {
+        etapa: nextStage,
+        titulo: `[CONSECUENCIA:${characterId}] El paso del tiempo...`,
+        descripcion: consecuenciaTexto,
+        isActive: false, // Para que no salga en el pool general
+        sortOrder: -1,
+        options: {
+          create: [
+            {
+              texto: 'Afrontar el reto de frente (Equilibrar stats)',
+              cambiosEnAtributos: { fisico: 2, cognitivo: 2, social: 2 },
+            },
+            {
+              texto: 'Apoyarme en mis fortalezas (Potenciar virtudes)',
+              cambiosEnAtributos: { afectivo: 5, etico: 5 },
+            }
+          ]
+        }
+      }
+    });
+
     const updated = await this.prisma.rdvCharacter.update({
       where: { id: characterId },
       data: {
@@ -294,7 +334,7 @@ export class RdvProgressService {
       },
     });
 
-    this.logger.log(`🌟 ${character.nombre} avanzó a ${nextStage}. Vidas restauradas + bonus.`);
+    this.logger.log(`🌟 ${character.nombre} avanzó a ${nextStage}. Consecuencia generada.`);
     return updated;
   }
 
@@ -314,6 +354,7 @@ export class RdvProgressService {
       vidas_max: { precio: 40, tipo: 'vida', cantidad: 5 },
       escudo_racha: { precio: 30, tipo: 'escudo' },
       xp_x2: { precio: 50, tipo: 'xpx2', cantidad: 10 },
+      descanso_gratis: { precio: 0, tipo: 'descanso' },
     };
 
     const item = ITEMS[itemId];
@@ -342,6 +383,19 @@ export class RdvProgressService {
       updateData.escudoRacha = true;
     } else if (item.tipo === 'xpx2') {
       updateData.xpBoostCharges = { increment: item.cantidad };
+    } else if (item.tipo === 'descanso') {
+      const vidasARecuperar = Math.min(1, 5 - character.vidas);
+      if (vidasARecuperar <= 0) {
+        throw new BadRequestException('Ya tienes el máximo de vidas (5).');
+      }
+      updateData.vidas = { increment: vidasARecuperar };
+      
+      // Penalización por descansar gratis
+      if (character.xp >= 15) {
+        updateData.xp = { decrement: 15 };
+      } else {
+        updateData.xp = 0;
+      }
     }
 
     return this.prisma.rdvCharacter.update({
