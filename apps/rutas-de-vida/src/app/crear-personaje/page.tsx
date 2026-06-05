@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, User as UserIcon, Sparkles, ArrowLeft } from 'lucide-react';
+import { User as UserIcon, Sparkles, ArrowLeft, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -55,176 +55,174 @@ export default function CrearPersonaje() {
     }
   };
 
+  const progressPercentage = step === 1 ? 50 : 100;
+
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background decorative blobs */}
-      <div className="absolute top-0 right-[-10%] w-[500px] h-[500px] bg-amber-200 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-float" />
-      <div className="absolute bottom-0 left-[-10%] w-[500px] h-[500px] bg-purple-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-float" style={{ animationDelay: '1s' }} />
-      <div className="absolute top-[30%] left-[50%] w-[300px] h-[300px] bg-pink-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-30 animate-float" style={{ animationDelay: '3s' }} />
-
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="glass-panel w-full max-w-4xl p-8 sm:p-12 rounded-3xl relative z-10"
-      >
-        {/* Step indicator */}
-        <div className="flex justify-center gap-3 mb-8">
-          <div className={`h-2 rounded-full transition-all duration-500 ${step === 1 ? 'w-12 bg-gradient-to-r from-purple-500 to-pink-500' : 'w-6 bg-slate-200'}`} />
-          <div className={`h-2 rounded-full transition-all duration-500 ${step === 2 ? 'w-12 bg-gradient-to-r from-purple-500 to-pink-500' : 'w-6 bg-slate-200'}`} />
+    <div className="min-h-screen bg-white flex flex-col font-sans">
+      {/* Top Header */}
+      <header className="w-full max-w-4xl mx-auto p-6 flex items-center gap-6">
+        <button 
+          onClick={() => {
+            if (step === 2) setStep(1);
+            else router.push('/');
+          }}
+          className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-colors"
+        >
+          {step === 1 ? <X className="w-6 h-6" /> : <ArrowLeft className="w-6 h-6" />}
+        </button>
+        
+        {/* Progress Bar */}
+        <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden relative">
+          <motion.div 
+            initial={{ width: step === 1 ? 0 : '50%' }}
+            animate={{ width: `${progressPercentage}%` }}
+            transition={{ duration: 0.5 }}
+            className="absolute top-0 left-0 h-full bg-[#58CC02] rounded-full"
+          >
+            <div className="absolute top-1 left-2 right-2 h-1 bg-white/30 rounded-full" />
+          </motion.div>
         </div>
+      </header>
 
-        <div className="text-center mb-10">
-          <h1 className="font-display text-3xl sm:text-4xl font-bold mb-3 text-slate-800">
-            {step === 1 ? '¡Crea tu personaje!' : '¿Cómo luce?'}
-          </h1>
-          <p className="text-slate-400">
-            {step === 1 ? 'Dale un nombre increíble a tu simulación vital.' : `Selecciona el género de ${nombre}`}
-          </p>
-        </div>
-
-        <div className="relative overflow-hidden min-h-[400px]">
-          <AnimatePresence mode="wait">
-            {step === 1 && (
-              <motion.div
-                key="step-1"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="flex flex-col items-center justify-center h-full pt-10"
-              >
-                <div className="w-full max-w-md">
-                  {/* Avatar placeholder */}
-                  <div className="w-24 h-24 mx-auto mb-8 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center border-4 border-white shadow-lg">
-                    <UserIcon className="w-10 h-10 text-purple-400" />
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto w-full p-6 relative">
+        <AnimatePresence mode="wait">
+          {step === 1 && (
+            <motion.div
+              key="step-1"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="w-full flex flex-col items-center"
+            >
+              <h1 className="font-display text-3xl sm:text-4xl font-bold mb-8 text-slate-800 text-center">
+                ¡Dale un nombre a tu personaje!
+              </h1>
+              
+              <div className="w-full max-w-md">
+                <div className="flex items-start gap-4 mb-8 bg-gray-50 p-6 rounded-2xl border-2 border-gray-100">
+                  <div className="w-16 h-16 rounded-full bg-[#FF005A] shrink-0 flex items-center justify-center border-4 border-white shadow-[0_4px_0_#D9004C] -mt-2">
+                    <UserIcon className="w-8 h-8 text-white" />
                   </div>
-
-                  <label htmlFor="nombre" className="block text-sm font-semibold text-slate-500 mb-3 text-center uppercase tracking-wider">
-                    ¿Cómo se llamará tu personaje?
-                  </label>
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <UserIcon className="h-5 w-5 text-slate-400 group-focus-within:text-purple-500 transition-colors" />
-                    </div>
+                  <div className="bg-white p-4 rounded-2xl rounded-tl-none border-2 border-gray-200 shadow-sm relative w-full">
+                    <div className="absolute -left-[10px] top-4 w-4 h-4 bg-white border-l-2 border-t-2 border-gray-200 -rotate-45" />
                     <input
                       type="text"
                       id="nombre"
                       value={nombre}
                       onChange={(e) => setNombre(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleNextStep()}
-                      className="glass-input block w-full pl-12 pr-4 py-4 rounded-2xl text-xl focus:ring-0 font-medium"
-                      placeholder="Ej. Mateo o Valentina"
+                      className="w-full text-xl font-bold text-slate-700 focus:outline-none placeholder-gray-300"
+                      placeholder="Escribe un nombre..."
                       autoFocus
                     />
                   </div>
-                  
-                  <div className="mt-10 flex justify-center">
-                    <button
-                      onClick={handleNextStep}
-                      disabled={nombre.trim().length < 2}
-                      className="group flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-slate-200 disabled:to-slate-300 disabled:cursor-not-allowed text-white disabled:text-slate-400 font-semibold rounded-full transition-all shadow-lg hover:shadow-xl disabled:shadow-none hover:scale-105 disabled:scale-100"
-                    >
-                      <span>Continuar</span>
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {step === 2 && (
+            <motion.div
+              key="step-2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="w-full flex flex-col items-center"
+            >
+              <h1 className="font-display text-3xl sm:text-4xl font-bold mb-8 text-slate-800 text-center">
+                ¿Cómo luce {nombre}?
+              </h1>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
+                {/* Male Card */}
+                <button
+                  onClick={() => setGenero('MALE')}
+                  className={`relative p-6 rounded-3xl transition-all duration-300 border-4 flex flex-col items-center gap-4
+                    ${genero === 'MALE' 
+                      ? 'border-[#00E1FF] bg-[#00E1FF]/10 text-[#009EBA] shadow-[0_6px_0_#00B4CC] translate-y-[-4px]' 
+                      : 'border-gray-200 bg-white hover:bg-gray-50 text-slate-600 shadow-[0_6px_0_#E5E5E5]'
+                    }
+                  `}
+                >
+                  <div className="relative w-40 h-40">
+                    <Image 
+                      src="/male_character.png" 
+                      alt="Hombre" 
+                      fill 
+                      className="object-contain"
+                    />
                   </div>
-                </div>
-              </motion.div>
-            )}
+                  <span className="font-bold text-xl">Hombre</span>
+                </button>
 
-            {step === 2 && (
-              <motion.div
-                key="step-2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="flex flex-col items-center h-full"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl mb-10">
-                  {/* Male Card */}
-                  <button
-                    onClick={() => setGenero('MALE')}
-                    className={`relative p-1 rounded-3xl transition-all duration-300 overflow-hidden ${
-                      genero === 'MALE' 
-                        ? 'bg-gradient-to-br from-blue-400 to-purple-500 scale-105 shadow-[0_8px_30px_rgba(99,102,241,0.3)]' 
-                        : 'bg-slate-200 hover:bg-slate-300'
-                    }`}
-                  >
-                    <div className="bg-white h-full w-full rounded-[22px] overflow-hidden group">
-                      <div className="relative h-64 w-full bg-gradient-to-br from-blue-50 to-purple-50">
-                        <Image 
-                          src="/male_character.png" 
-                          alt="Hombre" 
-                          fill 
-                          className="object-cover group-hover:scale-110 transition-transform duration-700"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
-                      </div>
-                      <div className="p-4 text-center">
-                        <h3 className={`font-display text-xl font-semibold ${genero === 'MALE' ? 'text-purple-600' : 'text-slate-500'}`}>Hombre</h3>
-                      </div>
-                    </div>
-                  </button>
+                {/* Female Card */}
+                <button
+                  onClick={() => setGenero('FEMALE')}
+                  className={`relative p-6 rounded-3xl transition-all duration-300 border-4 flex flex-col items-center gap-4
+                    ${genero === 'FEMALE' 
+                      ? 'border-[#FF96CB] bg-[#FF96CB]/10 text-[#E05E9C] shadow-[0_6px_0_#E05E9C] translate-y-[-4px]' 
+                      : 'border-gray-200 bg-white hover:bg-gray-50 text-slate-600 shadow-[0_6px_0_#E5E5E5]'
+                    }
+                  `}
+                >
+                  <div className="relative w-40 h-40">
+                    <Image 
+                      src="/female_character.png" 
+                      alt="Mujer" 
+                      fill 
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="font-bold text-xl">Mujer</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
 
-                  {/* Female Card */}
-                  <button
-                    onClick={() => setGenero('FEMALE')}
-                    className={`relative p-1 rounded-3xl transition-all duration-300 overflow-hidden ${
-                      genero === 'FEMALE' 
-                        ? 'bg-gradient-to-br from-pink-400 to-amber-400 scale-105 shadow-[0_8px_30px_rgba(236,72,153,0.3)]' 
-                        : 'bg-slate-200 hover:bg-slate-300'
-                    }`}
-                  >
-                    <div className="bg-white h-full w-full rounded-[22px] overflow-hidden group">
-                      <div className="relative h-64 w-full bg-gradient-to-br from-pink-50 to-amber-50">
-                        <Image 
-                          src="/female_character.png" 
-                          alt="Mujer" 
-                          fill 
-                          className="object-cover group-hover:scale-110 transition-transform duration-700"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
-                      </div>
-                      <div className="p-4 text-center">
-                        <h3 className={`font-display text-xl font-semibold ${genero === 'FEMALE' ? 'text-pink-600' : 'text-slate-500'}`}>Mujer</h3>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => setStep(1)}
-                    className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-600 rounded-full transition-all border border-slate-200 shadow-sm hover:shadow"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span>Volver</span>
-                  </button>
-                  
-                  {genero && (
-                    <motion.button
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      onClick={handleCreate}
-                      disabled={isSubmitting}
-                      className="group flex items-center gap-2 px-10 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-full transition-all shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-70"
-                    >
-                      {isSubmitting ? (
-                        <span>Naciendo...</span>
-                      ) : (
-                        <>
-                          <Sparkles className="w-4 h-4" />
-                          <span>Comenzar Vida</span>
-                        </>
-                      )}
-                    </motion.button>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+      {/* Action Button Area */}
+      <div className="w-full border-t-2 border-gray-200 bg-white p-6 pb-8 z-40">
+        <div className="max-w-3xl mx-auto flex justify-between items-center">
+          <div className="hidden sm:block"></div>
+          
+          {step === 1 ? (
+            <button
+              onClick={handleNextStep}
+              disabled={nombre.trim().length < 2}
+              className={`px-12 py-3 rounded-2xl font-bold text-lg uppercase tracking-wider transition-all w-full sm:w-auto
+                ${nombre.trim().length >= 2
+                  ? 'bg-[#FF005A] text-white hover:bg-[#E0004F] hover:shadow-[0_4px_0_#D9004C] active:translate-y-1 active:shadow-none shadow-[0_6px_0_#D9004C]' 
+                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                }
+              `}
+            >
+              Continuar
+            </button>
+          ) : (
+            <button
+              onClick={handleCreate}
+              disabled={!genero || isSubmitting}
+              className={`flex items-center justify-center gap-2 px-12 py-3 rounded-2xl font-bold text-lg uppercase tracking-wider transition-all w-full sm:w-auto
+                ${genero && !isSubmitting
+                  ? 'bg-[#58CC02] text-white hover:bg-[#46A302] hover:shadow-[0_4px_0_#3B8A02] active:translate-y-1 active:shadow-none shadow-[0_6px_0_#46A302]' 
+                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                }
+              `}
+            >
+              {isSubmitting ? (
+                <span>Creando...</span>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5" />
+                  <span>Comenzar</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
-      </motion.div>
-    </main>
+      </div>
+    </div>
   );
 }
