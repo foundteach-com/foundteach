@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, LogOut, Settings, ChevronRight,
+  LayoutDashboard, LogOut, Settings, ChevronRight, Gamepad2,
   Briefcase, Wrench, Laptop, BookOpen, Palette, Megaphone, Calculator, Scale
 } from 'lucide-react';
 import { AdminAreaPage } from './pages/AdminAreaPage';
@@ -12,6 +12,7 @@ import { DesignAreaPage } from './pages/DesignAreaPage';
 import { MarketingAreaPage } from './pages/MarketingAreaPage';
 import { AccountantPage } from './pages/AccountantPage';
 import { LawyerPage } from './pages/LawyerPage';
+import { RdvAdminPage } from './pages/RdvAdminPage';
 import { AdminChat } from './components/AdminChat';
 import './App.css';
 
@@ -70,7 +71,12 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Marketing', path: '/marketing-area', icon: <Megaphone size={17} /> },
     ],
   },
-
+  {
+    title: 'Videojuegos',
+    items: [
+      { label: 'Rutas de Vida', path: '/rdv-admin', icon: <Gamepad2 size={17} /> },
+    ],
+  },
 ];
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
@@ -243,6 +249,7 @@ function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <Route path="/marketing-area" element={<MarketingAreaPage />} />
             <Route path="/external/accountant" element={<AccountantPage />} />
             <Route path="/external/lawyer" element={<LawyerPage />} />
+            <Route path="/rdv-admin" element={<RdvAdminPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
