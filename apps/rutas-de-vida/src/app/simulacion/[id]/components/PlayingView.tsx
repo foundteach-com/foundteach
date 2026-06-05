@@ -4,6 +4,8 @@ import { X, User, CheckCircle2, AlertCircle, ArrowUpRight, ArrowDownRight } from
 import { RewardParticles } from '../../../../components/RewardParticles';
 import { playSuccessSound, playWarningSound } from '../../../../utils/audio';
 import { ETAPA_LABELS, STAT_COLORS } from '../../../../utils/constants';
+import { getCharacterAvatar, getDecisionBackground } from '../../../../utils/visuals';
+import Image from 'next/image';
 import type { useSimulation } from '../hooks/useSimulation';
 
 export function PlayingView({ state }: { state: ReturnType<typeof useSimulation> }) {
@@ -39,8 +41,28 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
   const totalDecisionsInStage = Math.max(decisions.length, 1);
   const progressPercentage = Math.min(100, Math.round((completedDecisionsCount / totalDecisionsInStage) * 100));
 
+  const bgImage = getDecisionBackground(currentDecision.titulo, currentDecision.descripcion);
+  const avatarImage = getCharacterAvatar(summary.character.genero, summary.character.etapaActual);
+
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans">
+    <div className="min-h-screen relative flex flex-col font-sans overflow-hidden bg-gray-50">
+      
+      {/* Fondo Dinámico con Ken Burns effect */}
+      {bgImage && (
+        <motion.div
+          initial={{ scale: 1.1, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 10, ease: "easeOut" }}
+          className="absolute inset-0 z-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${bgImage})` }}
+        >
+          {/* Overlay para garantizar legibilidad */}
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px]" />
+        </motion.div>
+      )}
+
+      {/* Contenedor principal con z-index para estar por encima del fondo */}
+      <div className="relative z-10 flex flex-col min-h-screen">
       {/* Partículas de recompensa */}
       <RewardParticles show={showXpParticles} type="xp" />
       <RewardParticles show={showMonedaParticles} type="monedas" />
@@ -68,7 +90,7 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
         </div>
 
         {/* Vidas en la vista de juego */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-white/50">
           {Array.from({ length: summary.character.vidas }).map((_, i) => (
             <span key={i} className="text-xl">❤️</span>
           ))}
@@ -86,12 +108,16 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
           {currentDecision.titulo}
         </h2>
 
-        <div className="flex items-start gap-4 mb-8 bg-gray-50 p-6 rounded-2xl border-2 border-gray-100">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FF005A] to-[#FF96CB] shrink-0 flex items-center justify-center border-2 border-white mt-1 shadow-md">
-            <User className="w-6 h-6 text-white" />
-          </div>
-          <div className="bg-white p-5 rounded-2xl rounded-tl-none border-2 border-gray-200 shadow-sm relative flex-1">
-            <div className="absolute -left-[10px] top-4 w-4 h-4 bg-white border-l-2 border-t-2 border-gray-200 -rotate-45" />
+        <div className="flex items-start gap-4 mb-8 bg-white/40 backdrop-blur-md p-6 rounded-2xl border border-white/60 shadow-lg">
+          <motion.div 
+            animate={{ y: [0, -5, 0] }} 
+            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+            className="w-16 h-16 rounded-full bg-white shrink-0 flex items-center justify-center border-4 border-white shadow-xl relative overflow-hidden"
+          >
+            <Image src={avatarImage} alt="Avatar" fill className="object-cover" />
+          </motion.div>
+          <div className="bg-white/90 backdrop-blur-xl p-5 rounded-2xl rounded-tl-none border border-white/80 shadow-sm relative flex-1">
+            <div className="absolute -left-[10px] top-4 w-4 h-4 bg-white/90 border-l border-t border-white/80 -rotate-45" />
             {isTyping ? (
               <div className="flex items-center gap-1.5 h-7 px-2">
                 <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6 }} className="w-2.5 h-2.5 bg-gray-300 rounded-full" />
@@ -136,10 +162,10 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
                   key={option.id}
                   onClick={() => handleSelectOption(option.id)}
                   disabled={isTakingDecision || showDrawer || isTyping}
-                  className={`w-full text-left p-4 rounded-2xl border-2 transition-all flex items-center gap-4
+                  className={`w-full text-left p-4 rounded-2xl border-2 transition-all flex items-center gap-4 backdrop-blur-md
                     ${isSelected
-                      ? 'border-[#00E1FF] bg-[#00E1FF]/10 text-[#009EBA] scale-[1.02] shadow-sm'
-                      : 'border-gray-200 bg-white hover:bg-gray-50 text-slate-600 hover:border-gray-300 hover:scale-[1.01]'
+                      ? 'border-[#00E1FF] bg-[#00E1FF]/20 text-[#009EBA] scale-[1.02] shadow-md'
+                      : 'border-white/80 bg-white/70 hover:bg-white/90 text-slate-700 hover:border-white hover:scale-[1.01] shadow-sm'
                     } ${(isTakingDecision || showDrawer || isTyping) ? 'opacity-50 cursor-not-allowed transform-none hover:scale-100' : ''}`}
                 >
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold shrink-0 transition-colors
@@ -253,6 +279,8 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Fin del contenedor relativo z-10 */}
+      </div>
     </div>
   );
 }

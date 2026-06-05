@@ -2,21 +2,13 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Activity, Brain, Users, Heart, Shield, MessageCircle, Home, BookOpen, Globe, Target, ShoppingBag, Medal } from 'lucide-react';
 import { ETAPA_LABELS, STAT_COLORS, CONTEXT_COLORS } from '../../../../utils/constants';
+import { getCharacterAvatar } from '../../../../utils/visuals';
 import { StatBar } from '../../../../components/StatBar';
 import { DailyQuests } from '../../../../components/DailyQuests';
 import type { CharacterSummary } from '../../../../types';
+import Image from 'next/image';
 
-const getStageEmoji = (stage: string) => {
-  switch (stage) {
-    case 'EARLY_CHILDHOOD': return '👶';
-    case 'CHILDHOOD': return '🧒';
-    case 'ADOLESCENCE': return '🧑';
-    case 'YOUTH': return '🎓';
-    case 'ADULTHOOD': return '💼';
-    case 'OLD_AGE': return '🧓';
-    default: return '🙂';
-  }
-};
+// Stage emojis are handled via avatars now, but keeping for reference if needed elsewhere
 
 export function SidebarStats({ 
   characterId, 
@@ -33,10 +25,8 @@ export function SidebarStats({
     <aside className="hidden lg:flex w-80 border-l border-gray-200 flex-col p-6 fixed right-0 h-full bg-white overflow-y-auto pb-24">
       <div className="flex items-center gap-4 mb-4 p-4 bg-gray-50 rounded-2xl border border-gray-200 relative overflow-hidden group hover:border-[#FF005A]/30 transition-colors cursor-default">
         <div className="absolute top-0 right-0 w-16 h-16 bg-[#FF005A]/5 rounded-bl-full -z-10 group-hover:bg-[#FF005A]/10 transition-colors" />
-        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FF005A] to-[#FF96CB] p-[2px] shadow-sm">
-          <div className="bg-white w-full h-full rounded-full flex items-center justify-center text-2xl">
-            {getStageEmoji(summary.character.etapaActual)}
-          </div>
+        <div className="w-14 h-14 rounded-full bg-white shrink-0 flex items-center justify-center border-2 border-gray-100 shadow-sm relative overflow-hidden">
+          <Image src={getCharacterAvatar(summary.character.genero, summary.character.etapaActual)} alt="Avatar" fill className="object-cover" />
         </div>
         <div className="flex-1">
           <h3 className="font-bold text-slate-800 text-lg leading-tight">{summary.character.nombre}</h3>

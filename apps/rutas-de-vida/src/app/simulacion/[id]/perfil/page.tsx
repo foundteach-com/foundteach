@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Flame, Coins, Award, Calendar } from 'lucide-react';
 import Image from 'next/image';
+import { getCharacterAvatar } from '../../../../utils/visuals';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -51,12 +52,12 @@ export default function PerfilPage() {
 
         {/* Avatar e información */}
         <div className="flex flex-col items-center gap-4">
-          <div className="w-32 h-32 rounded-full border-4 border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden relative shadow-sm">
+          <div className="w-32 h-32 rounded-full border-4 border-gray-200 bg-white flex items-center justify-center overflow-hidden relative shadow-sm">
             <Image
-              src={summary.character.genero === 'MALE' ? '/male_character.png' : '/female_character.png'}
+              src={getCharacterAvatar(summary.character.genero, summary.character.etapaActual)}
               alt="Avatar"
               fill
-              className="object-contain mt-4"
+              className="object-cover"
             />
           </div>
           <h2 className="text-3xl font-display font-bold text-slate-800">{summary.character.nombre}</h2>
