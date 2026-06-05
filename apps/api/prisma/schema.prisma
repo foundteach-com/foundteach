@@ -831,6 +831,8 @@ model RdvCharacter {
   genero       RdvGender
   etapaActual  RdvLifeStage @default(EARLY_CHILDHOOD) @map("etapa_actual")
   isActive     Boolean      @default(true) @map("is_active")
+  xp           Int          @default(0)
+  monedas      Int          @default(0)
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")
 

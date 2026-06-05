@@ -145,6 +145,15 @@ export class RdvProgressService {
         });
       }
 
+      // Actualizar XP y monedas
+      await tx.rdvCharacter.update({
+        where: { id: dto.characterId },
+        data: {
+          xp: { increment: 10 },
+          monedas: { increment: 5 },
+        },
+      });
+
       // Registrar progreso
       const progress = await tx.rdvProgress.create({
         data: {
@@ -222,6 +231,8 @@ export class RdvProgressService {
         nombre: character.nombre,
         genero: character.genero,
         etapaActual: character.etapaActual,
+        xp: character.xp,
+        monedas: character.monedas,
       },
       stats: character.stats,
       context: character.context,

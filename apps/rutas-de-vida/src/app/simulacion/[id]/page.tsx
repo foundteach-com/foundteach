@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, Brain, Users, Heart, Shield, MessageCircle, Home, BookOpen, Globe, User, ArrowRight, Sparkles, CheckCircle2, AlertCircle, Trophy, Navigation, Target, Star, MoreHorizontal, X } from 'lucide-react';
+import { Activity, Brain, Users, Heart, Shield, MessageCircle, Home, BookOpen, Globe, User, ArrowRight, Sparkles, CheckCircle2, AlertCircle, Trophy, Navigation, Target, Star, MoreHorizontal, X, Flame, Coins } from 'lucide-react';
+import { playSuccessSound } from '../../../utils/audio';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -13,6 +14,8 @@ interface CharacterSummary {
     nombre: string;
     genero: 'MALE' | 'FEMALE';
     etapaActual: string;
+    xp: number;
+    monedas: number;
   };
   stats: {
     fisico: number;
@@ -150,6 +153,7 @@ export default function SimulacionPage() {
 
       if (!res.ok) throw new Error('Error al enviar la decisión');
 
+      playSuccessSound();
       setDrawerVariant('success');
       setShowDrawer(true);
       
@@ -206,16 +210,29 @@ export default function SimulacionPage() {
           </div>
           
           <nav className="flex flex-col gap-2">
-            <NavItem icon={<Navigation />} label="Aprender" active />
-            <NavItem icon={<Target />} label="Práctica" />
-            <NavItem icon={<Star />} label="Logros" />
-            <NavItem icon={<User />} label="Perfil" />
-            <NavItem icon={<MoreHorizontal />} label="Más" />
+            <NavItem icon={<Navigation />} label="Aprender" active onClick={() => {}} />
+            <NavItem icon={<Target />} label="Práctica" onClick={() => {}} />
+            <NavItem icon={<Star />} label="Logros" onClick={() => router.push(`/simulacion/${characterId}/logros`)} />
+            <NavItem icon={<User />} label="Perfil" onClick={() => router.push(`/simulacion/${characterId}/perfil`)} />
+            <NavItem icon={<MoreHorizontal />} label="Más" onClick={() => {}} />
           </nav>
         </aside>
 
         {/* Main Content (The Path) */}
-        <main className="flex-1 lg:ml-64 lg:mr-80 flex justify-center p-6 sm:p-10">
+        <main className="flex-1 lg:ml-64 lg:mr-80 flex flex-col items-center p-6 sm:p-10">
+          
+          {/* Top Rewards Bar */}
+          <div className="w-full max-w-[600px] flex justify-end gap-6 mb-8 px-4">
+            <div className="flex items-center gap-2 font-bold text-orange-500">
+              <Flame className="w-6 h-6 fill-orange-500" />
+              <span className="text-lg">{summary.character.xp} XP</span>
+            </div>
+            <div className="flex items-center gap-2 font-bold text-sky-500">
+              <Coins className="w-6 h-6 fill-sky-500 text-sky-600" />
+              <span className="text-lg">{summary.character.monedas}</span>
+            </div>
+          </div>
+
           <div className="max-w-[600px] w-full flex flex-col items-center">
             
             {/* Stage Header */}
@@ -472,11 +489,14 @@ export default function SimulacionPage() {
 
 // --- SUBCOMPONENTS ---
 
-function NavItem({ icon, label, active = false }: { icon: React.ReactNode; label: string; active?: boolean }) {
+function NavItem({ icon, label, active = false, onClick }: { icon: React.ReactNode; label: string; active?: boolean; onClick?: () => void }) {
   return (
-    <button className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-colors
-      ${active ? 'bg-[#FF005A]/10 text-[#FF005A] border-2 border-[#FF005A]/20' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700 border-2 border-transparent'}
-    `}>
+    <button 
+      onClick={onClick}
+      className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-colors
+        ${active ? 'bg-[#FF005A]/10 text-[#FF005A] border-2 border-[#FF005A]/20' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700 border-2 border-transparent'}
+      `}
+    >
       {icon}
       <span className="font-bold uppercase tracking-wider text-sm">{label}</span>
     </button>
