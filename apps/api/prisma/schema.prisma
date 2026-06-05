@@ -833,6 +833,7 @@ model RdvCharacter {
   isActive     Boolean      @default(true) @map("is_active")
   xp           Int          @default(0)
   monedas      Int          @default(0)
+  vidas        Int          @default(5)
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")
 

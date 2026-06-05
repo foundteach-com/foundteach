@@ -32,9 +32,9 @@ export class RdvProgressService {
    * 2. Aplica cambios a stats, context y relationships.
    * 3. Registra el progreso.
    * 4. Clampea todos los valores entre 0 y 100.
+   * 5. Si algún stat bajó más de 15 puntos, descuenta una vida (Opción A).
    */
   async makeDecision(dto: MakeDecisionDto) {
-    // 1. Obtener personaje con su estado actual
     const character = await this.prisma.rdvCharacter.findUnique({
       where: { id: dto.characterId },
       include: {
@@ -54,7 +54,6 @@ export class RdvProgressService {
       );
     }
 
-    // 2. Obtener la decisión y verificar la etapa
     const decision = await this.prisma.rdvDecision.findUnique({
       where: { id: dto.decisionId },
     });
@@ -69,7 +68,6 @@ export class RdvProgressService {
       );
     }
 
-    // 3. Obtener la opción seleccionada
     const option = await this.prisma.rdvOption.findUnique({
       where: { id: dto.optionId },
     });
@@ -84,18 +82,21 @@ export class RdvProgressService {
       );
     }
 
-    // 4. Calcular cambios en stats
     const cambiosAtributos = (option.cambiosEnAtributos as Record<string, number>) || {};
     const statsUpdate: Record<string, number> = {};
+    let perdioVida = false;
 
     for (const field of RDV_STAT_FIELDS) {
       if (cambiosAtributos[field] !== undefined) {
         const currentValue = character.stats[field as RdvStatField];
-        statsUpdate[field] = this.clamp(currentValue + cambiosAtributos[field]);
+        const delta = cambiosAtributos[field];
+        statsUpdate[field] = this.clamp(currentValue + delta);
+        if (delta <= -15) {
+          perdioVida = true;
+        }
       }
     }
 
-    // 5. Calcular cambios en context
     const cambiosContexto = (option.cambiosEnContexto as Record<string, number>) || {};
     const contextUpdate: Record<string, number> = {};
 
@@ -106,7 +107,6 @@ export class RdvProgressService {
       }
     }
 
-    // 6. Calcular cambios en relationships
     const cambiosRelaciones = (option.cambiosEnRelaciones as Record<string, number>) || {};
     const relationshipUpdates: Array<{ id: string; valor: number }> = [];
 
@@ -119,9 +119,7 @@ export class RdvProgressService {
       }
     }
 
-    // 7. Aplicar todos los cambios en una transacción
     const result = await this.prisma.$transaction(async (tx) => {
-      // Actualizar stats
       if (Object.keys(statsUpdate).length > 0) {
         await tx.rdvStats.update({
           where: { characterId: dto.characterId },
@@ -129,7 +127,6 @@ export class RdvProgressService {
         });
       }
 
-      // Actualizar context
       if (Object.keys(contextUpdate).length > 0) {
         await tx.rdvContext.update({
           where: { characterId: dto.characterId },
@@ -137,7 +134,6 @@ export class RdvProgressService {
         });
       }
 
-      // Actualizar relationships
       for (const relUpdate of relationshipUpdates) {
         await tx.rdvRelationship.update({
           where: { id: relUpdate.id },
@@ -145,17 +141,21 @@ export class RdvProgressService {
         });
       }
 
-      // Actualizar XP y monedas
+      const characterUpdate: Record<string, any> = {
+        xp: { increment: 10 },
+        monedas: { increment: 5 },
+      };
+
+      if (perdioVida && character.vidas > 0) {
+        characterUpdate.vidas = { decrement: 1 };
+      }
+
       await tx.rdvCharacter.update({
         where: { id: dto.characterId },
-        data: {
-          xp: { increment: 10 },
-          monedas: { increment: 5 },
-        },
+        data: characterUpdate,
       });
 
-      // Registrar progreso
-      const progress = await tx.rdvProgress.create({
+      await tx.rdvProgress.create({
         data: {
           characterId: dto.characterId,
           decisionId: dto.decisionId,
@@ -163,7 +163,6 @@ export class RdvProgressService {
         },
       });
 
-      // Retornar el personaje actualizado
       return tx.rdvCharacter.findUnique({
         where: { id: dto.characterId },
         include: {
@@ -175,14 +174,14 @@ export class RdvProgressService {
     });
 
     this.logger.log(
-      `✅ Decisión "${decision.titulo}" tomada por personaje ${character.nombre}`,
+      `✅ Decisión "${decision.titulo}" tomada por ${character.nombre}${perdioVida ? ' — ❤️ -1 vida' : ''}`,
     );
 
-    return result;
+    return { ...result, perdioVida };
   }
 
   /**
-   * Obtiene el historial de decisiones de un personaje.
+   * Historial de decisiones de un personaje.
    */
   async getHistory(characterId: string) {
     const character = await this.prisma.rdvCharacter.findUnique({
@@ -204,7 +203,7 @@ export class RdvProgressService {
   }
 
   /**
-   * Resumen completo del estado actual del personaje.
+   * Resumen completo del estado actual del personaje (incluye vidas).
    */
   async getSummary(characterId: string) {
     const character = await this.prisma.rdvCharacter.findUnique({
@@ -233,6 +232,7 @@ export class RdvProgressService {
         etapaActual: character.etapaActual,
         xp: character.xp,
         monedas: character.monedas,
+        vidas: character.vidas,
       },
       stats: character.stats,
       context: character.context,
@@ -242,5 +242,100 @@ export class RdvProgressService {
       })),
       decisionsCount: character._count.progress,
     };
+  }
+
+  /**
+   * Avanza a la siguiente etapa de la vida.
+   * Restaura todas las vidas y otorga bonus de XP y monedas.
+   */
+  async advanceStage(characterId: string) {
+    const character = await this.prisma.rdvCharacter.findUnique({
+      where: { id: characterId },
+    });
+
+    if (!character) throw new NotFoundException('Personaje no encontrado');
+
+    const stages = [
+      'EARLY_CHILDHOOD',
+      'CHILDHOOD',
+      'ADOLESCENCE',
+      'YOUTH',
+      'ADULTHOOD',
+      'OLD_AGE'
+    ];
+
+    const currentIndex = stages.indexOf(character.etapaActual);
+    if (currentIndex === -1 || currentIndex === stages.length - 1) {
+      throw new BadRequestException('El personaje ya está en la última etapa o la etapa es inválida');
+    }
+
+    const nextStage = stages[currentIndex + 1] as any;
+
+    const updated = await this.prisma.rdvCharacter.update({
+      where: { id: characterId },
+      data: {
+        etapaActual: nextStage,
+        vidas: 5,
+        xp: { increment: 50 },
+        monedas: { increment: 20 },
+      },
+    });
+
+    this.logger.log(`🌟 ${character.nombre} avanzó a ${nextStage}. Vidas restauradas + bonus.`);
+    return updated;
+  }
+
+  /**
+   * Compra vidas con monedas (10 monedas por vida).
+   */
+  async buyLives(characterId: string, cantidad: number = 1) {
+    const character = await this.prisma.rdvCharacter.findUnique({
+      where: { id: characterId },
+    });
+
+    if (!character) throw new NotFoundException('Personaje no encontrado');
+
+    const costoPorVida = 10;
+    const costoTotal = costoPorVida * cantidad;
+
+    if (character.monedas < costoTotal) {
+      throw new BadRequestException(
+        `No tienes suficientes monedas. Necesitas ${costoTotal} y tienes ${character.monedas}.`
+      );
+    }
+
+    const maxVidas = 5;
+    const vidasARecuperar = Math.min(cantidad, maxVidas - character.vidas);
+
+    if (vidasARecuperar <= 0) {
+      throw new BadRequestException('Ya tienes el máximo de vidas (5).');
+    }
+
+    return this.prisma.rdvCharacter.update({
+      where: { id: characterId },
+      data: {
+        vidas: { increment: vidasARecuperar },
+        monedas: { decrement: vidasARecuperar * costoPorVida },
+      },
+    });
+  }
+
+  /**
+   * Tabla de clasificación: personajes ordenados por XP.
+   */
+  async getLeaderboard() {
+    return this.prisma.rdvCharacter.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        nombre: true,
+        genero: true,
+        etapaActual: true,
+        xp: true,
+        monedas: true,
+      },
+      orderBy: { xp: 'desc' },
+      take: 50,
+    });
   }
 }

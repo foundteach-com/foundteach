@@ -11,6 +11,24 @@ export class RdvProgressController {
     return this.progressService.makeDecision(dto);
   }
 
+  @Post('advance')
+  async advanceStage(@Body('characterId') characterId: string) {
+    return this.progressService.advanceStage(characterId);
+  }
+
+  @Post('comprar-vidas')
+  async buyLives(
+    @Body('characterId') characterId: string,
+    @Body('cantidad') cantidad: number,
+  ) {
+    return this.progressService.buyLives(characterId, cantidad ?? 1);
+  }
+
+  @Get('ligas')
+  async getLeaderboard() {
+    return this.progressService.getLeaderboard();
+  }
+
   @Get(':characterId')
   async getHistory(@Param('characterId') characterId: string) {
     return this.progressService.getHistory(characterId);
