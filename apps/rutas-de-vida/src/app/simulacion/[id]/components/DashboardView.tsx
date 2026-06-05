@@ -7,6 +7,26 @@ import { SidebarNav } from './SidebarNav';
 import { SidebarStats } from './SidebarStats';
 import { MobileBottomNav } from './MobileBottomNav';
 
+const getDecisionEmoji = (title: string) => {
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes('escuela') || lowerTitle.includes('examen') || lowerTitle.includes('tarea') || lowerTitle.includes('lectura') || lowerTitle.includes('educación') || lowerTitle.includes('universidad')) return '🏫';
+  if (lowerTitle.includes('familia') || lowerTitle.includes('padre') || lowerTitle.includes('madre') || lowerTitle.includes('hermano') || lowerTitle.includes('hogar')) return '🏠';
+  if (lowerTitle.includes('amigo') || lowerTitle.includes('compañero') || lowerTitle.includes('grupo') || lowerTitle.includes('reunión')) return '👫';
+  if (lowerTitle.includes('amor') || lowerTitle.includes('pareja') || lowerTitle.includes('relación') || lowerTitle.includes('matrimonial')) return '❤️';
+  if (lowerTitle.includes('dinero') || lowerTitle.includes('trabajo') || lowerTitle.includes('jefe') || lowerTitle.includes('ascenso') || lowerTitle.includes('ahorro') || lowerTitle.includes('deuda')) return '💼';
+  if (lowerTitle.includes('salud') || lowerTitle.includes('ejercicio') || lowerTitle.includes('deporte')) return '🏃';
+  if (lowerTitle.includes('tecnología') || lowerTitle.includes('redes') || lowerTitle.includes('digital')) return '📱';
+  if (lowerTitle.includes('fiesta') || lowerTitle.includes('alcohol') || lowerTitle.includes('drogas')) return '🎉';
+  if (lowerTitle.includes('mascota') || lowerTitle.includes('animal')) return '🐶';
+  if (lowerTitle.includes('arte') || lowerTitle.includes('dibujo') || lowerTitle.includes('pasatiempo')) return '🎨';
+  if (lowerTitle.includes('voluntariado') || lowerTitle.includes('social') || lowerTitle.includes('comunidad') || lowerTitle.includes('vecino')) return '🤝';
+  if (lowerTitle.includes('tormenta') || lowerTitle.includes('charco') || lowerTitle.includes('noche')) return '🌧️';
+  if (lowerTitle.includes('legado') || lowerTitle.includes('herencia') || lowerTitle.includes('sabiduría')) return '📜';
+  if (lowerTitle.includes('guardería') || lowerTitle.includes('juego') || lowerTitle.includes('bloques')) return '🧸';
+  if (lowerTitle.includes('mentira') || lowerTitle.includes('pelea') || lowerTitle.includes('acoso')) return '⚠️';
+  return '⭐';
+};
+
 export function DashboardView({ 
   characterId, 
   state 
@@ -142,6 +162,8 @@ export function DashboardView({
               const isCompleted = index < completedDecisionsCount;
               const isCurrent = index === completedDecisionsCount;
               const offset = index % 2 === 0 ? 0 : index % 4 === 1 ? 40 : -40;
+              const nextOffset = index < decisions.length - 1 ? ((index + 1) % 2 === 0 ? 0 : (index + 1) % 4 === 1 ? 40 : -40) : null;
+              const diffX = nextOffset !== null ? nextOffset - offset : 0;
 
               return (
                 <motion.div 
@@ -150,27 +172,49 @@ export function DashboardView({
                     hidden: { opacity: 0, y: 20, scale: 0.8 },
                     visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', damping: 15, stiffness: 200 } }
                   }}
-                  className="relative w-full flex justify-center" 
+                  className="relative w-full flex justify-center group" 
                   style={{ left: `${offset}px` }}
                 >
+                  {index < decisions.length - 1 && (
+                    <svg className="absolute top-[calc(100%-8px)] left-1/2 w-1 h-10 z-0 overflow-visible" style={{ transform: 'translateX(-50%)' }}>
+                      <path
+                        d={`M 0 0 C 0 20, ${diffX} 20, ${diffX} 40`}
+                        fill="none"
+                        stroke={isCompleted ? "#58CC02" : "#E5E5E5"}
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        strokeDasharray={isCompleted ? "none" : "8 12"}
+                      />
+                    </svg>
+                  )}
+
                   {isCurrent ? (
-                    <div className="relative flex flex-col items-center cursor-pointer group" onClick={handleStartNode}>
-                      <div className="absolute -top-12 bg-white border-2 border-gray-200 rounded-xl px-4 py-2 font-bold text-[#FF005A] shadow-md z-10 whitespace-nowrap animate-bounce">
+                    <div className="relative flex flex-col items-center cursor-pointer group z-10" onClick={handleStartNode}>
+                      <div className="absolute -top-12 bg-white border-2 border-gray-200 rounded-xl px-4 py-2 font-bold text-[#FF005A] shadow-md z-20 whitespace-nowrap animate-bounce">
                         ¡EMPEZAR!
                         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-gray-200 rotate-45" />
                       </div>
-                      <div className="w-20 h-20 rounded-full bg-[#FF005A] shadow-[0_8px_0_#D9004C] active:translate-y-2 active:shadow-none transition-all flex items-center justify-center border-4 border-white z-0 hover:brightness-110 relative">
-                        <Star className="w-10 h-10 text-white fill-white" />
-                        <div className="absolute inset-0 rounded-full border-4 border-[#FF005A] animate-ping opacity-30" />
+                      <div className="w-20 h-20 rounded-full bg-[#FF005A] shadow-[0_8px_0_#D9004C] active:translate-y-2 active:shadow-none transition-all flex items-center justify-center border-4 border-white relative hover:brightness-110">
+                        <span className="text-4xl relative z-10 drop-shadow-md">{getDecisionEmoji(decision.titulo)}</span>
+                        <div className="absolute inset-0 rounded-full border-4 border-[#FF005A] animate-ping opacity-40" />
+                        <div className="absolute inset-0 rounded-full bg-white opacity-20 animate-pulse" />
                       </div>
                     </div>
                   ) : isCompleted ? (
-                    <div className="w-16 h-16 rounded-full bg-[#FF005A] shadow-[0_6px_0_#D9004C] flex items-center justify-center border-4 border-white opacity-80 z-0">
-                      <CheckCircle2 className="w-8 h-8 text-white" />
+                    <div className="w-16 h-16 rounded-full bg-[#58CC02] shadow-[0_6px_0_#46A302] flex items-center justify-center border-4 border-white opacity-95 z-10 relative cursor-default hover:-translate-y-1 transition-transform">
+                      <span className="text-2xl drop-shadow-sm">{getDecisionEmoji(decision.titulo)}</span>
+                      <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                        <CheckCircle2 className="w-5 h-5 text-[#58CC02] fill-[#D7FFB8]" />
+                      </div>
+                      {/* Tooltip */}
+                      <div className="absolute bottom-full mb-3 bg-slate-800 text-white text-sm font-bold px-4 py-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-lg">
+                        {decision.titulo}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
+                      </div>
                     </div>
                   ) : (
-                    <div className="w-16 h-16 rounded-full bg-[#E5E5E5] shadow-[0_6px_0_#CCCCCC] flex items-center justify-center border-4 border-white opacity-60 z-0">
-                      <Star className="w-8 h-8 text-gray-400" />
+                    <div className="w-16 h-16 rounded-full bg-[#E5E5E5] shadow-[0_6px_0_#CCCCCC] flex items-center justify-center border-4 border-white opacity-80 z-10 relative">
+                      <span className="text-2xl grayscale opacity-40">{getDecisionEmoji(decision.titulo)}</span>
                     </div>
                   )}
                 </motion.div>
@@ -204,7 +248,11 @@ export function DashboardView({
         </div>
       </main>
 
-      <SidebarStats characterId={characterId} summary={summary} />
+      <SidebarStats 
+        characterId={characterId} 
+        summary={summary} 
+        stageProgress={{ current: completedDecisionsCount, total: Math.max(decisions.length, 1) }}
+      />
       
       <MobileBottomNav characterId={characterId} />
     </div>

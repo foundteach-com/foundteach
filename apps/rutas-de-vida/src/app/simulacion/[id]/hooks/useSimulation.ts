@@ -19,6 +19,7 @@ export function useSimulation(characterId: string) {
   const [showDrawer, setShowDrawer] = useState(false);
   const [drawerVariant, setDrawerVariant] = useState<'success' | 'warning'>('success');
   const [perdioVida, setPerdioVida] = useState(false);
+  const [statChanges, setStatChanges] = useState<{ label: string; delta: number }[]>([]);
 
   // Partículas de recompensa
   const [showXpParticles, setShowXpParticles] = useState(false);
@@ -136,6 +137,18 @@ export function useSimulation(characterId: string) {
       setPerdioVida(perdio);
       setDrawerVariant(perdio ? 'warning' : 'success');
 
+      // Calcular diferencias de stats
+      const changes: { label: string; delta: number }[] = [];
+      if (summary && data.stats) {
+        const oldStats = summary.stats as unknown as Record<string, number>;
+        const newStats = data.stats as Record<string, number>;
+        for (const key of Object.keys(oldStats)) {
+          const diff = newStats[key] - oldStats[key];
+          if (diff !== 0) changes.push({ label: key, delta: diff });
+        }
+      }
+      setStatChanges(changes);
+
       // Mostrar partículas
       setShowXpParticles(true);
       setShowMonedaParticles(true);
@@ -160,6 +173,7 @@ export function useSimulation(characterId: string) {
     setShowDrawer(false);
     setSelectedOptionId(null);
     setPerdioVida(false);
+    setStatChanges([]);
     setViewMode('dashboard');
     await initialize();
   };
@@ -202,6 +216,7 @@ export function useSimulation(characterId: string) {
     showDrawer,
     drawerVariant,
     perdioVida,
+    statChanges,
     showXpParticles,
     showMonedaParticles,
     showVidaParticles,

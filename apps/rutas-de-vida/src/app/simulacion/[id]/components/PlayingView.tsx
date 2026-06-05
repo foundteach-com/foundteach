@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, User, CheckCircle2, AlertCircle, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { RewardParticles } from '../../../../components/RewardParticles';
 import { playSuccessSound, playWarningSound } from '../../../../utils/audio';
+import { ETAPA_LABELS, STAT_COLORS } from '../../../../utils/constants';
 import type { useSimulation } from '../hooks/useSimulation';
 
 export function PlayingView({ state }: { state: ReturnType<typeof useSimulation> }) {
@@ -12,6 +13,16 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
     showXpParticles, showMonedaParticles, showVidaParticles,
     handleSelectOption, handleConfirmDecision, handleContinue
   } = state;
+
+  const [isTyping, setIsTyping] = useState(true);
+
+  useEffect(() => {
+    if (currentDecision) {
+      setIsTyping(true);
+      const t = setTimeout(() => setIsTyping(false), 1500);
+      return () => clearTimeout(t);
+    }
+  }, [currentDecision]);
 
   useEffect(() => {
     if (showDrawer) {
@@ -66,19 +77,32 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
 
       {/* Zona de juego */}
       <main className="flex-1 flex flex-col justify-center max-w-3xl mx-auto w-full p-6">
+        <div className="w-full text-center mb-4">
+          <span className="text-sm font-bold uppercase tracking-widest text-[#FF005A] bg-[#FF005A]/10 px-4 py-1.5 rounded-full">
+            {ETAPA_LABELS[summary.character.etapaActual] || summary.character.etapaActual}
+          </span>
+        </div>
         <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">
           {currentDecision.titulo}
         </h2>
 
         <div className="flex items-start gap-4 mb-8 bg-gray-50 p-6 rounded-2xl border-2 border-gray-100">
-          <div className="w-12 h-12 rounded-full bg-[#FF005A] shrink-0 flex items-center justify-center border-2 border-[#D9004C] mt-1 shadow-sm">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FF005A] to-[#FF96CB] shrink-0 flex items-center justify-center border-2 border-white mt-1 shadow-md">
             <User className="w-6 h-6 text-white" />
           </div>
-          <div className="bg-white p-4 rounded-2xl rounded-tl-none border-2 border-gray-200 shadow-sm relative">
+          <div className="bg-white p-5 rounded-2xl rounded-tl-none border-2 border-gray-200 shadow-sm relative flex-1">
             <div className="absolute -left-[10px] top-4 w-4 h-4 bg-white border-l-2 border-t-2 border-gray-200 -rotate-45" />
-            <p className="text-lg text-slate-700 leading-relaxed font-medium">
-              {currentDecision.descripcion}
-            </p>
+            {isTyping ? (
+              <div className="flex items-center gap-1.5 h-7 px-2">
+                <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6 }} className="w-2.5 h-2.5 bg-gray-300 rounded-full" />
+                <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.15 }} className="w-2.5 h-2.5 bg-gray-300 rounded-full" />
+                <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.3 }} className="w-2.5 h-2.5 bg-gray-300 rounded-full" />
+              </div>
+            ) : (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-lg text-slate-700 leading-relaxed font-medium">
+                {currentDecision.descripcion}
+              </motion.p>
+            )}
           </div>
         </div>
 
@@ -104,24 +128,33 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
           </div>
         ) : (
           <div className="space-y-3">
-            {currentDecision.options.map((option) => {
+            {currentDecision.options.map((option, index) => {
               const isSelected = selectedOptionId === option.id;
+              const letter = String.fromCharCode(65 + index); // A, B, C
               return (
                 <button
                   key={option.id}
                   onClick={() => handleSelectOption(option.id)}
-                  disabled={isTakingDecision || showDrawer}
-                  className={`w-full text-left p-4 rounded-2xl border-2 transition-all flex items-center justify-between
+                  disabled={isTakingDecision || showDrawer || isTyping}
+                  className={`w-full text-left p-4 rounded-2xl border-2 transition-all flex items-center gap-4
                     ${isSelected
-                      ? 'border-[#00E1FF] bg-[#00E1FF]/10 text-[#009EBA]'
-                      : 'border-gray-200 bg-white hover:bg-gray-50 text-slate-600 hover:border-gray-300'
-                    } ${(isTakingDecision || showDrawer) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      ? 'border-[#00E1FF] bg-[#00E1FF]/10 text-[#009EBA] scale-[1.02] shadow-sm'
+                      : 'border-gray-200 bg-white hover:bg-gray-50 text-slate-600 hover:border-gray-300 hover:scale-[1.01]'
+                    } ${(isTakingDecision || showDrawer || isTyping) ? 'opacity-50 cursor-not-allowed transform-none hover:scale-100' : ''}`}
                 >
-                  <span className="text-lg font-medium">{option.texto}</span>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold shrink-0 transition-colors
+                    ${isSelected ? 'bg-[#00E1FF] text-white' : 'bg-gray-100 text-gray-400'}`}>
+                    {letter}
+                  </div>
+                  <span className="text-lg font-medium flex-1">{option.texto}</span>
                   {isSelected && (
-                    <div className="w-6 h-6 rounded-full bg-[#00E1FF] text-white flex items-center justify-center shrink-0">
+                    <motion.div 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="w-6 h-6 rounded-full bg-[#00E1FF] text-white flex items-center justify-center shrink-0"
+                    >
                       <CheckCircle2 className="w-4 h-4" />
-                    </div>
+                    </motion.div>
                   )}
                 </button>
               );
@@ -185,6 +218,23 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
                   <p className="text-sm font-semibold opacity-70 mt-1">
                     {drawerVariant === 'success' ? '+10 XP  •  +5 Monedas' : '+10 XP  •  +5 Monedas  •  -1 ❤️'}
                   </p>
+                  
+                  {state.statChanges && state.statChanges.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {state.statChanges.map((change, i) => {
+                        const isPositive = change.delta > 0;
+                        const statKey = change.label.toLowerCase() as keyof typeof STAT_COLORS;
+                        const colorInfo = STAT_COLORS[statKey] || { text: 'text-gray-600', bg: 'bg-gray-100' };
+                        
+                        return (
+                          <div key={i} className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${colorInfo.bg} ${colorInfo.text}`}>
+                            {isPositive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                            {change.label.charAt(0).toUpperCase() + change.label.slice(1)} {isPositive ? '+' : ''}{change.delta}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
 
