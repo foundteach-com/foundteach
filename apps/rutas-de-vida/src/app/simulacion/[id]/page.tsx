@@ -413,14 +413,27 @@ export default function SimulacionPage() {
           </div>
 
           {/* Nodos del camino */}
-          <div className="relative py-8 flex flex-col items-center w-full gap-8">
+          <motion.div 
+            initial="hidden"
+            animate="visible"
+            variants={{ visible: { transition: { staggerChildren: 0.15 } } }}
+            className="relative py-8 flex flex-col items-center w-full gap-8"
+          >
             {decisions.map((decision, index) => {
               const isCompleted = index < completedDecisionsCount;
               const isCurrent = index === completedDecisionsCount;
               const offset = index % 2 === 0 ? 0 : index % 4 === 1 ? 40 : -40;
 
               return (
-                <div key={decision.id} className="relative w-full flex justify-center" style={{ left: `${offset}px` }}>
+                <motion.div 
+                  key={decision.id} 
+                  variants={{
+                    hidden: { opacity: 0, y: 20, scale: 0.8 },
+                    visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', damping: 15, stiffness: 200 } }
+                  }}
+                  className="relative w-full flex justify-center" 
+                  style={{ left: `${offset}px` }}
+                >
                   {isCurrent ? (
                     <div className="relative flex flex-col items-center cursor-pointer group" onClick={handleStartNode}>
                       <div className="absolute -top-12 bg-white border-2 border-gray-200 rounded-xl px-4 py-2 font-bold text-[#FF005A] shadow-md z-10 whitespace-nowrap animate-bounce">
@@ -441,13 +454,19 @@ export default function SimulacionPage() {
                       <Star className="w-8 h-8 text-gray-400" />
                     </div>
                   )}
-                </div>
+                </motion.div>
               );
             })}
 
             {/* Etapa completada: botón CRECER */}
             {!currentDecision && decisions.length > 0 && (
-              <div className="mt-8 flex flex-col items-center w-full max-w-xs">
+              <motion.div 
+                variants={{
+                  hidden: { opacity: 0, scale: 0.8 },
+                  visible: { opacity: 1, scale: 1, transition: { type: 'spring' } }
+                }}
+                className="mt-8 flex flex-col items-center w-full max-w-xs"
+              >
                 <div className="p-6 bg-gradient-to-br from-amber-100 to-yellow-100 rounded-2xl border-2 border-amber-200 text-center mb-6 shadow-sm w-full">
                   <Trophy className="w-12 h-12 text-amber-500 mx-auto mb-3" />
                   <h3 className="font-bold text-xl text-amber-700">¡Etapa Completada!</h3>
@@ -460,9 +479,9 @@ export default function SimulacionPage() {
                 >
                   {isLoading ? 'Cargando...' : '🌱 ¡CRECER!'}
                 </button>
-              </div>
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         </div>
       </main>
 
@@ -716,7 +735,7 @@ function StatBar({ icon, label, value, colors }: { icon: React.ReactNode; label:
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${value}%` }}
-            transition={{ duration: 1, ease: 'easeOut' }}
+            transition={{ type: 'spring', stiffness: 50, damping: 10, mass: 1 }}
             className={`h-full rounded-full ${colors.bar}`}
           >
             <div className="w-full h-1/3 bg-white/30" />

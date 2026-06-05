@@ -13,11 +13,15 @@ export default function CrearPersonaje() {
   const [nombre, setNombre] = useState('');
   const [genero, setGenero] = useState<Gender>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isWobbling, setIsWobbling] = useState(false);
   const router = useRouter();
 
   const handleNextStep = () => {
     if (nombre.trim().length >= 2) {
       setStep(2);
+    } else {
+      setIsWobbling(true);
+      setTimeout(() => setIsWobbling(false), 400);
     }
   };
 
@@ -104,19 +108,23 @@ export default function CrearPersonaje() {
                   <div className="w-16 h-16 rounded-full bg-[#FF005A] shrink-0 flex items-center justify-center border-4 border-white shadow-[0_4px_0_#D9004C] -mt-2">
                     <UserIcon className="w-8 h-8 text-white" />
                   </div>
-                  <div className="bg-white p-4 rounded-2xl rounded-tl-none border-2 border-gray-200 shadow-sm relative w-full">
-                    <div className="absolute -left-[10px] top-4 w-4 h-4 bg-white border-l-2 border-t-2 border-gray-200 -rotate-45" />
+                  <motion.div 
+                    animate={isWobbling ? { x: [-10, 10, -10, 10, 0] } : {}}
+                    transition={{ duration: 0.4 }}
+                    className={`bg-white p-4 rounded-2xl rounded-tl-none border-2 shadow-sm relative w-full transition-colors ${isWobbling ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                  >
+                    <div className={`absolute -left-[10px] top-4 w-4 h-4 bg-white border-l-2 border-t-2 -rotate-45 transition-colors ${isWobbling ? 'border-red-400 bg-red-50' : 'border-gray-200'}`} />
                     <input
                       type="text"
                       id="nombre"
                       value={nombre}
                       onChange={(e) => setNombre(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleNextStep()}
-                      className="w-full text-xl font-bold text-slate-700 focus:outline-none placeholder-gray-300"
+                      className={`w-full text-xl font-bold focus:outline-none bg-transparent ${isWobbling ? 'text-red-500 placeholder-red-300' : 'text-slate-700 placeholder-gray-300'}`}
                       placeholder="Escribe un nombre..."
                       autoFocus
                     />
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             </motion.div>
@@ -136,7 +144,9 @@ export default function CrearPersonaje() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
                 {/* Male Card */}
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setGenero('MALE')}
                   className={`relative p-6 rounded-3xl transition-all duration-300 border-4 flex flex-col items-center gap-4
                     ${genero === 'MALE' 
@@ -145,7 +155,7 @@ export default function CrearPersonaje() {
                     }
                   `}
                 >
-                  <div className="relative w-40 h-40">
+                  <div className="relative w-40 h-40 pointer-events-none">
                     <Image 
                       src="/male_character.png" 
                       alt="Hombre" 
@@ -154,10 +164,12 @@ export default function CrearPersonaje() {
                     />
                   </div>
                   <span className="font-bold text-xl">Hombre</span>
-                </button>
+                </motion.button>
 
                 {/* Female Card */}
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setGenero('FEMALE')}
                   className={`relative p-6 rounded-3xl transition-all duration-300 border-4 flex flex-col items-center gap-4
                     ${genero === 'FEMALE' 
@@ -166,7 +178,7 @@ export default function CrearPersonaje() {
                     }
                   `}
                 >
-                  <div className="relative w-40 h-40">
+                  <div className="relative w-40 h-40 pointer-events-none">
                     <Image 
                       src="/female_character.png" 
                       alt="Mujer" 
@@ -175,7 +187,7 @@ export default function CrearPersonaje() {
                     />
                   </div>
                   <span className="font-bold text-xl">Mujer</span>
-                </button>
+                </motion.button>
               </div>
             </motion.div>
           )}
