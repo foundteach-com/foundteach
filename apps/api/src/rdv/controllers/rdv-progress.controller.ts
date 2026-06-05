@@ -38,4 +38,9 @@ export class RdvProgressController {
   async getSummary(@Param('characterId') characterId: string) {
     return this.progressService.getSummary(characterId);
   }
+
+  @Get(':characterId/logros')
+  async getLogros(@Param('characterId') characterId: string) {
+    return this.progressService.getLogros(characterId);
+  }
 }

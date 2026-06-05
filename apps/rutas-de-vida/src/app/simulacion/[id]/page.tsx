@@ -498,7 +498,11 @@ export default function SimulacionPage() {
           <StatBar icon={<BookOpen size={18} />} label="Escuela" value={summary.context.escuela} colors={{ bar: 'bg-[#00E1FF]', bg: 'bg-[#00E1FF]/10', text: 'text-[#00B4CC]', icon: 'text-[#00B4CC]' }} />
         </div>
 
-        <DailyQuests />
+        <DailyQuests summary={{
+          decisionsCount: summary.decisionsCount,
+          xp: summary.character.xp,
+          escudoRacha: summary.character.escudoRacha,
+        }} />
 
         {/* Acceso rápido móvil */}
         <div className="mt-8 pt-6 border-t border-gray-100 space-y-2">

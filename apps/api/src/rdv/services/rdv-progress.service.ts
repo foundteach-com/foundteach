@@ -368,4 +368,76 @@ export class RdvProgressService {
       take: 50,
     });
   }
+
+  /**
+   * Calcula los logros desbloqueados de un personaje basándose en su progreso real.
+   */
+  async getLogros(characterId: string) {
+    const character = await this.prisma.rdvCharacter.findUnique({
+      where: { id: characterId },
+      include: {
+        stats: true,
+        _count: { select: { progress: true } },
+      },
+    });
+
+    if (!character) throw new NotFoundException('Personaje no encontrado');
+
+    const decisionsCount = character._count.progress;
+    const STAGES_ORDER = ['EARLY_CHILDHOOD', 'CHILDHOOD', 'ADOLESCENCE', 'YOUTH', 'ADULTHOOD', 'OLD_AGE'];
+    const currentStageIndex = STAGES_ORDER.indexOf(character.etapaActual);
+
+    const logros = [
+      {
+        id: 'primeros_pasos',
+        title: 'Primeros Pasos',
+        desc: 'Completaste tu primera decisión.',
+        emoji: '⭐',
+        color: 'bg-yellow-400',
+        unlocked: decisionsCount >= 1,
+      },
+      {
+        id: 'corazon_de_oro',
+        title: 'Corazón de Oro',
+        desc: 'Alcanzaste 70 en Afectivo.',
+        emoji: '❤️',
+        color: 'bg-pink-400',
+        unlocked: (character.stats?.afectivo ?? 0) >= 70,
+      },
+      {
+        id: 'mente_brillante',
+        title: 'Mente Brillante',
+        desc: 'Alcanzaste 70 en Cognitivo.',
+        emoji: '🧠',
+        color: 'bg-sky-400',
+        unlocked: (character.stats?.cognitivo ?? 0) >= 70,
+      },
+      {
+        id: 'racha_semanal',
+        title: 'Racha Imparable',
+        desc: 'Tomaste 7 o más decisiones.',
+        emoji: '⚡',
+        color: 'bg-orange-400',
+        unlocked: decisionsCount >= 7,
+      },
+      {
+        id: 'creciendo',
+        title: 'Creciendo',
+        desc: 'Avanzaste más allá de la Primera Infancia.',
+        emoji: '🌱',
+        color: 'bg-[#58CC02]',
+        unlocked: currentStageIndex >= 1,
+      },
+      {
+        id: 'sabio',
+        title: 'El Gran Sabio',
+        desc: 'Alcanzaste la etapa de Vejez.',
+        emoji: '🏆',
+        color: 'bg-purple-500',
+        unlocked: character.etapaActual === 'OLD_AGE',
+      },
+    ];
+
+    return { logros, decisionsCount, etapaActual: character.etapaActual };
+  }
 }
