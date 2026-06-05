@@ -24,6 +24,7 @@ export class RdvDecisionsService {
         descripcion: dto.descripcion,
         sortOrder: dto.sortOrder ?? 0,
         isActive: dto.isActive ?? true,
+        requisitos: dto.requisitos ? dto.requisitos : {},
         options: dto.opciones
           ? {
               create: dto.opciones.map((opt, index) => ({
@@ -61,7 +62,43 @@ export class RdvDecisionsService {
     });
 
     if (characterId) {
-      // 2. Orden determinista
+      // 2. Filtrar por requisitos (Estadísticas e Historial de decisiones)
+      const [characterStats, characterProgress] = await Promise.all([
+        this.prisma.rdvStats.findUnique({ where: { characterId } }),
+        this.prisma.rdvProgress.findMany({ where: { characterId } })
+      ]);
+      const takenDecisionIds = new Set(characterProgress.map((p) => p.decisionId));
+
+      decisions = decisions.filter((d) => {
+        if (!d.requisitos || typeof d.requisitos !== 'object') return true;
+        const reqs = d.requisitos as any;
+
+        // 2a. Validar estadísticas mínimas
+        if (reqs.minStats && characterStats) {
+          for (const [statName, valueRequired] of Object.entries(reqs.minStats)) {
+            const currentVal = (characterStats as any)[statName] || 0;
+            if (currentVal < (valueRequired as number)) return false;
+          }
+        }
+
+        // 2b. Validar decisiones previas requeridas
+        if (reqs.requiredDecisions && Array.isArray(reqs.requiredDecisions)) {
+          for (const reqId of reqs.requiredDecisions) {
+            if (!takenDecisionIds.has(reqId)) return false;
+          }
+        }
+
+        // 2c. Validar decisiones previas excluyentes
+        if (reqs.excludedDecisions && Array.isArray(reqs.excludedDecisions)) {
+          for (const exclId of reqs.excludedDecisions) {
+            if (takenDecisionIds.has(exclId)) return false;
+          }
+        }
+
+        return true;
+      });
+
+      // 3. Orden determinista
       const hash = (str: string) => {
         let h = 0;
         for (let i = 0; i < str.length; i++) {
@@ -73,7 +110,7 @@ export class RdvDecisionsService {
       decisions.sort((a, b) => hash(a.id + characterId) - hash(b.id + characterId));
       decisions = decisions.slice(0, 10); // Aseguramos que haya máximo 10 aleatorias
 
-      // 3. Buscar si hay una decisión de consecuencia para este personaje en esta etapa
+      // 4. Buscar si hay una decisión de consecuencia para este personaje en esta etapa
       const consequence = await this.prisma.rdvDecision.findFirst({
         where: {
           isActive: false,

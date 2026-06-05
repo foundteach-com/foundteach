@@ -895,6 +895,8 @@ model RdvDecision {
   descripcion String       @db.Text
   sortOrder   Int          @default(0) @map("sort_order")
   isActive    Boolean      @default(true) @map("is_active")
+  requisitos  Json?        @default("{}")
+
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
 

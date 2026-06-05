@@ -33,11 +33,25 @@ export interface CharacterSummary {
   decisionsCount: number;
 }
 
+export interface DecisionCondition {
+  minStats?: {
+    fisico?: number;
+    cognitivo?: number;
+    social?: number;
+    afectivo?: number;
+    etico?: number;
+    comunicativo?: number;
+  };
+  requiredDecisions?: string[];
+  excludedDecisions?: string[];
+}
+
 export interface Decision {
   id: string;
   etapa: string;
   titulo: string;
   descripcion: string;
+  requisitos?: DecisionCondition;
   options: Array<{
     id: string;
     texto: string;

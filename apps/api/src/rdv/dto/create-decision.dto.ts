@@ -32,6 +32,9 @@ export class CreateDecisionDto {
   isActive?: boolean;
 
   @IsOptional()
+  requisitos?: any;
+
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateOptionDto)
