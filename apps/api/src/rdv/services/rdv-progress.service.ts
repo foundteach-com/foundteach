@@ -308,7 +308,7 @@ export class RdvProgressService {
 
     if (!character) throw new NotFoundException('Personaje no encontrado');
 
-    const ITEMS = {
+    const ITEMS: Record<string, { precio: number, tipo: string, cantidad?: number }> = {
       vida_1: { precio: 10, tipo: 'vida', cantidad: 1 },
       vida_3: { precio: 25, tipo: 'vida', cantidad: 3 },
       vidas_max: { precio: 40, tipo: 'vida', cantidad: 5 },
@@ -316,7 +316,7 @@ export class RdvProgressService {
       xp_x2: { precio: 50, tipo: 'xpx2', cantidad: 10 },
     };
 
-    const item = ITEMS[itemId as keyof typeof ITEMS];
+    const item = ITEMS[itemId];
     if (!item) throw new BadRequestException('Item inválido');
 
     if (character.monedas < item.precio) {
