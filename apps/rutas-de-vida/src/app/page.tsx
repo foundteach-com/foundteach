@@ -6,13 +6,13 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 sm:p-24 relative overflow-hidden">
+    <main className="min-h-screen w-full flex flex-col items-center justify-center px-6 py-10 sm:px-12 sm:py-16 relative overflow-hidden">
       {/* Background decorative blobs */}
-      <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-purple-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-float" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-pink-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-float" style={{ animationDelay: '2s' }} />
-      <div className="absolute top-[40%] right-[20%] w-[300px] h-[300px] bg-sky-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-30 animate-float" style={{ animationDelay: '4s' }} />
+      <div className="absolute top-[-12%] left-[-8%] w-[min(46vw,520px)] h-[min(46vw,520px)] bg-purple-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-float" />
+      <div className="absolute bottom-[-12%] right-[-8%] w-[min(46vw,520px)] h-[min(46vw,520px)] bg-pink-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-float" style={{ animationDelay: '2s' }} />
+      <div className="absolute top-[40%] right-[15%] w-[min(35vw,360px)] h-[min(35vw,360px)] bg-sky-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-30 animate-float" style={{ animationDelay: '4s' }} />
 
-      <div className="z-10 text-center max-w-4xl mx-auto">
+      <div className="z-10 text-center w-full max-w-[min(1120px,100%)] mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -22,14 +22,14 @@ export default function Home() {
             <Sparkles className="w-4 h-4" />
             Simulación Educativa Interactiva
           </span>
-          <h1 className="font-display text-5xl sm:text-7xl font-bold tracking-tight mb-8 text-slate-800">
+          <h1 className="font-display text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-8 text-slate-800 leading-tight">
             Tu Vida. <br className="sm:hidden" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-amber-500">
               Tus Decisiones.
             </span>
             <br /> Tu Desarrollo.
           </h1>
-          <p className="text-lg sm:text-xl text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed">
             Explora las etapas del desarrollo humano desde la primera infancia hasta la vejez. Cada decisión moldea tu camino cognitivo, social y emocional.
           </p>
         </motion.div>
@@ -42,7 +42,7 @@ export default function Home() {
         >
           <Link
             href="/crear-personaje"
-            className="group inline-flex items-center justify-center gap-3 px-12 py-5 bg-[#58CC02] text-white font-bold text-xl uppercase tracking-wider rounded-2xl transition-all shadow-[0_8px_0_#46A302] hover:bg-[#46A302] active:translate-y-2 active:shadow-none"
+            className="group inline-flex items-center justify-center gap-3 px-8 py-4 sm:px-12 sm:py-5 bg-[#58CC02] text-white font-bold text-lg sm:text-xl uppercase tracking-wider rounded-2xl transition-all shadow-[0_8px_0_#46A302] hover:bg-[#46A302] active:translate-y-2 active:shadow-none"
           >
             <span>Iniciar Simulación</span>
             <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
@@ -54,7 +54,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-24"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-16 md:mt-24"
         >
           <FeatureCard 
             icon={<Globe className="w-6 h-6 text-teal-500" />}
