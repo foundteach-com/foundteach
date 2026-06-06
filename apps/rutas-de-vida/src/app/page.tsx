@@ -54,63 +54,82 @@ export default function Home() {
           </button>
         </motion.div>
 
-        {showPoem ? (
+        {showPoem && (
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-16 w-full flex justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80"
           >
-            <div className="w-full max-w-4xl rounded-[2rem] border border-slate-200 bg-white/95 p-8 shadow-2xl backdrop-blur-xl text-slate-800">
-              <h2 className="text-3xl sm:text-4xl font-display font-bold text-center mb-8">En el camino de la vida</h2>
-              <div className="space-y-5 text-sm sm:text-base leading-relaxed">
-                <p>En el camino de la vida,</p>
-                <p>el destino siempre es avanzar,</p>
-                <p>sin importar la etapa en llegarmos a estar</p>
-                <p>ni lo que el futuro nos pueda deparar.</p>
-                <p>Desde que nacemos hay una mano amiga</p>
-                <p>que nos ayuda a gatear y caminar,</p>
-                <p>y aunque el tiempo cambie muchas cosas,</p>
-                <p>siempre necesitamos alguien con quien contar.</p>
-                <p>Cuando somos niños soñamos despiertos,</p>
-                <p>sin pensar en lo que tenemos que luchar;</p>
-                <p>si algún día una estrella fugaz pasara frente a mí,</p>
-                <p>pediría volver a mi niñez y con mis padres poder compartir.</p>
-                <p>Mi familia se separó desde muy niña</p>
-                <p>Sin poder disfrutar de una linda familia</p>
-                <p>Pero eso no fue impedimento para ser buena chica</p>
-                <p>Porque siempre me rodee de gente de Aguachica</p>
-                <p>Elegí llenar mi alma de esperanza,</p>
-                <p>de fuerza, de fe y de valor,</p>
-                <p>para compartir con quienes han llegado</p>
-                <p>a iluminar mi vida con su amor.</p>
-                <p>Vivamos el momento, vivamos el hoy,</p>
-                <p>disfrutemos cada regalo que Dios nos da,</p>
-                <p>porque nadie sabe cuándo llega el momento</p>
-                <p>en que de este mundo uno se va.</p>
-                <p>Hoy solo le pido a Dios una promesa: que</p>
-                <p>me permita a mi hijo felicidad brindarle,</p>
-                <p>acompañarlo en cada uno de sus pasos</p>
-                <p>y siempre a su lado yo poder estar.</p>
-                <p>Que nunca le falte mi abrazo, ni</p>
-                <p>el amor que una madre le puede dar,</p>
-                <p>porque mi mayor sueño en esta vida</p>
-                <p>es verlo crecer y poder acompañarlo.</p>
-                <p className="font-semibold mt-4">Adriana Marcela Macea Jacome</p>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.25 }}
+              className="w-full max-w-3xl rounded-[2rem] border border-slate-200 bg-white p-8 shadow-2xl backdrop-blur-xl text-slate-900"
+            >
+              <div className="flex flex-col gap-4">
+                <h2 className="text-3xl sm:text-4xl font-display font-bold text-center">En el camino de la vida</h2>
+                <div className="mt-4 grid gap-4 text-sm sm:text-base leading-relaxed text-slate-700">
+                  <p>En el camino de la vida,</p>
+                  <p>el destino siempre es avanzar,</p>
+                  <p>sin importar la etapa en llegarmos a estar</p>
+                  <p>ni lo que el futuro nos pueda deparar.</p>
+                  <p className="font-semibold">•</p>
+                  <p>Desde que nacemos hay una mano amiga</p>
+                  <p>que nos ayuda a gatear y caminar,</p>
+                  <p>y aunque el tiempo cambie muchas cosas,</p>
+                  <p>siempre necesitamos alguien con quien contar.</p>
+                  <p className="font-semibold">•</p>
+                  <p>Cuando somos niños soñamos despiertos,</p>
+                  <p>sin pensar en lo que tenemos que luchar;</p>
+                  <p>si algún día una estrella fugaz pasara frente a mí,</p>
+                  <p>pediría volver a mi niñez y con mis padres poder compartir.</p>
+                  <p className="font-semibold">•</p>
+                  <p>Mi familia se separó desde muy niña</p>
+                  <p>Sin poder disfrutar de una linda familia</p>
+                  <p>Pero eso no fue impedimento para ser buena chica</p>
+                  <p>Porque siempre me rodee de gente de Aguachica</p>
+                  <p className="font-semibold">•</p>
+                  <p>Elegí llenar mi alma de esperanza,</p>
+                  <p>de fuerza, de fe y de valor,</p>
+                  <p>para compartir con quienes han llegado</p>
+                  <p>a iluminar mi vida con su amor.</p>
+                  <p className="font-semibold">•</p>
+                  <p>Vivamos el momento, vivamos el hoy,</p>
+                  <p>disfrutemos cada regalo que Dios nos da,</p>
+                  <p>porque nadie sabe cuándo llega el momento</p>
+                  <p>en que de este mundo uno se va.</p>
+                  <p className="font-semibold">•</p>
+                  <p>Hoy solo le pido a Dios una promesa: que</p>
+                  <p>me permita a mi hijo felicidad brindarle,</p>
+                  <p>acompañarlo en cada uno de sus pasos</p>
+                  <p>y siempre a su lado yo poder estar.</p>
+                  <p className="font-semibold">•</p>
+                  <p>Que nunca le falte mi abrazo, ni</p>
+                  <p>el amor que una madre le puede dar,</p>
+                  <p>porque mi mayor sueño en esta vida</p>
+                  <p>es verlo crecer y poder acompañarlo.</p>
+                  <p className="font-semibold mt-2">Adriana Marcela Macea Jacome</p>
+                </div>
+                <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                  <button
+                    onClick={() => router.push('/crear-personaje')}
+                    className="inline-flex items-center justify-center rounded-2xl bg-[#58CC02] px-10 py-3 text-base font-bold uppercase tracking-wider text-white shadow-[0_8px_0_#46A302] hover:bg-[#46A302] active:translate-y-1 active:shadow-none"
+                  >
+                    Continuar
+                  </button>
+                  <button
+                    onClick={() => setShowPoem(false)}
+                    className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-10 py-3 text-base font-bold uppercase tracking-wider text-slate-700 shadow-sm hover:bg-slate-50 active:translate-y-1"
+                  >
+                    Cerrar
+                  </button>
+                </div>
               </div>
-              <div className="mt-10 flex justify-center">
-                <button
-                  onClick={() => router.push('/crear-personaje')}
-                  className="inline-flex items-center justify-center rounded-2xl bg-[#58CC02] px-10 py-3 text-base font-bold uppercase tracking-wider text-white shadow-[0_8px_0_#46A302] hover:bg-[#46A302] active:translate-y-1 active:shadow-none"
-                >
-                  Continuar
-                </button>
-              </div>
-            </div>
+            </motion.div>
           </motion.div>
-        ) : null}
+        )}
 
-        {!showPoem && (
-          <motion.div
+        <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -141,7 +160,6 @@ export default function Home() {
               delay={1}
             />
           </motion.div>
-        )}
 
         <footer className="mt-16 w-full px-4 sm:px-6">
           <div className="w-full flex justify-center bg-white/90 backdrop-blur-xl border-t border-slate-200 py-10">
