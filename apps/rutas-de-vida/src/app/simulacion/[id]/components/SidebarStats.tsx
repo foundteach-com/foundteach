@@ -23,14 +23,14 @@ export function SidebarStats({
 
   return (
     <aside className="hidden lg:flex w-full max-w-96 border-l border-gray-200 flex-col p-8 fixed right-0 h-full bg-white overflow-y-auto pb-24" style={{ width: '420px' }}>
-      <div className="flex items-center gap-4 mb-6 p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200 relative overflow-hidden group hover:border-[#FF005A]/30 transition-colors cursor-default">
+      <div className="flex items-center gap-5 mb-6 p-7 bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl border border-gray-200 relative overflow-hidden group hover:border-[#FF005A]/30 transition-colors cursor-default">
         <div className="absolute top-0 right-0 w-16 h-16 bg-[#FF005A]/5 rounded-bl-full -z-10 group-hover:bg-[#FF005A]/10 transition-colors" />
-        <div className="w-20 h-20 rounded-full bg-white shrink-0 flex items-center justify-center border-2 border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="w-24 h-24 rounded-full bg-white shrink-0 flex items-center justify-center border-2 border-gray-100 shadow-sm relative overflow-hidden">
           <Image src={getCharacterAvatar(summary.character.genero, summary.character.etapaActual)} alt="Avatar" fill className="object-cover" />
         </div>
         <div className="flex-1">
-          <h3 className="font-bold text-slate-800 text-lg leading-tight">{summary.character.nombre}</h3>
-          <p className="text-sm font-semibold text-gray-500">
+          <h3 className="font-bold text-slate-800 text-2xl leading-tight">{summary.character.nombre}</h3>
+          <p className="text-base font-semibold text-gray-500 mt-1">
             {ETAPA_LABELS[summary.character.etapaActual] || summary.character.etapaActual}
           </p>
         </div>
