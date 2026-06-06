@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { User as UserIcon, Sparkles, ArrowLeft, X } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
 type Gender = 'MALE' | 'FEMALE' | null;
 
 export default function CrearPersonaje() {
+  const [showPoem, setShowPoem] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [nombre, setNombre] = useState('');
   const [genero, setGenero] = useState<Gender>(null);
@@ -16,6 +17,15 @@ export default function CrearPersonaje() {
   const [isWobbling, setIsWobbling] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('poem') === 'true') {
+        setShowPoem(true);
+      }
+    }
+  }, []);
 
   const handleNextStep = () => {
     if (nombre.trim().length >= 2) {
@@ -64,8 +74,85 @@ export default function CrearPersonaje() {
   const progressPercentage = step === 1 ? 50 : 100;
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans">
-      {/* Top Header */}
+    <div className="min-h-screen bg-white flex flex-col font-sans relative">
+      {showPoem && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80"
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.25 }}
+            className="w-full max-w-3xl rounded-[2rem] border border-slate-200 bg-white p-8 shadow-2xl backdrop-blur-xl text-slate-900"
+          >
+            <div className="flex flex-col gap-4">
+              <h2 className="text-3xl sm:text-4xl font-display font-bold text-center">En el camino de la vida</h2>
+              <div className="mt-4 grid gap-4 text-sm sm:text-base leading-relaxed text-slate-700">
+                <p>En el camino de la vida,</p>
+                <p>el destino siempre es avanzar,</p>
+                <p>sin importar la etapa en llegarmos a estar</p>
+                <p>ni lo que el futuro nos pueda deparar.</p>
+                <p className="font-semibold">•</p>
+                <p>Desde que nacemos hay una mano amiga</p>
+                <p>que nos ayuda a gatear y caminar,</p>
+                <p>y aunque el tiempo cambie muchas cosas,</p>
+                <p>siempre necesitamos alguien con quien contar.</p>
+                <p className="font-semibold">•</p>
+                <p>Cuando somos niños soñamos despiertos,</p>
+                <p>sin pensar en lo que tenemos que luchar;</p>
+                <p>si algún día una estrella fugaz pasara frente a mí,</p>
+                <p>pediría volver a mi niñez y con mis padres poder compartir.</p>
+                <p className="font-semibold">•</p>
+                <p>Mi familia se separó desde muy niña</p>
+                <p>Sin poder disfrutar de una linda familia</p>
+                <p>Pero eso no fue impedimento para ser buena chica</p>
+                <p>Porque siempre me rodee de gente de Aguachica</p>
+                <p className="font-semibold">•</p>
+                <p>Elegí llenar mi alma de esperanza,</p>
+                <p>de fuerza, de fe y de valor,</p>
+                <p>para compartir con quienes han llegado</p>
+                <p>a iluminar mi vida con su amor.</p>
+                <p className="font-semibold">•</p>
+                <p>Vivamos el momento, vivamos el hoy,</p>
+                <p>disfrutemos cada regalo que Dios nos da,</p>
+                <p>porque nadie sabe cuándo llega el momento</p>
+                <p>en que de este mundo uno se va.</p>
+                <p className="font-semibold">•</p>
+                <p>Hoy solo le pido a Dios una promesa: que</p>
+                <p>me permita a mi hijo felicidad brindarle,</p>
+                <p>acompañarlo en cada uno de sus pasos</p>
+                <p>y siempre a su lado yo poder estar.</p>
+                <p className="font-semibold">•</p>
+                <p>Que nunca le falte mi abrazo, ni</p>
+                <p>el amor que una madre le puede dar,</p>
+                <p>porque mi mayor sueño en esta vida</p>
+                <p>es verlo crecer y poder acompañarlo.</p>
+                <p className="font-semibold mt-2">Adriana Marcela Macea Jacome</p>
+              </div>
+              <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <button
+                  onClick={() => {
+                    setShowPoem(false);
+                    router.replace('/crear-personaje');
+                  }}
+                  className="inline-flex items-center justify-center rounded-2xl bg-[#58CC02] px-10 py-3 text-base font-bold uppercase tracking-wider text-white shadow-[0_8px_0_#46A302] hover:bg-[#46A302] active:translate-y-1 active:shadow-none"
+                >
+                  Continuar
+                </button>
+                <button
+                  onClick={() => setShowPoem(false)}
+                  className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-10 py-3 text-base font-bold uppercase tracking-wider text-slate-700 shadow-sm hover:bg-slate-50 active:translate-y-1"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
       <header className="w-full max-w-4xl mx-auto p-6 flex items-center gap-6">
         <button 
           onClick={() => {
