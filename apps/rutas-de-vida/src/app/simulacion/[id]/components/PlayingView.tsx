@@ -43,6 +43,7 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
 
   const bgImage = getDecisionBackground(currentDecision.titulo, currentDecision.descripcion);
   const avatarImage = getCharacterAvatar(summary.character.genero, summary.character.etapaActual);
+  const sanitizeTitle = (t?: string) => (t || '').replace(/^\[[^\]]+\]\s*/i, '').trim();
 
   return (
     <div className="min-h-screen relative flex flex-col font-sans overflow-hidden bg-gray-50">
@@ -99,7 +100,7 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
           </span>
         </div>
         <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">
-          {currentDecision.titulo}
+          {sanitizeTitle(currentDecision.titulo)}
         </h2>
 
         <div className="flex items-start gap-4 mb-8 bg-white/40 backdrop-blur-md p-6 rounded-2xl border border-white/60 shadow-lg">

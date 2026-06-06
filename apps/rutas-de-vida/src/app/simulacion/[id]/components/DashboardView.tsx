@@ -43,6 +43,8 @@ export function DashboardView({
 
   const [showReportModal, setShowReportModal] = useState(false);
 
+  const sanitizeTitle = (t?: string) => (t || '').replace(/^\[[^\]]+\]\s*/i, '').trim();
+
   if (!summary) return null;
 
   return (
@@ -194,7 +196,7 @@ export function DashboardView({
                       </div>
                       {/* Tooltip */}
                       <div className="absolute bottom-full mb-3 bg-slate-800 text-white text-sm font-bold px-4 py-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-lg">
-                        {decision.titulo}
+                        {sanitizeTitle(decision.titulo)}
                         <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
                       </div>
                     </div>
