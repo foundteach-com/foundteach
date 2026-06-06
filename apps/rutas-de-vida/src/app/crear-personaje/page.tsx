@@ -85,11 +85,11 @@ export default function CrearPersonaje() {
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.25 }}
-            className="w-full max-w-3xl rounded-[2rem] border border-slate-200 bg-white p-8 shadow-2xl backdrop-blur-xl text-slate-900"
+            className="w-full max-w-3xl max-h-[calc(100vh-4rem)] overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-2xl backdrop-blur-xl text-slate-900"
           >
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 h-full">
               <h2 className="text-3xl sm:text-4xl font-display font-bold text-center">En el camino de la vida</h2>
-              <div className="mt-4 grid gap-4 text-sm sm:text-base leading-relaxed text-slate-700">
+              <div className="mt-4 grid gap-4 text-sm sm:text-base leading-relaxed text-slate-700 overflow-y-auto pr-2 max-h-[calc(100vh-14rem)] shadow-inner rounded-3xl bg-slate-50/80 p-4">
                 <p>En el camino de la vida,</p>
                 <p>el destino siempre es avanzar,</p>
                 <p>sin importar la etapa en llegarmos a estar</p>
@@ -131,7 +131,8 @@ export default function CrearPersonaje() {
                 <p>es verlo crecer y poder acompañarlo.</p>
                 <p className="font-semibold mt-2">Adriana Marcela Macea Jacome</p>
               </div>
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <div className="mt-8 h-px w-full bg-slate-200" />
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <button
                   onClick={() => {
                     setShowPoem(false);
