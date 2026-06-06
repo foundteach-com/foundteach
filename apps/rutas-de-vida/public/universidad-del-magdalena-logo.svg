@@ -1,0 +1,18 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1F4AA3" />
+      <stop offset="100%" stop-color="#F40F75" />
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="120" r="110" fill="#F8F8FF" stroke="#1F4AA3" stroke-width="8" />
+  <circle cx="120" cy="120" r="86" fill="url(#grad)" opacity="0.14" />
+  <path d="M120 34V206" stroke="#1F4AA3" stroke-width="12" stroke-linecap="round" />
+  <path d="M34 120H206" stroke="#1F4AA3" stroke-width="12" stroke-linecap="round" />
+  <path d="M120 48L150 120L120 192L90 120L120 48Z" fill="#1F4AA3" opacity="0.18" />
+  <path d="M120 72L146 120L120 168L94 120L120 72Z" fill="#1F4AA3" />
+  <text x="120" y="98" fill="#1F4AA3" font-size="14" font-weight="700" text-anchor="middle">UNIVERSIDAD</text>
+  <text x="120" y="116" fill="#1F4AA3" font-size="14" font-weight="700" text-anchor="middle">DEL</text>
+  <text x="120" y="134" fill="#1F4AA3" font-size="14" font-weight="700" text-anchor="middle">MAGDALENA</text>
+  <text x="120" y="160" fill="#1F4AA3" font-size="12" font-weight="600" text-anchor="middle">1962</text>
+</svg>

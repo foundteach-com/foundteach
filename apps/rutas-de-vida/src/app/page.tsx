@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { ArrowRight, Brain, Globe, Users, Sparkles } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Home() {
@@ -81,6 +82,27 @@ export default function Home() {
             delay={1}
           />
         </motion.div>
+
+        <footer className="mt-16 w-full max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col items-center gap-5 rounded-[2rem] border border-slate-200 bg-white/80 px-6 py-8 shadow-[0_30px_60px_-40px_rgba(15,23,42,0.25)] backdrop-blur-xl text-center">
+            <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto">
+              <Image
+                src="/universidad-del-magdalena-logo.svg"
+                alt="Universidad del Magdalena"
+                fill
+                className="object-contain"
+              />
+            </div>
+            <div>
+              <p className="text-sm uppercase tracking-[0.24em] text-slate-500 mb-3">Equipo de desarrollo</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm sm:text-base font-semibold text-slate-800 leading-snug">
+                <span>Adriana Marcela Macea Jacome</span>
+                <span>Mayorlis Martínez Domínguez</span>
+                <span>Manuel Antonio Martínez Sogamoso</span>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
     </main>
   );
