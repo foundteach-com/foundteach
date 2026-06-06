@@ -5,6 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { User as UserIcon, Sparkles, ArrowLeft, X } from 'lucide-react';
 import Image from 'next/image';
+import { Quicksand } from 'next/font/google';
+
+const quicksand = Quicksand({ subsets: ['latin'], weight: ['400', '600', '700'], display: 'swap' });
 
 type Gender = 'MALE' | 'FEMALE' | null;
 
@@ -85,11 +88,11 @@ export default function CrearPersonaje() {
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.25 }}
-            className="w-full max-w-3xl max-h-[calc(100vh-4rem)] overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-2xl backdrop-blur-xl text-slate-900"
+            className={`${quicksand.className} w-full max-w-3xl max-h-[calc(100vh-4rem)] overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-2xl backdrop-blur-xl text-slate-900`}
           >
             <div className="flex flex-col gap-4 h-full">
-              <h2 className="text-3xl sm:text-4xl font-display font-bold text-center">En el camino de la vida</h2>
-              <div className="mt-4 grid gap-4 text-sm sm:text-base leading-relaxed text-slate-700 overflow-y-auto pr-2 max-h-[calc(100vh-14rem)] shadow-inner rounded-3xl bg-slate-50/80 p-4">
+              <h2 className="text-4xl sm:text-5xl font-display font-bold text-center">En el camino de la vida</h2>
+              <div className="mt-4 grid gap-4 text-lg sm:text-xl leading-[1.2] text-center text-slate-700 overflow-y-auto pr-2 max-h-[calc(100vh-14rem)] shadow-inner rounded-3xl bg-slate-50/80 p-6">
                 <p>En el camino de la vida,</p>
                 <p>el destino siempre es avanzar,</p>
                 <p>sin importar la etapa en llegarmos a estar</p>
@@ -132,19 +135,19 @@ export default function CrearPersonaje() {
                 <p className="font-semibold mt-2">Adriana Marcela Macea Jacome</p>
               </div>
               <div className="mt-8 h-px w-full bg-slate-200" />
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:justify-center items-center">
                 <button
                   onClick={() => {
                     setShowPoem(false);
                     router.replace('/crear-personaje');
                   }}
-                  className="inline-flex items-center justify-center rounded-2xl bg-[#58CC02] px-10 py-3 text-base font-bold uppercase tracking-wider text-white shadow-[0_8px_0_#46A302] hover:bg-[#46A302] active:translate-y-1 active:shadow-none"
+                  className="inline-flex items-center justify-center rounded-3xl bg-gradient-to-br from-[#58CC02] to-[#46A302] px-12 py-3 text-lg font-extrabold uppercase tracking-wider text-white shadow-lg transform transition-transform hover:scale-[1.02] active:translate-y-0.5"
                 >
-                  Continuar
+                  INICIAR SIMULACIÓN
                 </button>
                 <button
                   onClick={() => setShowPoem(false)}
-                  className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-10 py-3 text-base font-bold uppercase tracking-wider text-slate-700 shadow-sm hover:bg-slate-50 active:translate-y-1"
+                  className="inline-flex items-center justify-center rounded-3xl border border-slate-300 bg-white px-8 py-3 text-base font-bold uppercase tracking-wider text-slate-700 shadow-sm hover:bg-slate-50 active:translate-y-1"
                 >
                   Cerrar
                 </button>
