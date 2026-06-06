@@ -83,22 +83,25 @@ export default function Home() {
           />
         </motion.div>
 
-        <footer className="mt-16 w-full max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col items-center gap-5 rounded-[2rem] border border-slate-200 bg-white/80 px-6 py-8 shadow-[0_30px_60px_-40px_rgba(15,23,42,0.25)] backdrop-blur-xl text-center">
-            <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto">
-              <Image
-                src="/universidad-del-magdalena-logo.svg"
-                alt="Universidad del Magdalena"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <div>
-              <p className="text-sm uppercase tracking-[0.24em] text-slate-500 mb-3">Equipo de desarrollo</p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm sm:text-base font-semibold text-slate-800 leading-snug">
-                <span>Adriana Marcela Macea Jacome</span>
-                <span>Mayorlis Martínez Domínguez</span>
-                <span>Manuel Antonio Martínez Sogamoso</span>
+        <footer className="mt-16 w-full px-4 sm:px-6">
+          <div className="w-full flex justify-center bg-white/90 backdrop-blur-xl border-t border-slate-200 py-10">
+            <div className="w-full max-w-[1200px] flex flex-col items-center gap-8 px-4 sm:px-6">
+              <div className="relative w-28 h-28 sm:w-32 sm:h-32">
+                <Image
+                  src="https://foundteach-assets.sfo3.cdn.digitaloceanspaces.com/logo-unimagdalena.png"
+                  alt="Universidad del Magdalena"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <div className="text-center space-y-2 text-slate-800">
+                <p className="text-sm sm:text-base font-semibold uppercase tracking-[0.2em] text-slate-500">Universidad del Magdalena</p>
+                <p className="text-sm sm:text-base font-semibold">Facultad de Ciencias de la Educación</p>
+                <p className="text-sm sm:text-base font-semibold">Licenciatura en Matemáticas</p>
+                <p className="text-sm sm:text-base font-semibold">Desarrollo Humano &amp; Educación</p>
+                <p className="text-sm sm:text-base font-semibold text-slate-600">
+                  Adriana Marcela Macea Jacome&nbsp;|&nbsp;Mayorlis Martínez Domínguez&nbsp;|&nbsp;Manuel Antonio Martínez Sogamoso
+                </p>
               </div>
             </div>
           </div>
