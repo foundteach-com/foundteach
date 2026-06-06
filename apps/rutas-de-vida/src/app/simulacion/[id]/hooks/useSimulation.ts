@@ -29,6 +29,7 @@ export function useSimulation(characterId: string) {
   // Animación de avanzar de etapa
   const [showStageUpModal, setShowStageUpModal] = useState(false);
   const [nextStageName, setNextStageName] = useState('');
+  const [showFinalModal, setShowFinalModal] = useState(false);
 
   const fetchState = useCallback(async () => {
     try {
@@ -181,6 +182,7 @@ export function useSimulation(characterId: string) {
   const handleAdvanceStage = async () => {
     try {
       setIsLoading(true);
+      const prevStage = summary?.character.etapaActual;
       const res = await fetch(`${API_URL}/api/rdv/progress/advance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -193,7 +195,13 @@ export function useSimulation(characterId: string) {
       const data = await res.json();
       const siguienteNombre = ETAPA_LABELS[data.etapaActual] || data.etapaActual;
       setNextStageName(siguienteNombre);
-      setShowStageUpModal(true);
+      // Si el jugador ya estaba en la última etapa (OLD_AGE) y avanzó, mostramos modal final
+      if (prevStage === 'OLD_AGE') {
+        setShowFinalModal(true);
+        setShowStageUpModal(false);
+      } else {
+        setShowStageUpModal(true);
+      }
       playSuccessSound();
       await initialize();
     } catch (error) {
@@ -229,5 +237,7 @@ export function useSimulation(characterId: string) {
     handleContinue,
     handleAdvanceStage,
     handleRest,
+    showFinalModal,
+    setShowFinalModal,
   };
 }

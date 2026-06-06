@@ -49,6 +49,51 @@ export function DashboardView({
 
   return (
     <div className="flex min-h-screen bg-white text-slate-800 font-sans pb-20 lg:pb-0">
+      {/* Modal final de felicitación al completar todas las etapas */}
+      <AnimatePresence>
+        {state.showFinalModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 z-[300] flex items-center justify-center p-4"
+          >
+            <motion.div className="max-w-2xl w-full bg-white rounded-3xl p-8 shadow-2xl text-center">
+              <h2 className="text-3xl font-display font-bold text-slate-800 mb-4">¡Felicidades!</h2>
+              <p className="text-slate-600 mb-6">Has completado el recorrido. Aquí tienes un resumen de tus estadísticas finales:</p>
+              <div className="grid grid-cols-2 gap-4 text-left mb-6">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-slate-500">XP</div>
+                  <div className="font-bold text-lg text-orange-500">{summary.character.xp}</div>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-slate-500">Monedas</div>
+                  <div className="font-bold text-lg text-sky-500">{summary.character.monedas}</div>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-slate-500">Progreso total</div>
+                  <div className="font-bold text-lg text-slate-800">{summary.decisionsCount} decisiones</div>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-slate-500">Etapa final</div>
+                  <div className="font-bold text-lg text-[#FF005A]">{ETAPA_LABELS[summary.character.etapaActual] || summary.character.etapaActual}</div>
+                </div>
+              </div>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={() => {
+                    state.setShowFinalModal(false);
+                    router.push('/');
+                  }}
+                  className="px-8 py-3 rounded-2xl bg-[#58CC02] text-white font-bold shadow-md hover:bg-[#46A302]"
+                >
+                  Terminar
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Modal de subida de etapa */}
       <AnimatePresence>
         {showStageUpModal && (
