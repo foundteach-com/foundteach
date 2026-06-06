@@ -16,6 +16,7 @@ export default function CrearPersonaje() {
   const [step, setStep] = useState<1 | 2>(1);
   const [nombre, setNombre] = useState('');
   const [genero, setGenero] = useState<Gender>(null);
+  const [codigoEstudiantil, setCodigoEstudiantil] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isWobbling, setIsWobbling] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -41,6 +42,11 @@ export default function CrearPersonaje() {
 
   const handleCreate = async () => {
     if (!genero) return;
+    if (!codigoEstudiantil.trim()) {
+      setErrorMsg('Por favor ingresa un código estudiantil');
+      setTimeout(() => setErrorMsg(null), 4000);
+      return;
+    }
     
     setIsSubmitting(true);
     try {
@@ -53,6 +59,7 @@ export default function CrearPersonaje() {
         body: JSON.stringify({
           nombre,
           genero,
+          studentCode: codigoEstudiantil.trim(),
         }),
       });
 
@@ -250,52 +257,70 @@ export default function CrearPersonaje() {
                 ¿Cómo luce {nombre}?
               </h1>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
-                {/* Male Card */}
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setGenero('MALE')}
-                  className={`relative p-6 rounded-3xl transition-all duration-300 border-4 flex flex-col items-center gap-4
-                    ${genero === 'MALE' 
-                      ? 'border-[#00E1FF] bg-[#00E1FF]/10 text-[#009EBA] shadow-[0_6px_0_#00B4CC] translate-y-[-4px]' 
-                      : 'border-gray-200 bg-white hover:bg-gray-50 text-slate-600 shadow-[0_6px_0_#E5E5E5]'
-                    }
-                  `}
-                >
-                  <div className="relative w-40 h-40 pointer-events-none">
-                    <Image 
-                      src="/male_character.png" 
-                      alt="Hombre" 
-                      fill 
-                      className="object-contain"
-                    />
-                  </div>
-                  <span className="font-bold text-xl">Hombre</span>
-                </motion.button>
+              <div className="space-y-6 w-full max-w-2xl">
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                  <label htmlFor="codigoEstudiantil" className="block text-sm font-semibold text-slate-700 mb-2">
+                    Código estudiantil
+                  </label>
+                  <input
+                    id="codigoEstudiantil"
+                    value={codigoEstudiantil}
+                    onChange={(e) => setCodigoEstudiantil(e.target.value.toUpperCase())}
+                    placeholder="Ej. FT2026-001"
+                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-lg font-medium text-slate-800 focus:border-[#58CC02] focus:ring-2 focus:ring-[#58CC02]/20 outline-none"
+                  />
+                  <p className="mt-2 text-sm text-slate-500">
+                    Este código se usa para guardar tu progreso y recuperar tu historial.
+                  </p>
+                </div>
 
-                {/* Female Card */}
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setGenero('FEMALE')}
-                  className={`relative p-6 rounded-3xl transition-all duration-300 border-4 flex flex-col items-center gap-4
-                    ${genero === 'FEMALE' 
-                      ? 'border-[#FF96CB] bg-[#FF96CB]/10 text-[#E05E9C] shadow-[0_6px_0_#E05E9C] translate-y-[-4px]' 
-                      : 'border-gray-200 bg-white hover:bg-gray-50 text-slate-600 shadow-[0_6px_0_#E5E5E5]'
-                    }
-                  `}
-                >
-                  <div className="relative w-40 h-40 pointer-events-none">
-                    <Image 
-                      src="/female_character.png" 
-                      alt="Mujer" 
-                      fill 
-                      className="object-contain"
-                    />
-                  </div>
-                  <span className="font-bold text-xl">Mujer</span>
-                </motion.button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {/* Male Card */}
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setGenero('MALE')}
+                    className={`relative p-6 rounded-3xl transition-all duration-300 border-4 flex flex-col items-center gap-4
+                      ${genero === 'MALE' 
+                        ? 'border-[#00E1FF] bg-[#00E1FF]/10 text-[#009EBA] shadow-[0_6px_0_#00B4CC] translate-y-[-4px]' 
+                        : 'border-gray-200 bg-white hover:bg-gray-50 text-slate-600 shadow-[0_6px_0_#E5E5E5]'
+                      }
+                    `}
+                  >
+                    <div className="relative w-40 h-40 pointer-events-none">
+                      <Image 
+                        src="/male_character.png" 
+                        alt="Hombre" 
+                        fill 
+                        className="object-contain"
+                      />
+                    </div>
+                    <span className="font-bold text-xl">Hombre</span>
+                  </motion.button>
+
+                  {/* Female Card */}
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setGenero('FEMALE')}
+                    className={`relative p-6 rounded-3xl transition-all duration-300 border-4 flex flex-col items-center gap-4
+                      ${genero === 'FEMALE' 
+                        ? 'border-[#FF96CB] bg-[#FF96CB]/10 text-[#E05E9C] shadow-[0_6px_0_#E05E9C] translate-y-[-4px]' 
+                        : 'border-gray-200 bg-white hover:bg-gray-50 text-slate-600 shadow-[0_6px_0_#E5E5E5]'
+                      }
+                    `}
+                  >
+                    <div className="relative w-40 h-40 pointer-events-none">
+                      <Image 
+                        src="/female_character.png" 
+                        alt="Mujer" 
+                        fill 
+                        className="object-contain"
+                      />
+                    </div>
+                    <span className="font-bold text-xl">Mujer</span>
+                  </motion.button>
+                </div>
               </div>
             </motion.div>
           )}
@@ -323,7 +348,7 @@ export default function CrearPersonaje() {
           ) : (
             <button
               onClick={handleCreate}
-              disabled={!genero || isSubmitting}
+              disabled={!genero || isSubmitting || !codigoEstudiantil.trim()}
               className={`flex items-center justify-center gap-2 px-12 py-3 rounded-2xl font-bold text-lg uppercase tracking-wider transition-all w-full sm:w-auto
                 ${genero && !isSubmitting
                   ? 'bg-[#58CC02] text-white hover:bg-[#46A302] hover:shadow-[0_4px_0_#3B8A02] active:translate-y-1 active:shadow-none shadow-[0_6px_0_#46A302]' 

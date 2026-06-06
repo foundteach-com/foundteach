@@ -12,4 +12,8 @@ export class CreateCharacterDto {
   @IsOptional()
   @IsString()
   userId?: string;
+
+  @IsOptional()
+  @IsString()
+  studentCode?: string;
 }

@@ -20,10 +20,34 @@ export class RdvCharactersService {
    * - 7 RdvRelationships (todas en 50)
    */
   async create(dto: CreateCharacterDto) {
-    // Verificar que el usuario existe si se proporcionó un userId
-    if (dto.userId) {
+    let userId = dto.userId || null;
+
+    if (dto.studentCode?.trim()) {
+      const normalizedCode = dto.studentCode.trim().toUpperCase();
+      let user = await this.prisma.user.findUnique({
+        where: { studentCode: normalizedCode },
+      });
+
+      if (!user) {
+        const safeEmailPrefix = normalizedCode.replace(/[^a-z0-9]/gi, '').toLowerCase() || 'user';
+        user = await this.prisma.user.create({
+          data: {
+            email: `${safeEmailPrefix}@guest.foundteach.com`,
+            password: 'rdv-pending',
+            firstName: dto.nombre.trim().split(/\s+/)[0] || 'Jugador',
+            lastName: dto.nombre.trim().split(/\s+/).slice(1).join(' ') || dto.nombre.trim(),
+            role: 'STUDENT',
+            studentCode: normalizedCode,
+          },
+        });
+      }
+
+      userId = user.id;
+    }
+
+    if (userId) {
       const user = await this.prisma.user.findUnique({
-        where: { id: dto.userId },
+        where: { id: userId },
       });
       if (!user) {
         throw new NotFoundException('Usuario no encontrado');
@@ -32,7 +56,7 @@ export class RdvCharactersService {
 
     const character = await this.prisma.rdvCharacter.create({
       data: {
-        userId: dto.userId || null,
+        userId,
         nombre: dto.nombre,
         genero: dto.genero,
         etapaActual: 'EARLY_CHILDHOOD',
