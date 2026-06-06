@@ -88,11 +88,11 @@ export default function CrearPersonaje() {
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.25 }}
-            className={`${quicksand.className} w-full max-w-3xl max-h-[calc(100vh-4rem)] overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-2xl backdrop-blur-xl text-slate-900`}
+            className={`${quicksand.className} w-full max-w-3xl max-h-[calc(100vh-4rem)] flex flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-2xl backdrop-blur-xl text-slate-900`}
           >
             <div className="flex flex-col gap-4 h-full">
               <h2 className="text-4xl sm:text-5xl font-display font-bold text-center">En el camino de la vida</h2>
-              <div className="mt-4 grid gap-4 text-lg sm:text-xl leading-[1.2] text-center text-slate-700 overflow-y-auto pr-2 max-h-[calc(100vh-14rem)] shadow-inner rounded-3xl bg-slate-50/80 p-6">
+              <div className="mt-4 grid gap-4 text-lg sm:text-xl leading-[1.2] text-center text-slate-700 overflow-y-auto pr-2 flex-1 shadow-inner rounded-3xl bg-slate-50/80 p-6">
                 <p>En el camino de la vida,</p>
                 <p>el destino siempre es avanzar,</p>
                 <p>sin importar la etapa en llegarmos a estar</p>
@@ -135,7 +135,7 @@ export default function CrearPersonaje() {
                 <p className="font-semibold mt-2">Adriana Marcela Macea Jacome</p>
               </div>
               <div className="mt-8 h-px w-full bg-slate-200" />
-              <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:justify-center items-center">
+              <div className="mt-6 flex-shrink-0 flex flex-col gap-4 sm:flex-row sm:justify-center items-center">
                 <button
                   onClick={() => {
                     setShowPoem(false);
