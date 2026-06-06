@@ -142,36 +142,6 @@ export default function Home() {
             />
           </motion.div>
         )}
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-16 md:mt-24"
-        >
-          <FeatureCard 
-            icon={<Globe className="w-6 h-6 text-teal-500" />}
-            title="Enfoque Ecológico"
-            description="Interactúa con tu familia, escuela y sociedad. Tu entorno importa."
-            accentColor="from-teal-50 to-cyan-50"
-            borderColor="border-teal-200/60"
-            delay={0}
-          />
-          <FeatureCard 
-            icon={<Users className="w-6 h-6 text-purple-500" />}
-            title="Sistemas Relacionales"
-            description="Forja lazos con tus padres, amigos y parejas a lo largo de tu vida."
-            accentColor="from-purple-50 to-pink-50"
-            borderColor="border-purple-200/60"
-            delay={0.5}
-          />
-          <FeatureCard 
-            icon={<Brain className="w-6 h-6 text-amber-500" />}
-            title="Ciclo Vital Completo"
-            description="Crece, aprende y enfrenta los retos de cada etapa de la existencia."
-            accentColor="from-amber-50 to-orange-50"
-            borderColor="border-amber-200/60"
-            delay={1}
-          />
-        </motion.div>
 
         <footer className="mt-16 w-full px-4 sm:px-6">
           <div className="w-full flex justify-center bg-white/90 backdrop-blur-xl border-t border-slate-200 py-10">
