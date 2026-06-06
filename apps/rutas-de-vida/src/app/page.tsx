@@ -1,11 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Brain, Globe, Users, Sparkles } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const [showPoem, setShowPoem] = useState(false);
+  const router = useRouter();
+
   return (
     <main className="min-h-screen w-full flex flex-col items-center justify-center px-6 py-10 sm:px-12 sm:py-16 relative overflow-hidden">
       {/* Background decorative blobs */}
@@ -41,17 +45,103 @@ export default function Home() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="flex justify-center"
         >
-          <Link
-            href="/crear-personaje"
+          <button
+            onClick={() => setShowPoem(true)}
             className="group inline-flex items-center justify-center gap-3 px-8 py-4 sm:px-12 sm:py-5 bg-[#58CC02] text-white font-bold text-lg sm:text-xl uppercase tracking-wider rounded-2xl transition-all shadow-[0_8px_0_#46A302] hover:bg-[#46A302] active:translate-y-2 active:shadow-none"
           >
             <span>Iniciar Simulación</span>
             <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          </button>
         </motion.div>
 
-        {/* Features grid */}
-        <motion.div
+        {showPoem ? (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-16 w-full flex justify-center"
+          >
+            <div className="w-full max-w-4xl rounded-[2rem] border border-slate-200 bg-white/95 p-8 shadow-2xl backdrop-blur-xl text-slate-800">
+              <h2 className="text-3xl sm:text-4xl font-display font-bold text-center mb-8">En el camino de la vida</h2>
+              <div className="space-y-5 text-sm sm:text-base leading-relaxed">
+                <p>En el camino de la vida,</p>
+                <p>el destino siempre es avanzar,</p>
+                <p>sin importar la etapa en llegarmos a estar</p>
+                <p>ni lo que el futuro nos pueda deparar.</p>
+                <p>Desde que nacemos hay una mano amiga</p>
+                <p>que nos ayuda a gatear y caminar,</p>
+                <p>y aunque el tiempo cambie muchas cosas,</p>
+                <p>siempre necesitamos alguien con quien contar.</p>
+                <p>Cuando somos niños soñamos despiertos,</p>
+                <p>sin pensar en lo que tenemos que luchar;</p>
+                <p>si algún día una estrella fugaz pasara frente a mí,</p>
+                <p>pediría volver a mi niñez y con mis padres poder compartir.</p>
+                <p>Mi familia se separó desde muy niña</p>
+                <p>Sin poder disfrutar de una linda familia</p>
+                <p>Pero eso no fue impedimento para ser buena chica</p>
+                <p>Porque siempre me rodee de gente de Aguachica</p>
+                <p>Elegí llenar mi alma de esperanza,</p>
+                <p>de fuerza, de fe y de valor,</p>
+                <p>para compartir con quienes han llegado</p>
+                <p>a iluminar mi vida con su amor.</p>
+                <p>Vivamos el momento, vivamos el hoy,</p>
+                <p>disfrutemos cada regalo que Dios nos da,</p>
+                <p>porque nadie sabe cuándo llega el momento</p>
+                <p>en que de este mundo uno se va.</p>
+                <p>Hoy solo le pido a Dios una promesa: que</p>
+                <p>me permita a mi hijo felicidad brindarle,</p>
+                <p>acompañarlo en cada uno de sus pasos</p>
+                <p>y siempre a su lado yo poder estar.</p>
+                <p>Que nunca le falte mi abrazo, ni</p>
+                <p>el amor que una madre le puede dar,</p>
+                <p>porque mi mayor sueño en esta vida</p>
+                <p>es verlo crecer y poder acompañarlo.</p>
+                <p className="font-semibold mt-4">Adriana Marcela Macea Jacome</p>
+              </div>
+              <div className="mt-10 flex justify-center">
+                <button
+                  onClick={() => router.push('/crear-personaje')}
+                  className="inline-flex items-center justify-center rounded-2xl bg-[#58CC02] px-10 py-3 text-base font-bold uppercase tracking-wider text-white shadow-[0_8px_0_#46A302] hover:bg-[#46A302] active:translate-y-1 active:shadow-none"
+                >
+                  Continuar
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        ) : null}
+
+        {!showPoem && (
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-16 md:mt-24"
+          >
+            <FeatureCard 
+              icon={<Globe className="w-6 h-6 text-teal-500" />}
+              title="Enfoque Ecológico"
+              description="Interactúa con tu familia, escuela y sociedad. Tu entorno importa."
+              accentColor="from-teal-50 to-cyan-50"
+              borderColor="border-teal-200/60"
+              delay={0}
+            />
+            <FeatureCard 
+              icon={<Users className="w-6 h-6 text-purple-500" />}
+              title="Sistemas Relacionales"
+              description="Forja lazos con tus padres, amigos y parejas a lo largo de tu vida."
+              accentColor="from-purple-50 to-pink-50"
+              borderColor="border-purple-200/60"
+              delay={0.5}
+            />
+            <FeatureCard 
+              icon={<Brain className="w-6 h-6 text-amber-500" />}
+              title="Ciclo Vital Completo"
+              description="Crece, aprende y enfrenta los retos de cada etapa de la existencia."
+              accentColor="from-amber-50 to-orange-50"
+              borderColor="border-amber-200/60"
+              delay={1}
+            />
+          </motion.div>
+        )}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
