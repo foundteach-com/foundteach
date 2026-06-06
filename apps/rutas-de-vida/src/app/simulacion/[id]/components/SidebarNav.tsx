@@ -14,9 +14,7 @@ export function SidebarNav({ characterId }: { characterId: string }) {
       </div>
       <nav className="flex flex-col gap-2">
         <NavItem icon={<Navigation />} label="Aprender" active onClick={() => router.push(`/simulacion/${characterId}`)} />
-        <NavItem icon={<Target />} label="Práctica" onClick={() => {}} />
         <NavItem icon={<Medal />} label="Ligas" onClick={() => router.push(`/simulacion/${characterId}/ligas`)} />
-        <NavItem icon={<ShoppingBag />} label="Tienda" onClick={() => router.push(`/simulacion/${characterId}/tienda`)} />
         <NavItem icon={<Star />} label="Logros" onClick={() => router.push(`/simulacion/${characterId}/logros`)} />
         <NavItem icon={<User />} label="Perfil" onClick={() => router.push(`/simulacion/${characterId}/perfil`)} />
       </nav>
