@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Trophy, Star, Flame, Coins, BookOpen, CheckCircle2 } from 'lucide-react';
 import { ETAPA_LABELS } from '../../../../utils/constants';
@@ -7,7 +11,6 @@ import { SidebarNav } from './SidebarNav';
 import { SidebarStats } from './SidebarStats';
 import { MobileBottomNav } from './MobileBottomNav';
 import { LifeReportModal } from './LifeReportModal';
-import { useState } from 'react';
 
 const getDecisionEmoji = (title: string) => {
   const lowerTitle = title.toLowerCase();
@@ -42,6 +45,7 @@ export function DashboardView({
   } = state;
 
   const [showReportModal, setShowReportModal] = useState(false);
+  const router = useRouter();
 
   const sanitizeTitle = (t?: string) => (t || '').replace(/^\[[^\]]+\]\s*/i, '').trim();
 
