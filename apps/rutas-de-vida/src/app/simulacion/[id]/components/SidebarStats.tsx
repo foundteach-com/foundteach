@@ -22,10 +22,10 @@ export function SidebarStats({
   const router = useRouter();
 
   return (
-    <aside className="hidden lg:flex w-80 border-l border-gray-200 flex-col p-6 fixed right-0 h-full bg-white overflow-y-auto pb-24">
-      <div className="flex items-center gap-4 mb-4 p-4 bg-gray-50 rounded-2xl border border-gray-200 relative overflow-hidden group hover:border-[#FF005A]/30 transition-colors cursor-default">
+    <aside className="hidden lg:flex w-96 border-l border-gray-200 flex-col p-8 fixed right-0 h-full bg-white overflow-y-auto pb-24">
+      <div className="flex items-center gap-4 mb-6 p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200 relative overflow-hidden group hover:border-[#FF005A]/30 transition-colors cursor-default">
         <div className="absolute top-0 right-0 w-16 h-16 bg-[#FF005A]/5 rounded-bl-full -z-10 group-hover:bg-[#FF005A]/10 transition-colors" />
-        <div className="w-14 h-14 rounded-full bg-white shrink-0 flex items-center justify-center border-2 border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="w-16 h-16 rounded-full bg-white shrink-0 flex items-center justify-center border-2 border-gray-100 shadow-sm relative overflow-hidden">
           <Image src={getCharacterAvatar(summary.character.genero, summary.character.etapaActual)} alt="Avatar" fill className="object-cover" />
         </div>
         <div className="flex-1">
@@ -37,26 +37,25 @@ export function SidebarStats({
       </div>
 
       {stageProgress && (
-        <div className="mb-8 px-2">
-          <div className="flex justify-between items-center mb-1.5">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Progreso de Etapa</span>
-            <span className="text-xs font-bold text-[#FF005A]">{stageProgress.current} / {stageProgress.total}</span>
+        <div className="mb-10 p-5 bg-gradient-to-br from-[#FF005A]/5 to-[#FF005A]/2 rounded-2xl border border-[#FF005A]/20">
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Progreso de Etapa</span>
+            <span className="text-lg font-extrabold text-[#FF005A]">{stageProgress.current} / {stageProgress.total}</span>
           </div>
-          <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden shadow-sm">
             <motion.div 
               initial={{ width: 0 }}
               animate={{ width: `${Math.min(100, Math.round((stageProgress.current / stageProgress.total) * 100))}%` }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="h-full bg-[#FF005A] rounded-full relative"
+              className="h-full bg-gradient-to-r from-[#FF005A] to-[#FF1A7B] rounded-full relative"
             >
-              <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/30" />
+              <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/40" />
             </motion.div>
           </div>
         </div>
       )}
 
-      <hr className="border-gray-100 mb-6" />
-
+      <hr className="border-gray-100 mb-8" />
       <h3 className="font-bold text-slate-700 mb-4 text-lg">Estadísticas</h3>
       <div className="space-y-4 mb-8">
         <StatBar icon={<Activity size={18} />} label="Físico" value={summary.stats.fisico} colors={STAT_COLORS.fisico} />

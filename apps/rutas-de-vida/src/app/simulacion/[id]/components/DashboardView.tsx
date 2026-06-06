@@ -99,7 +99,7 @@ export function DashboardView({
       <SidebarNav characterId={characterId} />
 
       {/* Contenido principal */}
-      <main className="flex-1 lg:ml-64 lg:mr-80 flex flex-col items-center p-6 sm:p-10">
+      <main className="flex-1 lg:ml-64 lg:mr-96 flex flex-col items-center p-6 sm:p-10">
 
         {/* Barra superior de recompensas */}
         <div className="w-full max-w-[600px] flex justify-end items-center gap-6 mb-8 px-4">
