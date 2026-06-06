@@ -89,12 +89,6 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
           </motion.div>
         </div>
 
-        {/* Vidas en la vista de juego */}
-        <div className="flex items-center gap-1 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-white/50">
-          {Array.from({ length: summary.character.vidas }).map((_, i) => (
-            <span key={i} className="text-xl">❤️</span>
-          ))}
-        </div>
       </header>
 
       {/* Zona de juego */}
@@ -112,9 +106,9 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
           <motion.div 
             animate={{ y: [0, -5, 0] }} 
             transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-            className="w-16 h-16 rounded-full bg-white shrink-0 flex items-center justify-center border-4 border-white shadow-xl relative overflow-hidden"
+            className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white shrink-0 flex items-center justify-center border-4 border-white shadow-xl relative overflow-hidden"
           >
-            <Image src={avatarImage} alt="Avatar" fill className="object-cover" />
+            <Image src={avatarImage} alt="Avatar" fill className="object-cover rounded-full" />
           </motion.div>
           <div className="bg-white/90 backdrop-blur-xl p-5 rounded-2xl rounded-tl-none border border-white/80 shadow-sm relative flex-1">
             <div className="absolute -left-[10px] top-4 w-4 h-4 bg-white/90 border-l border-t border-white/80 -rotate-45" />
@@ -132,7 +126,7 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
           </div>
         </div>
 
-        {summary.character.vidas <= 0 ? (
+        {false ? (
           <div className="space-y-6">
             <div className="p-6 bg-rose-50 border-2 border-rose-200 rounded-2xl text-center">
               <div className="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -190,25 +184,23 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
       </main>
 
       {/* Botón de acción (Oculto si no hay vidas) */}
-      {summary.character.vidas > 0 && (
-        <div className="w-full border-t-2 border-gray-200 bg-white p-6 pb-8 z-40">
-          <div className="max-w-3xl mx-auto flex justify-between items-center">
-            <div className="hidden sm:block"></div>
-            <button
-              disabled={!selectedOptionId || isTakingDecision || showDrawer}
-              onClick={handleConfirmDecision}
-              className={`px-12 py-3 rounded-2xl font-bold text-lg uppercase tracking-wider transition-all w-full sm:w-auto
-                ${selectedOptionId
-                  ? 'bg-[#58CC02] text-white hover:bg-[#46A302] hover:shadow-[0_4px_0_#3B8A02] active:translate-y-1 active:shadow-none shadow-[0_6px_0_#46A302]'
-                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                }
-              `}
-            >
-              {isTakingDecision ? 'Procesando...' : 'Comprobar'}
-            </button>
-          </div>
+      <div className="w-full border-t-2 border-gray-200 bg-white p-6 pb-8 z-40">
+        <div className="max-w-3xl mx-auto flex justify-between items-center">
+          <div className="hidden sm:block"></div>
+          <button
+            disabled={!selectedOptionId || isTakingDecision || showDrawer}
+            onClick={handleConfirmDecision}
+            className={`px-12 py-3 rounded-2xl font-bold text-lg uppercase tracking-wider transition-all w-full sm:w-auto
+              ${selectedOptionId
+                ? 'bg-[#58CC02] text-white hover:bg-[#46A302] hover:shadow-[0_4px_0_#3B8A02] active:translate-y-1 active:shadow-none shadow-[0_6px_0_#46A302]'
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              }
+            `}
+          >
+            {isTakingDecision ? 'Procesando...' : 'Comprobar'}
+          </button>
         </div>
-      )}
+      </div>
 
       {/* Drawer de retroalimentación */}
       <AnimatePresence>
@@ -238,11 +230,11 @@ export function PlayingView({ state }: { state: ReturnType<typeof useSimulation>
                   </h3>
                   {drawerVariant === 'warning' && (
                     <p className="text-[#FF4B4B] font-medium">
-                      Esta decisión afectó negativamente tus estadísticas. ❤️ -1 vida
+                      Esta decisión afectó negativamente tus estadísticas.
                     </p>
                   )}
                   <p className="text-sm font-semibold opacity-70 mt-1">
-                    {drawerVariant === 'success' ? '+10 XP  •  +5 Monedas' : '+10 XP  •  +5 Monedas  •  -1 ❤️'}
+                    +10 XP  •  +5 Monedas
                   </p>
                   
                   {state.statChanges && state.statChanges.length > 0 && (

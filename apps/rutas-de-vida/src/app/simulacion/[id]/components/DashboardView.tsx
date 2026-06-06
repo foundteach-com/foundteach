@@ -84,10 +84,6 @@ export function DashboardView({
                   <span className="text-2xl">🪙</span>
                   <span className="font-bold text-sky-500">+20 Monedas</span>
                 </div>
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-2xl">❤️</span>
-                  <span className="font-bold text-red-500">Vidas llenas</span>
-                </div>
               </div>
               <button
                 onClick={() => setShowStageUpModal(false)}
@@ -107,21 +103,7 @@ export function DashboardView({
 
         {/* Barra superior de recompensas */}
         <div className="w-full max-w-[600px] flex justify-end items-center gap-6 mb-8 px-4">
-          {/* Vidas / Corazones */}
-          <div className="flex items-center gap-1">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <motion.span
-                key={i}
-                initial={{ scale: 1 }}
-                animate={i >= summary.character.vidas ? { scale: [1, 1.2, 1] } : {}}
-                className={`text-2xl transition-all ${i < summary.character.vidas ? '' : 'grayscale opacity-30'}`}
-              >
-                ❤️
-              </motion.span>
-            ))}
-          </div>
-          
-          <ActivePowers 
+            <ActivePowers 
             hasShield={summary.character.escudoRacha} 
             xpBoostCharges={summary.character.xpBoostCharges} 
           />
