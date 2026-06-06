@@ -141,8 +141,8 @@ export function DashboardView({
           <motion.div 
             initial="hidden"
             animate="visible"
-            variants={{ visible: { transition: { staggerChildren: 0.15 } } }}
-            className="relative py-8 flex flex-col items-center w-full gap-8"
+            variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
+            className="relative py-10 flex flex-col items-center w-full gap-12"
           >
             {decisions.map((decision, index) => {
               const isCompleted = index < completedDecisionsCount;
@@ -162,35 +162,35 @@ export function DashboardView({
                   style={{ left: `${offset}px` }}
                 >
                   {index < decisions.length - 1 && (
-                    <svg className="absolute top-[calc(100%-8px)] left-1/2 w-1 h-10 z-0 overflow-visible" style={{ transform: 'translateX(-50%)' }}>
-                      <path
-                        d={`M 0 0 C 0 20, ${diffX} 20, ${diffX} 40`}
-                        fill="none"
-                        stroke={isCompleted ? "#58CC02" : "#E5E5E5"}
-                        strokeWidth="8"
-                        strokeLinecap="round"
-                        strokeDasharray={isCompleted ? "none" : "8 12"}
-                      />
-                    </svg>
-                  )}
+                      <svg className="absolute top-[calc(100%-10px)] left-1/2 w-1 h-12 z-0 overflow-visible" style={{ transform: 'translateX(-50%)' }}>
+                        <path
+                          d={`M 0 0 C 0 28, ${diffX} 28, ${diffX} 56`}
+                          fill="none"
+                          stroke={isCompleted ? "#58CC02" : "#E5E5E5"}
+                          strokeWidth="10"
+                          strokeLinecap="round"
+                          strokeDasharray={isCompleted ? "none" : "10 14"}
+                        />
+                      </svg>
+                    )}
 
                   {isCurrent ? (
                     <div className="relative flex flex-col items-center cursor-pointer group z-10" onClick={handleStartNode}>
-                      <div className="absolute -top-12 bg-white border-2 border-gray-200 rounded-xl px-4 py-2 font-bold text-[#FF005A] shadow-md z-20 whitespace-nowrap animate-bounce">
+                      <div className="absolute -top-16 bg-white border-2 border-gray-200 rounded-2xl px-5 py-3 font-bold text-[#FF005A] shadow-md z-20 whitespace-nowrap animate-bounce text-base">
                         ¡EMPEZAR!
-                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-gray-200 rotate-45" />
+                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-gray-200 rotate-45" />
                       </div>
-                      <div className="w-20 h-20 rounded-full bg-[#FF005A] shadow-[0_8px_0_#D9004C] active:translate-y-2 active:shadow-none transition-all flex items-center justify-center border-4 border-white relative hover:brightness-110">
-                        <span className="text-4xl relative z-10 drop-shadow-md">{getDecisionEmoji(decision.titulo)}</span>
+                      <div className="w-[96px] h-[96px] rounded-full bg-[#FF005A] shadow-[0_10px_0_#D9004C] active:translate-y-2 active:shadow-none transition-all flex items-center justify-center border-4 border-white relative hover:brightness-110">
+                        <span className="text-5xl relative z-10 drop-shadow-md">{getDecisionEmoji(decision.titulo)}</span>
                         <div className="absolute inset-0 rounded-full border-4 border-[#FF005A] animate-ping opacity-40" />
                         <div className="absolute inset-0 rounded-full bg-white opacity-20 animate-pulse" />
                       </div>
                     </div>
                   ) : isCompleted ? (
-                    <div className="w-16 h-16 rounded-full bg-[#58CC02] shadow-[0_6px_0_#46A302] flex items-center justify-center border-4 border-white opacity-95 z-10 relative cursor-default hover:-translate-y-1 transition-transform">
-                      <span className="text-2xl drop-shadow-sm">{getDecisionEmoji(decision.titulo)}</span>
-                      <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
-                        <CheckCircle2 className="w-5 h-5 text-[#58CC02] fill-[#D7FFB8]" />
+                    <div className="w-[80px] h-[80px] rounded-full bg-[#58CC02] shadow-[0_8px_0_#46A302] flex items-center justify-center border-4 border-white opacity-95 z-10 relative cursor-default hover:-translate-y-1 transition-transform">
+                      <span className="text-3xl drop-shadow-sm">{getDecisionEmoji(decision.titulo)}</span>
+                      <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-0.5 shadow-sm">
+                        <CheckCircle2 className="w-6 h-6 text-[#58CC02] fill-[#D7FFB8]" />
                       </div>
                       {/* Tooltip */}
                       <div className="absolute bottom-full mb-3 bg-slate-800 text-white text-sm font-bold px-4 py-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-lg">
@@ -199,8 +199,8 @@ export function DashboardView({
                       </div>
                     </div>
                   ) : (
-                    <div className="w-16 h-16 rounded-full bg-[#E5E5E5] shadow-[0_6px_0_#CCCCCC] flex items-center justify-center border-4 border-white opacity-80 z-10 relative">
-                      <span className="text-2xl grayscale opacity-40">{getDecisionEmoji(decision.titulo)}</span>
+                    <div className="w-[64px] h-[64px] rounded-full bg-[#E5E5E5] shadow-[0_6px_0_#CCCCCC] flex items-center justify-center border-4 border-white opacity-80 z-10 relative">
+                      <span className="text-xl grayscale opacity-40">{getDecisionEmoji(decision.titulo)}</span>
                     </div>
                   )}
                 </motion.div>
