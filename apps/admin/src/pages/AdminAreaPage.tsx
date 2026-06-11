@@ -16,6 +16,13 @@ interface CompanyData {
   phone: string;
   website: string;
   address: string;
+  rut: string;
+  legalRepresentativeName: string;
+  legalRepresentativeId: string;
+  certificateOfExistenceNumber: string;
+  certificateExpeditedDate: string;
+  incorporationDate: string;
+  statutesDescription: string;
 }
 
 interface UserRow {
@@ -247,6 +254,13 @@ function CompanyTab() {
     phone: '',
     website: 'https://foundteach.com',
     address: '',
+    rut: '',
+    legalRepresentativeName: '',
+    legalRepresentativeId: '',
+    certificateOfExistenceNumber: '',
+    certificateExpeditedDate: '',
+    incorporationDate: '',
+    statutesDescription: '',
   });
   const [form, setForm] = useState<CompanyData>({ ...data });
 
@@ -330,11 +344,58 @@ function CompanyTab() {
           </div>
         )}
 
-        <CompanyField label="Nombre legal" value={data.name}    field="name"    icon={Building2} editing={editing} formValue={form.name}    onChange={handleFieldChange} />
-        <CompanyField label="Correo"        value={data.email}   field="email"   icon={Mail}     editing={editing} formValue={form.email}   onChange={handleFieldChange} type="email" />
-        <CompanyField label="Teléfono"      value={data.phone}   field="phone"   icon={Phone}    editing={editing} formValue={form.phone}   onChange={handleFieldChange} />
-        <CompanyField label="Sitio web"     value={data.website} field="website" icon={Globe}    editing={editing} formValue={form.website} onChange={handleFieldChange} />
-        <CompanyField label="Dirección"     value={data.address} field="address" icon={MapPin}   editing={editing} formValue={form.address} onChange={handleFieldChange} />
+        {/* Información Básica */}
+        <div style={{ marginBottom: 28, paddingBottom: 24, borderBottom: '1px solid var(--border-color)' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Información Básica</h4>
+          <CompanyField label="Nombre legal" value={data.name}    field="name"    icon={Building2} editing={editing} formValue={form.name}    onChange={handleFieldChange} />
+          <CompanyField label="Correo"        value={data.email}   field="email"   icon={Mail}     editing={editing} formValue={form.email}   onChange={handleFieldChange} type="email" />
+          <CompanyField label="Teléfono"      value={data.phone}   field="phone"   icon={Phone}    editing={editing} formValue={form.phone}   onChange={handleFieldChange} />
+          <CompanyField label="Sitio web"     value={data.website} field="website" icon={Globe}    editing={editing} formValue={form.website} onChange={handleFieldChange} />
+          <CompanyField label="Dirección"     value={data.address} field="address" icon={MapPin}   editing={editing} formValue={form.address} onChange={handleFieldChange} />
+        </div>
+
+        {/* Información Fiscal y Legal */}
+        <div style={{ marginBottom: 28, paddingBottom: 24, borderBottom: '1px solid var(--border-color)' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Datos Tributarios</h4>
+          <CompanyField label="RUT (Registro Único Tributario)" value={data.rut} field="rut" icon={FileText} editing={editing} formValue={form.rut} onChange={handleFieldChange} />
+        </div>
+
+        {/* Certificado de Existencia y Representación */}
+        <div style={{ marginBottom: 28, paddingBottom: 24, borderBottom: '1px solid var(--border-color)' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Certificado de Existencia y Representación</h4>
+          <CompanyField label="Número de Certificado" value={data.certificateOfExistenceNumber} field="certificateOfExistenceNumber" icon={FileText} editing={editing} formValue={form.certificateOfExistenceNumber} onChange={handleFieldChange} />
+          <CompanyField label="Fecha de Expedición" value={data.certificateExpeditedDate} field="certificateExpeditedDate" icon={FileText} editing={editing} formValue={form.certificateExpeditedDate} onChange={handleFieldChange} type="date" />
+        </div>
+
+        {/* Representante Legal */}
+        <div style={{ marginBottom: 28, paddingBottom: 24, borderBottom: '1px solid var(--border-color)' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Representante Legal</h4>
+          <CompanyField label="Nombre Completo" value={data.legalRepresentativeName} field="legalRepresentativeName" icon={Users} editing={editing} formValue={form.legalRepresentativeName} onChange={handleFieldChange} />
+          <CompanyField label="Cédula de Identidad" value={data.legalRepresentativeId} field="legalRepresentativeId" icon={FileText} editing={editing} formValue={form.legalRepresentativeId} onChange={handleFieldChange} />
+        </div>
+
+        {/* Información de Constitución */}
+        <div>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Constitución y Estatutos</h4>
+          <CompanyField label="Fecha de Constitución" value={data.incorporationDate} field="incorporationDate" icon={FileText} editing={editing} formValue={form.incorporationDate} onChange={handleFieldChange} type="date" />
+          <div style={{ marginBottom: 20 }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 6 }}>Descripción de Estatutos</label>
+            {editing ? (
+              <textarea
+                value={form.statutesDescription}
+                onChange={e => handleFieldChange('statutesDescription', e.target.value)}
+                className="form-input"
+                style={{ minHeight: '100px', resize: 'vertical', padding: 12 }}
+                placeholder="Información sobre los estatutos de constitución de la empresa..."
+              />
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '10px 0', borderBottom: '1px solid var(--border-color)', color: data.statutesDescription ? 'var(--text-main)' : 'var(--text-muted)', fontSize: '0.93rem', fontWeight: data.statutesDescription ? 500 : 400, lineHeight: 1.5 }}>
+                <span style={{ color: 'var(--text-muted)', flexShrink: 0, display: 'flex', marginTop: 2 }}><FileText size={15} /></span>
+                {data.statutesDescription || <span style={{ fontStyle: 'italic' }}>Sin información registrada</span>}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Identity card */}
@@ -352,8 +413,52 @@ function CompanyTab() {
           </div>
         </div>
 
+        {/* Información de Identidad */}
         <div style={{ background: 'var(--surface-color)', borderRadius: 16, border: '1px solid var(--border-color)', padding: 20 }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>Links Rápidos</div>
+          <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>Identidad Corporativa</div>
+          
+          {/* RUT */}
+          <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--border-color)' }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 3 }}>RUT</div>
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>
+              {data.rut ? data.rut : <span style={{ opacity: 0.5, fontStyle: 'italic' }}>Sin registrar</span>}
+            </div>
+          </div>
+
+          {/* Certificado */}
+          <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--border-color)' }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 3 }}>Certificado de Existencia</div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-main)' }}>
+              {data.certificateOfExistenceNumber ? (
+                <>
+                  <div style={{ fontWeight: 600 }}>#{data.certificateOfExistenceNumber}</div>
+                  {data.certificateExpeditedDate && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>Expedido: {fmtDate(data.certificateExpeditedDate)}</div>}
+                </>
+              ) : (
+                <span style={{ opacity: 0.5, fontStyle: 'italic' }}>Sin registrar</span>
+              )}
+            </div>
+          </div>
+
+          {/* Representante Legal */}
+          <div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 3 }}>Representante Legal</div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-main)' }}>
+              {data.legalRepresentativeName ? (
+                <>
+                  <div style={{ fontWeight: 600 }}>{data.legalRepresentativeName}</div>
+                  {data.legalRepresentativeId && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>Cédula: {data.legalRepresentativeId}</div>}
+                </>
+              ) : (
+                <span style={{ opacity: 0.5, fontStyle: 'italic' }}>Sin registrar</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Enlaces Importantes */}
+        <div style={{ background: 'var(--surface-color)', borderRadius: 16, border: '1px solid var(--border-color)', padding: 20 }}>
+          <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>Enlaces Rápidos</div>
           {[
             { label: 'Admin Panel',    url: 'https://admin.foundteach.com',  color: '#2563eb' },
             { label: 'App (Garzie)',   url: 'https://app.foundteach.com',    color: '#7c3aed' },
@@ -370,6 +475,22 @@ function CompanyTab() {
               <Globe size={14} style={{ opacity: 0.6 }} />
             </a>
           ))}
+        </div>
+
+        {/* Nota sobre Documentos */}
+        <div style={{ background: 'rgba(37,99,235,0.08)', borderRadius: 12, border: '1px solid rgba(37,99,235,0.2)', padding: 16 }}>
+          <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#2563eb', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <FileText size={14} /> Documentos Corporativos
+          </div>
+          <p style={{ fontSize: '0.8rem', color: '#2563eb', opacity: 0.8, lineHeight: 1.4, marginBottom: 10 }}>
+            Todos los documentos importantes (RUT, Certificado de Existencia, Estatutos, Contratos) se encuentran registrados en la sección <strong>DOCUMENTOS</strong>.
+          </p>
+          <button
+            onClick={() => alert('Por favor dirígete a la pestaña DOCUMENTOS para ver todos los archivos corporativos')}
+            style={{ width: '100%', padding: '8px 12px', background: '#2563eb', color: 'white', borderRadius: 8, fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', border: 'none' }}
+          >
+            Ver Documentos
+          </button>
         </div>
       </div>
     </div>
