@@ -17,11 +17,15 @@ export async function apiRequest<T = any>(path: string, opts?: RequestInit & { j
   const res = await fetch(url, { ...opts, headers, body });
 
   if (res.status === 401) {
+    // Si el token expiró o es inválido, forzamos cierre de sesión
+    localStorage.removeItem('admin_token');
+    window.location.href = '/login';
+    
     const errText = await res.text();
-    let errMsg = 'No autorizado';
+    let errMsg = 'Tu sesión ha expirado. Por favor inicia sesión nuevamente.';
     try {
       const errData = errText ? JSON.parse(errText) : {};
-      errMsg = errData.message || errMsg;
+      if (errData.message && errData.message !== 'Unauthorized') errMsg = errData.message;
     } catch { /* use default */ }
     throw new Error(errMsg);
   }
