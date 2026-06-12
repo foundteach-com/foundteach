@@ -248,6 +248,8 @@ function CompanyTab() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [loaded, setLoaded] = useState(false);
   const [data, setData] = useState<CompanyData>({
     name: 'FoundTeach EdTech S.A.S',
     email: '',
@@ -267,22 +269,31 @@ function CompanyTab() {
   const fetchCompany = async () => {
     try {
       const d = await adminService.getCompany();
-      setData(d);
-      setForm(d);
+      const merged = { ...data, ...d };
+      setData(merged);
+      setForm(merged);
+      setLoaded(true);
     } catch { /* use defaults */ }
   };
 
+  // Load data from API on first render
+  useState(() => { if (!loaded) fetchCompany(); });
+
   const handleSave = async () => {
     setSaving(true);
+    setSaveError('');
     try {
       const d = await adminService.updateCompany(form);
-      setData(d);
-      setForm(d);
+      const merged = { ...form, ...d };
+      setData(merged);
+      setForm(merged);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
-    } catch { /* silently fail */ }
+      setEditing(false);
+    } catch (e: unknown) {
+      setSaveError(e instanceof Error ? e.message : 'Error al guardar los datos. Intente de nuevo.');
+    }
     setSaving(false);
-    setEditing(false);
   };
 
 
@@ -327,6 +338,11 @@ function CompanyTab() {
         {saved && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(5,150,105,0.08)', border: '1px solid rgba(5,150,105,0.2)', color: '#059669', borderRadius: 8, padding: '10px 14px', marginBottom: 20, fontSize: '0.85rem', fontWeight: 600 }}>
             <CheckCircle size={15} /> Cambios guardados correctamente
+          </div>
+        )}
+        {saveError && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', borderRadius: 8, padding: '10px 14px', marginBottom: 20, fontSize: '0.85rem', fontWeight: 600 }}>
+            <AlertCircle size={15} /> {saveError}
           </div>
         )}
 

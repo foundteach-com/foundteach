@@ -8,6 +8,13 @@ export interface UpdateCompanyDto {
   website?: string;
   address?: string;
   logoUrl?: string;
+  rut?: string;
+  legalRepresentativeName?: string;
+  legalRepresentativeId?: string;
+  certificateOfExistenceNumber?: string;
+  certificateExpeditedDate?: string;
+  incorporationDate?: string;
+  statutesDescription?: string;
 }
 
 @Injectable()

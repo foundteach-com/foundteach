@@ -190,6 +190,15 @@ model CompanyConfig {
   website   String?
   address   String?
   logoUrl   String?  @map("logo_url")
+  
+  rut                           String?
+  legalRepresentativeName       String? @map("legal_representative_name")
+  legalRepresentativeId         String? @map("legal_representative_id")
+  certificateOfExistenceNumber  String? @map("certificate_of_existence_number")
+  certificateExpeditedDate      String? @map("certificate_expedited_date")
+  incorporationDate             String? @map("incorporation_date")
+  statutesDescription           String? @map("statutes_description")
+
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("company_config")
