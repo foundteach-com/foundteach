@@ -269,7 +269,12 @@ function CompanyTab() {
   const fetchCompany = async () => {
     try {
       const d = await adminService.getCompany();
-      const merged = { ...data, ...d };
+      // Prevenir que los null de la base de datos rompan los inputs o la validación del backend
+      const sanitized: any = {};
+      for (const [key, value] of Object.entries(d)) {
+        sanitized[key] = value === null ? '' : value;
+      }
+      const merged = { ...data, ...sanitized };
       setData(merged);
       setForm(merged);
       setLoaded(true);
@@ -283,7 +288,9 @@ function CompanyTab() {
     setSaving(true);
     setSaveError('');
     try {
-      const d = await adminService.updateCompany(form);
+      // Remover campos de sistema que el backend (ValidationPipe) rechazaría
+      const { id, createdAt, updatedAt, ...payload } = form as any;
+      const d = await adminService.updateCompany(payload);
       const merged = { ...form, ...d };
       setData(merged);
       setForm(merged);

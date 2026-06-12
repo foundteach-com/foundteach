@@ -25,6 +25,10 @@ async function bootstrap() {
     }),
   );
 
+  // Interceptor global de errores para ver logs detallados en Railway
+  const { AllExceptionsFilter } = require('./common/filters/global-exception.filter');
+  app.useGlobalFilters(new AllExceptionsFilter());
+
   // CORS configurado para ser más robusto
   const corsOrigin = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',')
