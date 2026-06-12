@@ -1,20 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { IsOptional, IsString } from 'class-validator';
 
-export interface UpdateCompanyDto {
-  name?: string;
-  email?: string;
-  phone?: string;
-  website?: string;
-  address?: string;
-  logoUrl?: string;
-  rut?: string;
-  legalRepresentativeName?: string;
-  legalRepresentativeId?: string;
-  certificateOfExistenceNumber?: string;
-  certificateExpeditedDate?: string;
-  incorporationDate?: string;
-  statutesDescription?: string;
+export class UpdateCompanyDto {
+  @IsOptional() @IsString() name?: string;
+  @IsOptional() @IsString() email?: string;
+  @IsOptional() @IsString() phone?: string;
+  @IsOptional() @IsString() website?: string;
+  @IsOptional() @IsString() address?: string;
+  @IsOptional() @IsString() logoUrl?: string;
+  @IsOptional() @IsString() rut?: string;
+  @IsOptional() @IsString() legalRepresentativeName?: string;
+  @IsOptional() @IsString() legalRepresentativeId?: string;
+  @IsOptional() @IsString() certificateOfExistenceNumber?: string;
+  @IsOptional() @IsString() certificateExpeditedDate?: string;
+  @IsOptional() @IsString() incorporationDate?: string;
+  @IsOptional() @IsString() statutesDescription?: string;
 }
 
 @Injectable()

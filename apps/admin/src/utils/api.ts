@@ -17,7 +17,13 @@ export async function apiRequest<T = any>(path: string, opts?: RequestInit & { j
   const res = await fetch(url, { ...opts, headers, body });
 
   if (res.status === 401) {
-    throw new Error('No autorizado');
+    const errText = await res.text();
+    let errMsg = 'No autorizado';
+    try {
+      const errData = errText ? JSON.parse(errText) : {};
+      errMsg = errData.message || errMsg;
+    } catch { /* use default */ }
+    throw new Error(errMsg);
   }
 
   const text = await res.text();

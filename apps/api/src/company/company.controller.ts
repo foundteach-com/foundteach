@@ -3,8 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Role } from '@prisma/client';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
-import { CompanyService } from './company.service';
-import type { UpdateCompanyDto } from './company.service';
+import { CompanyService, UpdateCompanyDto } from './company.service';
 
 @Controller('company')
 export class CompanyController {
