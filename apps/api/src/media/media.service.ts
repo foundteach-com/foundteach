@@ -98,7 +98,7 @@ export class MediaService implements OnModuleInit {
    * Construye la URL pública de un objeto en DO Spaces.
    */
   private publicUrl(key: string): string {
-    return `https://${this.bucketName}.${this.region}.digitaloceanspaces.com/${key}`;
+    return `https://${this.bucketName}.${this.region}.cdn.digitaloceanspaces.com/${key}`;
   }
 
   /**

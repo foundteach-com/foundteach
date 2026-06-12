@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
+import { apiRequest } from '../utils/api';
 
 export interface BlogPost {
   id: string;
@@ -15,61 +15,24 @@ export interface BlogPost {
 
 export const blogService = {
   async getAll(): Promise<BlogPost[]> {
-    const res = await fetch(`${API_URL}/api/blog`, {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` }
-    });
-    if (!res.ok) throw new Error('Error al obtener artículos');
-    return res.json();
+    return apiRequest<BlogPost[]>('/api/blog');
   },
 
   async create(data: Partial<BlogPost>): Promise<BlogPost> {
-    const res = await fetch(`${API_URL}/api/blog`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
-      },
-      body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error('Error al crear artículo');
-    return res.json();
+    return apiRequest<BlogPost>('/api/blog', { method: 'POST', json: data });
   },
 
   async update(id: string, data: Partial<BlogPost>): Promise<BlogPost> {
-    const res = await fetch(`${API_URL}/api/blog/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
-      },
-      body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error('Error al actualizar artículo');
-    return res.json();
+    return apiRequest<BlogPost>(`/api/blog/${id}`, { method: 'PATCH', json: data });
   },
 
   async delete(id: string): Promise<void> {
-    const res = await fetch(`${API_URL}/api/blog/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` }
-    });
-    if (!res.ok) throw new Error('Error al eliminar artículo');
+    return apiRequest<void>(`/api/blog/${id}`, { method: 'DELETE' });
   },
 
   async uploadImage(file: File): Promise<{ url: string }> {
     const formData = new FormData();
     formData.append('file', file);
-
-    const res = await fetch(`${API_URL}/api/blog/upload`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` },
-      body: formData
-    });
-    
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({ message: 'Error desconocido en el servidor' }));
-      throw new Error(errorData.message || 'Error al subir imagen');
-    }
-    return res.json();
+    return apiRequest<{ url: string }>('/api/blog/upload', { method: 'POST', body: formData });
   }
 };

@@ -6,8 +6,8 @@ import {
   Clock, TrendingUp, BarChart2, Shield,
 } from 'lucide-react';
 
+import { adminService } from '../services/admin.service';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://api.foundteach.com';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface CompanyData {
@@ -264,36 +264,22 @@ function CompanyTab() {
   });
   const [form, setForm] = useState<CompanyData>({ ...data });
 
-  const token = localStorage.getItem('admin_token') || '';
-
   const fetchCompany = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/company`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const d = await res.json();
-        setData(d);
-        setForm(d);
-      }
+      const d = await adminService.getCompany();
+      setData(d);
+      setForm(d);
     } catch { /* use defaults */ }
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch(`${API_URL}/api/admin/company`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(form),
-      });
-      if (res.ok) {
-        const d = await res.json();
-        setData(d);
-        setForm(d);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2500);
-      }
+      const d = await adminService.updateCompany(form);
+      setData(d);
+      setForm(d);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
     } catch { /* silently fail */ }
     setSaving(false);
     setEditing(false);
@@ -509,16 +495,16 @@ function UsersTab() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
 
-  const token = localStorage.getItem('admin_token') || '';
-
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingUser, setEditingUser] = useState<Partial<UserRow> | null>(null);
+  const [updating, setUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState('');
   const load = async () => {
     if (loaded) return;
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/admin/users`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) setUsers(await res.json());
+      const list = await adminService.getUsers();
+      setUsers(list);
     } catch { /* ignore */ }
     setLoading(false);
     setLoaded(true);
@@ -529,13 +515,7 @@ function UsersTab() {
     setCreating(true);
     setError('');
     try {
-      const res = await fetch(`${API_URL}/api/admin/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(newUser),
-      });
-      if (!res.ok) throw new Error((await res.json()).message || 'Error al crear usuario');
-      const created = await res.json();
+      const created = await adminService.createUser(newUser);
       setUsers(prev => [created, ...prev]);
       setShowModal(false);
       setNewUser({ firstName: '', lastName: '', email: '', password: '', role: 'USER' });
@@ -545,13 +525,32 @@ function UsersTab() {
     setCreating(false);
   };
 
+  const openEditModal = (user: UserRow) => {
+    setEditingUser({ id: user.id, firstName: user.firstName, lastName: user.lastName, role: user.role, isActive: user.isActive });
+    setUpdateError('');
+    setShowEditModal(true);
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser || !editingUser.id) return;
+    setUpdating(true);
+    setUpdateError('');
+    try {
+      const updated = await adminService.updateUser(editingUser.id, editingUser);
+      setUsers(prev => prev.map(u => u.id === updated.id ? { ...u, ...updated } : u));
+      setShowEditModal(false);
+      setEditingUser(null);
+    } catch (e: unknown) {
+      setUpdateError(e instanceof Error ? e.message : 'Error desconocido al actualizar');
+    }
+    setUpdating(false);
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar este usuario?')) return;
     try {
-      await fetch(`${API_URL}/api/admin/users/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await adminService.deleteUser(id);
       setUsers(prev => prev.filter(u => u.id !== id));
     } catch { /* ignore */ }
   };
@@ -668,6 +667,15 @@ function UsersTab() {
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button
+                        title="Editar"
+                        onClick={() => openEditModal(u)}
+                        style={{ width: 30, height: 30, borderRadius: 7, background: 'rgba(37,99,235,0.1)', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}
+                        onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = 'rgba(37,99,235,0.2)'}
+                        onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'rgba(37,99,235,0.1)'}
+                      >
+                        <Edit3 size={13} />
+                      </button>
+                      <button
                         title="Eliminar"
                         onClick={() => handleDelete(u.id)}
                         style={{ width: 30, height: 30, borderRadius: 7, background: 'rgba(239,68,68,0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}
@@ -737,6 +745,55 @@ function UsersTab() {
           </div>
         </div>
       )}
+
+      {/* Edit User Modal */}
+      {showEditModal && editingUser && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.5)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000, backdropFilter: 'blur(4px)',
+        }} onClick={e => { if (e.target === e.currentTarget) setShowEditModal(false); }}>
+          <div style={{ background: 'var(--surface-color)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 460, boxShadow: '0 24px 48px rgba(0,0,0,0.15)', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+              <h3 style={{ fontWeight: 800, fontSize: '1.1rem' }}>Editar Usuario</h3>
+              <button onClick={() => setShowEditModal(false)} style={{ width: 30, height: 30, borderRadius: 8, background: 'var(--surface-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                <X size={16} />
+              </button>
+            </div>
+            {updateError && (
+              <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: '0.85rem', fontWeight: 600 }}>{updateError}</div>
+            )}
+            <form onSubmit={handleUpdate}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Nombre</label>
+                  <input className="form-input" value={editingUser.firstName || ''} onChange={e => setEditingUser(p => ({ ...p!, firstName: e.target.value }))} required />
+                </div>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Apellido</label>
+                  <input className="form-input" value={editingUser.lastName || ''} onChange={e => setEditingUser(p => ({ ...p!, lastName: e.target.value }))} required />
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Rol</label>
+                <select className="form-input" value={editingUser.role || 'USER'} onChange={e => setEditingUser(p => ({ ...p!, role: e.target.value }))}>
+                  <option value="USER">Usuario</option>
+                  <option value="ADMIN">Administrador</option>
+                  <option value="TEACHER">Docente</option>
+                  <option value="STUDENT">Estudiante</option>
+                </select>
+              </div>
+              <div className="form-group" style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <input type="checkbox" id="isActive" checked={editingUser.isActive || false} onChange={e => setEditingUser(p => ({ ...p!, isActive: e.target.checked }))} style={{ width: 16, height: 16, cursor: 'pointer' }} />
+                <label htmlFor="isActive" style={{ fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer' }}>Usuario Activo</label>
+              </div>
+              <button type="submit" disabled={updating} className="btn-primary">
+                {updating ? 'Guardando…' : 'Guardar Cambios'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -749,48 +806,54 @@ function DocumentsTab() {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
 
-  const token = localStorage.getItem('admin_token') || '';
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [docName, setDocName] = useState('');
+  const [docCategory, setDocCategory] = useState('General');
 
   const load = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/admin/documents`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) setDocs(await res.json());
+      const list = await adminService.getDocuments();
+      setDocs(list);
     } catch { /* ignore */ }
     setLoading(false);
     setLoaded(true);
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setSelectedFile(file);
+    let defaultName = file.name;
+    const lastDot = defaultName.lastIndexOf('.');
+    if (lastDot > 0) defaultName = defaultName.substring(0, lastDot);
+    setDocName(defaultName);
+    setDocCategory('General');
+    setShowUploadModal(true);
+    e.target.value = '';
+  };
+
+  const confirmUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedFile) return;
     setUploading(true);
     setUploadError('');
-    const fd = new FormData();
-    fd.append('file', file);
     try {
-      const res = await fetch(`${API_URL}/api/admin/documents/upload`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
-      });
-      if (!res.ok) throw new Error('Error al subir');
-      const d = await res.json();
+      const d = await adminService.uploadDocument(selectedFile, docName || selectedFile.name, docCategory);
       setDocs(prev => [d, ...prev]);
-    } catch { setUploadError('Error al subir el archivo. Intente de nuevo.'); }
+      setShowUploadModal(false);
+      setSelectedFile(null);
+    } catch { 
+      setUploadError('Error al subir el archivo. Intente de nuevo.'); 
+    }
     setUploading(false);
-    e.target.value = '';
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar este documento?')) return;
     try {
-      await fetch(`${API_URL}/api/admin/documents/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await adminService.deleteDocument(id);
       setDocs(prev => prev.filter(d => d.id !== id));
     } catch { /* ignore */ }
   };
@@ -834,7 +897,7 @@ function DocumentsTab() {
           }}>
             <Upload size={14} />
             {uploading ? 'Subiendo…' : 'Subir Archivo'}
-            <input type="file" style={{ display: 'none' }} onChange={handleUpload} disabled={uploading} />
+            <input type="file" style={{ display: 'none' }} onChange={handleFileSelect} disabled={uploading} />
           </label>
         </div>
       </div>
@@ -889,6 +952,57 @@ function DocumentsTab() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Upload Document Modal */}
+      {showUploadModal && selectedFile && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.5)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000, backdropFilter: 'blur(4px)',
+        }} onClick={e => { if (e.target === e.currentTarget && !uploading) setShowUploadModal(false); }}>
+          <div style={{ background: 'var(--surface-color)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 460, boxShadow: '0 24px 48px rgba(0,0,0,0.15)', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+              <h3 style={{ fontWeight: 800, fontSize: '1.1rem' }}>Subir Documento</h3>
+              <button onClick={() => !uploading && setShowUploadModal(false)} disabled={uploading} style={{ width: 30, height: 30, borderRadius: 8, background: 'var(--surface-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                <X size={16} />
+              </button>
+            </div>
+            {uploadError && (
+              <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: '0.85rem', fontWeight: 600 }}>{uploadError}</div>
+            )}
+            
+            <div style={{ marginBottom: 24, padding: 14, background: 'var(--background-color)', borderRadius: 10, border: '1px solid var(--border-color)' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>Archivo Seleccionado</div>
+              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--primary-color)', wordBreak: 'break-all' }}>{selectedFile.name}</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>{fmtBytes(selectedFile.size)}</div>
+            </div>
+
+            <form onSubmit={confirmUpload}>
+              <div className="form-group">
+                <label className="form-label">Nombre del Documento</label>
+                <input className="form-input" value={docName} onChange={e => setDocName(e.target.value)} required placeholder="Ej: RUT 2026 FoundTeach" />
+              </div>
+              <div className="form-group" style={{ marginBottom: 24 }}>
+                <label className="form-label">Categoría</label>
+                <select className="form-input" value={docCategory} onChange={e => setDocCategory(e.target.value)}>
+                  <option value="General">General</option>
+                  <option value="RUT">RUT</option>
+                  <option value="Certificado de Existencia">Certificado de Existencia</option>
+                  <option value="Estatutos">Estatutos Constitucionales</option>
+                  <option value="Contrato">Contrato</option>
+                  <option value="Política">Política / Lineamiento</option>
+                  <option value="Logo / Marca">Logo / Marca</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+              
+              <button type="submit" disabled={uploading} className="btn-primary">
+                {uploading ? 'Subiendo…' : 'Confirmar Subida'}
+              </button>
+            </form>
+          </div>
         </div>
       )}
     </div>
